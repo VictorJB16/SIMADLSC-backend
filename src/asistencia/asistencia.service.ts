@@ -4,7 +4,7 @@ import { Injectable } from '@nestjs/common';
 export class AsistenciaService {
 
    getAllasistencia() {
-    return ['Asistencia-1' , 'Asistencia-2', 'Asistencia-3']
+    return ['Asistencia 1' , 'Asistencia 2', 'Asistencia 3']
    } 
 
    createasistencia(){
