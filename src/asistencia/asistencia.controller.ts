@@ -1,28 +1,45 @@
-import { Controller, Delete, Get, Post, Put } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, NotFoundException, UsePipes, ValidationPipe,Query, ParseIntPipe} from '@nestjs/common';
 import { AsistenciaService } from './asistencia.service';
+import { CreateAsistenciaDto } from './dto/create-asistencia.dto';
+import { UpdateAsistenciaDto } from './dto/update-asistencia.dto';
 
-@Controller('/asistencia')
+@Controller('asistencia')
 export class AsistenciaController {
-    constructor(private asistenciaService: AsistenciaService ) {}
+  constructor(private readonly asistenciaService: AsistenciaService) {}
 
-    @Get()
-    getAllasistencia(){
-        return this.asistenciaService.getAllasistencia();
-    }
+  // Obtener todas las asistencias
+  @Get()
+  getAllAsistencias() {
+    return this.asistenciaService.getAllAsistencias();
+  }
 
-    @Post()
-    createasistencia(){
-        return this.asistenciaService.createasistencia() ;
-    }
+  // Buscar asistencia por id_estudiante
+  @Get('/:id')
+  getAsistenciaById(@Param('id',ParseIntPipe) id_estudiante: number) {
+    return this.asistenciaService.getAsistenciaByIdEstudiante(id_estudiante);
+  }
 
-    @Put()
-    updateasistencia(){
-        return this.asistenciaService.updateasistencia();
-    }
-    
-    @Delete()
-    deleasistencia(){
-return this.asistenciaService.deteleasistecia();
-    }
+  // Crear una nueva asistencia
+  @Post()
+  @UsePipes(new ValidationPipe())
+  createAsistencia(@Body() createAsistenciaDto: CreateAsistenciaDto) {
+    return this.asistenciaService.createAsistencia(createAsistenciaDto);
+  }
 
+
+
+  @Put('/:id')
+  @UsePipes(new ValidationPipe())
+  updateAsistencia(
+    @Param('id', ParseIntPipe) id_estudiante: number,
+    @Body() updateAsistenciaDto: UpdateAsistenciaDto
+  ) {
+    return this.asistenciaService.updateAsistencia(id_estudiante, updateAsistenciaDto);
+  }
+
+   // Eliminar una asistencia por id_estudiante
+   @Delete('/:id')
+   deleteAsistencia(@Param('id', ParseIntPipe) id_estudiante: number) {
+     return this.asistenciaService.deleteAsistencia(id_estudiante);
+   }
 }
