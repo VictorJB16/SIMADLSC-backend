@@ -13,6 +13,7 @@ import { ProfileController } from './profile/profile.controller';
       username: 'root',
       password: '0316',
       database: 'simadlsc',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
       synchronize: true,
     }),
