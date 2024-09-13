@@ -1,11 +1,24 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { ProfileController } from './profile/profile.controller';
 
 @Module({
-  imports: [AuthModule],
-  controllers: [AppController],
-  providers: [AppService],
+  imports: [
+    TypeOrmModule.forRoot({
+      type: 'mariadb',
+      host: 'localhost',
+      port: 3307,
+      username: 'root',
+      password: '0316',
+      database: 'simadlsc',
+      autoLoadEntities: true,
+      synchronize: true,
+    }),
+    AuthModule,
+    UsersModule,
+  ],
+  controllers: [ProfileController], 
 })
 export class AppModule {}
