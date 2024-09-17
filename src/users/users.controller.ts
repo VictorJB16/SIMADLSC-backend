@@ -21,6 +21,13 @@ export class UsersController {
     return this.usersService.findById(id);
   }
 
+  // Ruta para obtener todos los usuarios (protegida con JWT)
+  @UseGuards(JwtAuthGuard)
+  @Get()
+  async getAllUsers() {
+    return this.usersService.findAll();
+  }
+
   // Ruta para actualizar un usuario por ID (protegida con JWT)
   @UseGuards(JwtAuthGuard)
   @Put(':id')

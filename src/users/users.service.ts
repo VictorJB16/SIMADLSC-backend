@@ -49,6 +49,11 @@ export class UsersService {
     return user;
   }
 
+  // Buscar todos los usuarios
+  async findAll(): Promise<Usuario[]> {
+    return this.usersRepository.find({ relations: ['rol_Usuario'] });
+  }
+
   // Buscar un usuario por email
   async findByEmail(email: string): Promise<Usuario | undefined> {
     return this.usersRepository.findOne({ where: { email_Usuario: email } });
