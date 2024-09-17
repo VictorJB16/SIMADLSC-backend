@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn } from 'typeorm';
+import { Roles } from 'src/roles/entities/role.entity';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
 
 @Entity('usuario')
 export class Usuario {
@@ -6,25 +7,35 @@ export class Usuario {
   id_usuario: number;
 
   @Column({ type: 'nvarchar', length: 100 })
-  nombre_completo: string;
+  nombre_Usuario: string;
+
+  @Column({ type: 'nvarchar', length: 100 })
+  apellido1_Usuario: string;
+
+  @Column({ type: 'nvarchar', length: 100 })
+  apellido2_Usuario: string;
 
   @Column({ type: 'nvarchar', length: 100, unique: true })
-  email: string;
+  email_Usuario: string;
 
-  @Column({ type: 'nvarchar', length: 20 })
-  cedula: string
   @Column({ type: 'nvarchar', length: 64 })
-  contrasena: string; // La contraseña será almacenada como hash
+  contraseña_Usuario: string; // La contraseña será almacenada como hash
 
-  @Column({ type: 'nvarchar', length: 50, default: 'user' })
-  rol: string;
+  @ManyToOne(() => Roles, rol => rol.usuarios)
+  rol_Usuario: Roles;
+
+  @Column({ type: 'datetime', nullable: true })
+  ultimo_inicio_sesion_Usuario: Date;
+
+  @Column({ type: 'int', default: 0 })
+  intentos_inicio_sesion_Usuario: number;
 
   @Column({ type: 'bit', default: false })
-  bloqueado: boolean;
+  bloqueado_Usuario: boolean;
 
   @CreateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-  fecha_creacion: Date;
+  fecha_creacion_Usuario: Date;
 
   @UpdateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
-  fecha_actualizacion: Date;
+  fecha_actualizacion_Usuario: Date;
 }
