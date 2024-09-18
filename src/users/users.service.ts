@@ -56,7 +56,7 @@ export class UsersService {
 
   // Buscar un usuario por email
   async findByEmail(email: string): Promise<Usuario | undefined> {
-    return this.usersRepository.findOne({ where: { email_Usuario: email } });
+    return this.usersRepository.findOne({ where: { email_Usuario: email },relations: ['rol_Usuario'], });
   }
 
   // Actualizar un usuario por su ID
