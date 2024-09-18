@@ -27,7 +27,7 @@ import { GradosModule } from './grados/grados.module';
     }),
     AsistenciaModule,
     AuthModule,
-    UsersModule,
+    UsersModule,RolesModule,
     SeccionesModule,
     GradosModule
     
