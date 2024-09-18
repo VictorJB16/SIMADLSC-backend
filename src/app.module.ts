@@ -27,7 +27,6 @@ import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Mi
       synchronize: true,
     }),
     AsistenciaModule, AuthModule, UsersModule,  RolesModule],
-  ],
   controllers: [ProfileController],
 })
 export class AppModule implements NestModule {
