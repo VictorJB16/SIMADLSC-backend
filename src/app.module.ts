@@ -4,28 +4,29 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfileController } from './profile/profile.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RolesModule } from './roles/roles.module';
+import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './middleware/logger.middleware';  // Middleware de logging
 import { CorsMiddleware } from './middleware/cors.middleware';  // Middleware de CORS
 import { AuditMiddleware } from './middleware/audit.middleware';  // Middleware de auditoría
 import { XssProtectionMiddleware } from './middleware/xss.middleware';  // Middleware de protección contra XSS
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Middleware de rate limiting
 
+
 @Module({
-  imports: [
+  imports: [ 
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mariadb',
-      host: 'localhost',
-      port: 3307,
-      username: 'root',
-      password: 'root',
-      database: 'simadlsc',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      autoLoadEntities: true,
       synchronize: true,
     }),
-    AsistenciaModule,
-    AuthModule,
-    UsersModule
+    AsistenciaModule, AuthModule, UsersModule,  RolesModule],
   ],
   controllers: [ProfileController],
 })

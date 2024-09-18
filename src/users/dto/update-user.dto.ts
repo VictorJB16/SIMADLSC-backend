@@ -2,17 +2,22 @@ import { IsOptional, IsEmail, MinLength } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
-  @MinLength(3, { message: 'El nombre completo debe tener al menos 3 caracteres' })
-  nombre_completo?: string;
+  nombre_Usuario?: string;
 
   @IsOptional()
-  @IsEmail({}, { message: 'El email no es válido' })
-  email?: string;
+  apellido1_Usuario?: string;
 
   @IsOptional()
-  cedula?: string;
+  apellido2_Usuario?: string;
+
+  @IsOptional()
+  @IsEmail({}, { message: 'El correo electrónico no es válido' })
+  email_Usuario?: string;
 
   @IsOptional()
   @MinLength(6, { message: 'La contraseña debe tener al menos 6 caracteres' })
-  contrasena?: string;
+  contraseña_Usuario?: string;
+
+  @IsOptional()
+  rol_Usuario?: number; // Referencia al ID del Rol
 }
