@@ -5,10 +5,10 @@ export class LoginDto {
   email_Usuario: string;
 
   @IsNotEmpty({ message: 'La contraseña no puede estar vacía' })
-<<<<<<< HEAD
-  contraseña_Usuario: string;
-=======
-  password: string;
 
->>>>>>> Cr-branch
+  contraseña_Usuario: string;
+
+
+
+
 }
