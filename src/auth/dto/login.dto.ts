@@ -6,4 +6,5 @@ export class LoginDto {
 
   @IsNotEmpty({ message: 'La contraseña no puede estar vacía' })
   password: string;
+
 }

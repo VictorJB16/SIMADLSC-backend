@@ -42,12 +42,14 @@ export class AuthService {
     // Valida el usuario y las credenciales
     const user = await this.validateUser(email, password);
 
+    // Crear el payload que incluye el rol del usuario
     const payload = { sub: user.id_usuario, email: user.email, rol: user.rol };
 
-    // Genera y retorna el token
+    // Genera y retorna el token junto con el rol
     return {
       access_token: this.jwtService.sign(payload),
       message: 'Inicio de sesión exitoso',
+      rol: user.rol,  // Asegúrate de incluir el rol aquí
     };
   }
 }
