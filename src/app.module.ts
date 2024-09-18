@@ -11,7 +11,9 @@ import { CorsMiddleware } from './middleware/cors.middleware';  // Middleware de
 import { AuditMiddleware } from './middleware/audit.middleware';  // Middleware de auditoría
 import { XssProtectionMiddleware } from './middleware/xss.middleware';  // Middleware de protección contra XSS
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Middleware de rate limiting
-
+import { Seccion } from './secciones/entities/seccion.entity';
+import { SeccionesModule } from './secciones/secciones.module';
+import { GradosModule } from './grados/grados.module';
 
 @Module({
   imports: [ 
@@ -26,7 +28,13 @@ import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Mi
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true,
     }),
-    AsistenciaModule, AuthModule, UsersModule,  RolesModule],
+    AsistenciaModule,
+    AuthModule,
+    UsersModule,
+    RolesModule,
+    SeccionesModule,
+    GradosModule
+  ],
   controllers: [ProfileController],
 })
 export class AppModule implements NestModule {
