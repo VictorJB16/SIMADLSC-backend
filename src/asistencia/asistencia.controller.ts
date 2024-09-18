@@ -28,15 +28,17 @@ export class AsistenciaController {
 
 
 
-  @Put('/:id')
+  @Put('/:id_estudiante')
   @UsePipes(new ValidationPipe())
   updateAsistencia(
-    @Param('id', ParseIntPipe) id_estudiante: number,
+    @Param('id_estudiante', ParseIntPipe) id_estudiante: number,
     @Body() updateAsistenciaDto: UpdateAsistenciaDto
   ) {
     return this.asistenciaService.updateAsistencia(id_estudiante, updateAsistenciaDto);
   }
-
+  
+  
+  
    // Eliminar una asistencia por id_estudiante
    @Delete('/:id')
    deleteAsistencia(@Param('id', ParseIntPipe) id_estudiante: number) {

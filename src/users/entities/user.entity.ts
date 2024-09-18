@@ -38,4 +38,5 @@ export class Usuario {
 
   @UpdateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_actualizacion_Usuario: Date;
+
 }
