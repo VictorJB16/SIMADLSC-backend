@@ -5,5 +5,10 @@ export class LoginDto {
   email_Usuario: string;
 
   @IsNotEmpty({ message: 'La contraseña no puede estar vacía' })
+
   contraseña_Usuario: string;
+
+
+
+
 }

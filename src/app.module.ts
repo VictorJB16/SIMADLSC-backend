@@ -11,22 +11,30 @@ import { CorsMiddleware } from './middleware/cors.middleware';  // Middleware de
 import { AuditMiddleware } from './middleware/audit.middleware';  // Middleware de auditoría
 import { XssProtectionMiddleware } from './middleware/xss.middleware';  // Middleware de protección contra XSS
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Middleware de rate limiting
-
+import { Seccion } from './secciones/entities/seccion.entity';
+import { SeccionesModule } from './secciones/secciones.module';
+import { GradosModule } from './grados/grados.module';
 
 @Module({
   imports: [ 
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mariadb',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      host: 'localhost',
+      port: 3307,
+      username: 'root',
+      password: 'root',
+      database: 'simadlsc',
+      autoLoadEntities: true,
       synchronize: true,
     }),
-    AsistenciaModule, AuthModule, UsersModule,  RolesModule],
+    AsistenciaModule,
+    AuthModule,
+    UsersModule,
+    RolesModule,
+    SeccionesModule,
+    GradosModule
+  ],
   controllers: [ProfileController],
 })
 export class AppModule implements NestModule {

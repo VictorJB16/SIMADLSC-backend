@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
+import { IsEmail, isNotEmpty, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDto {
   @IsNotEmpty({ message: 'El nombre no puede estar vacío' })
@@ -21,4 +21,6 @@ export class CreateUserDto {
 
   @IsNotEmpty({ message: 'Debe seleccionar un rol' })
   rol_Usuario: number;  // Referencia al ID del Rol
+ 
+
 }
