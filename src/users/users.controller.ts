@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Put, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Put, Delete, UseGuards, Request } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -10,7 +10,7 @@ export class UsersController {
 
   // Ruta para registrar un nuevo usuario
   @Post('register')
-  async createUser(@Body() createUserDto: CreateUserDto) {
+  async createUser(@Body() createUserDto: CreateUserDto, @Request() req) {
     return this.usersService.createUser(createUserDto);
   }
 
@@ -39,6 +39,7 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Delete(':id')
   async deleteUser(@Param('id') id: number) {
-    return this.usersService.deleteUser(id);
+    await this.usersService.deleteUser(id);
+    return { message: 'Usuario eliminado' }; // O devuelve un estado 204 si no quieres enviar ningún mensaje.
   }
 }

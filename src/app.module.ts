@@ -24,7 +24,7 @@ import { GradosModule } from './grados/grados.module';
       port: 3333,
       username: 'root',
       password: 'Andreylxi$$3',
-      database: 'simadback',
+      database: 'simadlscc',
       autoLoadEntities: true,
       synchronize: true,
     }),

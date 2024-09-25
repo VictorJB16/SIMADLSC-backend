@@ -16,7 +16,9 @@ export class SeccionesService {
   }
 
   async create(createSeccionDto: CreateSeccionDto): Promise<Seccion> {
-    const seccion = this.seccionRepository.create(createSeccionDto);
-    return this.seccionRepository.save(seccion);
+    const newseccion = this.seccionRepository.create(createSeccionDto);
+    return this.seccionRepository.save(newseccion);
   }
+
+
 }

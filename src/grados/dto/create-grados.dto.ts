@@ -1,3 +1,6 @@
+import { IsNotEmpty } from "class-validator";
+
 export class CreateGradoDto {
-  readonly nivel: string;
+  @IsNotEmpty ()
+   nivel: string;
 }
