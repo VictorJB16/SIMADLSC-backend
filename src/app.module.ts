@@ -23,7 +23,7 @@ import { GradosModule } from './grados/grados.module';
       host: 'localhost',
       port: 3307,
       username: 'root',
-      password: 'root',
+      password: '0316',
       database: 'simadlsc',
       autoLoadEntities: true,
       synchronize: true,
