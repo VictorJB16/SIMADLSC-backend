@@ -77,4 +77,19 @@ export class UsersService {
     const user = await this.findById(id);
     await this.usersRepository.remove(user);
   }
+
+  async toggleBlockUser(id: number, bloqueado_Usuario: boolean): Promise<Usuario> {
+    const user = await this.findById(id); 
+    user.bloqueado_Usuario = bloqueado_Usuario;
+    return this.usersRepository.save(user); 
+  }
+
+
+  async updatePassword(id_usuario: number, hashedPassword: string): Promise<void> {
+    await this.usersRepository.update(id_usuario, { contraseña_Usuario: hashedPassword });
+  }
+
+ 
+
+
 }

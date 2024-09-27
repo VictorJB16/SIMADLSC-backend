@@ -1,5 +1,7 @@
+import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
+import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { Roles } from 'src/roles/entities/role.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
 
 @Entity('usuario')
 export class Usuario {
@@ -21,7 +23,7 @@ export class Usuario {
   @Column({ type: 'nvarchar', length: 64 })
   contraseña_Usuario: string; // La contraseña será almacenada como hash
 
-  @ManyToOne(() => Roles, rol => rol.usuarios)
+  @ManyToOne(() => Roles, (rol) => rol.usuarios)
   rol_Usuario: Roles;
 
   @Column({ type: 'datetime', nullable: true })
@@ -30,7 +32,7 @@ export class Usuario {
   @Column({ type: 'int', default: 0 })
   intentos_inicio_sesion_Usuario: number;
 
-  @Column({ type: 'bit', default: false })
+  @Column({ type: 'boolean', default: false })
   bloqueado_Usuario: boolean;
 
   @CreateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
@@ -39,4 +41,13 @@ export class Usuario {
   @UpdateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_actualizacion_Usuario: Date;
 
+  // Relación con los profesores
+  @OneToMany(() => Profesor, (profesor) => profesor.usuario)
+  profesores: Profesor[];
+
+  // Relación con los estudiantes
+  @OneToMany(() => Estudiante, (estudiante) => estudiante.usuario)
+  estudiantes: Estudiante[];
+
+ 
 }
