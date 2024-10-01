@@ -1,3 +1,4 @@
+
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { Horario } from 'src/horario/entities/horario.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
@@ -21,4 +22,4 @@ export class Seccion {
 
   @OneToMany(() => Estudiante, (estudiante) => estudiante.seccion)
   estudiantes: Estudiante[];
-}
+

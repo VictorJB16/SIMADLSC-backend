@@ -16,11 +16,13 @@ export class SeccionesService {
   }
 
   async create(createSeccionDto: CreateSeccionDto): Promise<Seccion> {
-    const seccion = this.seccionRepository.create(createSeccionDto);
-    return this.seccionRepository.save(seccion);
+    const newseccion = this.seccionRepository.create(createSeccionDto);
+    return this.seccionRepository.save(newseccion);
   }
+
 
   async findOne(id: number): Promise<Seccion> {
     return this.seccionRepository.findOne({ where: { id_Seccion: id } });
   }
+
 }
