@@ -4,3 +4,4 @@ export class CreateGradoDto {
   @IsNotEmpty ()
    nivel: string;
 }
+  
