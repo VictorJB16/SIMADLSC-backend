@@ -1,3 +1,6 @@
+import { IsNotEmpty } from "class-validator";
+
 export class CreateSeccionDto {
-  readonly nombre: string;
+  @IsNotEmpty()
+  nombre: string;
 }

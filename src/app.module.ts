@@ -21,10 +21,15 @@ import { GradosModule } from './grados/grados.module';
     TypeOrmModule.forRoot({
       type: 'mariadb',
       host: 'localhost',
-      port: 3307,
+      port: 3333,
       username: 'root',
+<<<<<<< HEAD
       password: '0316',
       database: 'simadlsc',
+=======
+      password: 'Andreylxi$$3',
+      database: 'simadlscc',
+>>>>>>> main
       autoLoadEntities: true,
       synchronize: true,
     }),
