@@ -23,3 +23,4 @@ export class Seccion {
   @OneToMany(() => Estudiante, (estudiante) => estudiante.seccion)
   estudiantes: Estudiante[];
 
+}
