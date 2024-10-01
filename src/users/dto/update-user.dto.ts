@@ -20,4 +20,6 @@ export class UpdateUserDto {
 
   @IsOptional()
   rol_Usuario?: number; // Referencia al ID del Rol
+  
+  bloqueado_Usuario?: boolean;
 }

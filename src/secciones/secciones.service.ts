@@ -21,4 +21,8 @@ export class SeccionesService {
   }
 
 
+  async findOne(id: number): Promise<Seccion> {
+    return this.seccionRepository.findOne({ where: { id_Seccion: id } });
+  }
+
 }
