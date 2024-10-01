@@ -7,7 +7,7 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'ty
 @Entity('profesores')
 export class Profesor {
   @PrimaryGeneratedColumn()
-  id_Profesor: number;
+  id_Profesor: number;  
 
   @ManyToOne(() => Usuario, (usuario) => usuario.profesores)
   usuario: Usuario;

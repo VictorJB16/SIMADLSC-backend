@@ -10,7 +10,7 @@ import { Roles } from 'src/roles/entities/role.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Usuario)
+    @InjectRepository(Usuario)  
     private readonly usersRepository: Repository<Usuario>,
 
     @InjectRepository(Roles)

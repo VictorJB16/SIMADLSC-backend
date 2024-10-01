@@ -19,4 +19,8 @@ export class SeccionesService {
     const seccion = this.seccionRepository.create(createSeccionDto);
     return this.seccionRepository.save(seccion);
   }
+
+  async findOne(id: number): Promise<Seccion> {
+    return this.seccionRepository.findOne({ where: { id_Seccion: id } });
+  }
 }

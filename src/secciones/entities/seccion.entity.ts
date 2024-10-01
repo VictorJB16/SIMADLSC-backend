@@ -20,5 +20,5 @@ export class Seccion {
   horarios: Horario[];
 
   @OneToMany(() => Estudiante, (estudiante) => estudiante.seccion)
-estudiantes: Estudiante[];
+  estudiantes: Estudiante[];
 }

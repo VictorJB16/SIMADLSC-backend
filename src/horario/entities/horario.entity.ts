@@ -8,7 +8,6 @@ import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 @Entity('horarios')
 export class Horario {
   @PrimaryGeneratedColumn()
-  @PrimaryGeneratedColumn()
   id_Horario: number;
 
   @Column({ length: 50 })

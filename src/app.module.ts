@@ -11,15 +11,14 @@ import { CorsMiddleware } from './middleware/cors.middleware';  // Middleware de
 import { AuditMiddleware } from './middleware/audit.middleware';  // Middleware de auditoría
 import { XssProtectionMiddleware } from './middleware/xss.middleware';  // Middleware de protección contra XSS
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Middleware de rate limiting
-import { Seccion } from './secciones/entities/seccion.entity';
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
-import { MailerCustomService } from './mailer/mailer.service';
 import { MailerCustomModule } from './mailer/mailer.module';
 import { HorarioModule } from './horario/horario.module';
 import { ProfesorModule } from './profesor/profesor.module';
 import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
+import { PeriodoModule } from './periodo/periodo.module';
 
 @Module({
   imports: [ 
@@ -46,6 +45,7 @@ import { MateriaModule } from './materia/materia.module';
     ProfesorModule,
     EstudianteModule,
     MateriaModule,
+    PeriodoModule,
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],

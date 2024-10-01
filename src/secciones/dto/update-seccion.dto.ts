@@ -1,9 +1,7 @@
 import { IsNotEmpty, IsNumber, IsDateString, IsOptional, IsString } from 'class-validator';
 
 export class updateSeccionesDto {
-
-
   @IsOptional()
   @IsString()
-  nombre?: string;
+  nombre_Seccion?: string;
 }
