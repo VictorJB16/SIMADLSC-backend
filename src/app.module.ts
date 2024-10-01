@@ -25,12 +25,25 @@ import { PeriodoModule } from './periodo/periodo.module';
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mariadb',
+<<<<<<< HEAD
+      host: 'localhost',
+      port: 3333,
+      username: 'root',
+<<<<<<< HEAD
+      password: '0316',
+      database: 'simadlsc',
+=======
+      password: 'Andreylxi$$3',
+      database: 'simadlscc',
+>>>>>>> main
+=======
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
+>>>>>>> main
       autoLoadEntities: true,
       synchronize: false,
     }),
