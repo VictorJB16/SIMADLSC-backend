@@ -21,10 +21,12 @@ import { PeriodoModule } from './periodo/periodo.module';
 
 @Module({
   imports: [ 
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true, // Hace que ConfigService esté disponible en toda la aplicación
+      envFilePath: '.env', // Opcional si el archivo .env está en la raíz
+    }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
-
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_USERNAME,
