@@ -8,77 +8,50 @@ import { Horario } from './entities/horario.entity';
 export class HorarioController {
   constructor(private readonly horarioService: HorarioService) {}
 
-  /**
-   * Endpoint para crear Horario para Estudiantes
-   * Ruta: POST /horarios/estudiante
-   * @param createHorarioDto Datos para crear el horario
-   * @returns Horario creado
-   */
-
   @Get()
   async findAll(): Promise<Horario[]> {
-    try {
-      return await this.horarioService.findAll();
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+    return this.horarioService.findAll();
   }
 
-   @Get('seccion/:seccionId')
-   async findBySeccion(
-     @Param('seccionId', ParseIntPipe) seccionId: number
-   ): Promise<Horario[]> {
-     try {
-       return await this.horarioService.findBySeccion(seccionId);
-     } catch (error) {
-       throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-     }
-   }
- 
-   @Get('profesor/:profesorId')
-   async findByProfesor(
-     @Param('profesorId', ParseIntPipe) profesorId: number
-   ): Promise<Horario[]> {
-     try {
-       return await this.horarioService.findByProfesor(profesorId);
-     } catch (error) {
-       throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-     }
-   }
+  @Get('seccion/:seccionId')
+  async findBySeccion(
+    @Param('seccionId', ParseIntPipe) seccionId: number
+  ): Promise<Horario[]> {
+    return this.horarioService.findBySeccion(seccionId);
+  }
+
+  @Get('profesor/:profesorId')
+  async findByProfesor(
+    @Param('profesorId', ParseIntPipe) profesorId: number
+  ): Promise<Horario[]> {
+    return this.horarioService.findByProfesor(profesorId);
+  }
 
   @Post('estudiante')
-  async createEstudiante(@Body() createHorarioDto: CreateHorarioEstudianteDto): Promise<Horario> {
-    try {
-      return await this.horarioService.createHorarioEstudiante(createHorarioDto);
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  async createEstudiante(
+    @Body() createHorarioDto: CreateHorarioEstudianteDto
+  ): Promise<Horario> {
+    return this.horarioService.createHorarioEstudiante(createHorarioDto);
   }
 
+  @Post('profesor')
+/*************  ✨ Codeium Command ⭐  *************/
   /**
-   * Endpoint para crear Horario para Profesores
-   * Ruta: POST /horarios/profesor
+   * Crear Horario para un Profesor
    * @param createHorarioDto Datos para crear el horario
    * @returns Horario creado
    */
-  @Post('profesor')
-  async createProfesor(@Body() createHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {
-    try {
-      return await this.horarioService.createHorarioProfesor(createHorarioDto);
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+/******  2c4ccfbf-73e3-42fc-b5b8-0028a0ce354a  *******/  async createProfesor(
+    @Body() createHorarioDto: CreateHorarioProfesorDto
+  ): Promise<Horario> {
+    return this.horarioService.createHorarioProfesor(createHorarioDto);
   }
 
   @Get(':id')
-  async findOne(
-    @Param('id', ParseIntPipe) id: number
-  ): Promise<Horario> {
-    try {
-      return await this.horarioService.findOne(id);
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Horario> {
+    return this.horarioService.findOne(id);
   }
-
 }
+
+
+
