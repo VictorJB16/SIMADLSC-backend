@@ -8,18 +8,24 @@ import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'ty
 export class Estudiante {
   @PrimaryGeneratedColumn()
   id_Estudiante: number;
+  
+  @Column({ length: 100 })
+  nombre_Estudiante: string;
 
   @Column({ length: 50 })
-  estado_Estudiante: string;
-
+  apellido1_Estudiante: string;
+  
+  @Column({ length: 50 })
+  apellido2_Estudiante: string;
+  
+  @Column({ default:"Activo" })
+  estado_Estudiante?: string;
+  
   @ManyToOne(() => Usuario, (usuario) => usuario.estudiantes)
   usuario: Usuario;
 
   @ManyToOne(() => Grado, (grado) => grado.estudiantes)
   grado: Grado;
-
-  @OneToMany(() => Horario, (horario) => horario.estudiante)
-  horarios: Horario[];
 
   @ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
   seccion: Seccion;

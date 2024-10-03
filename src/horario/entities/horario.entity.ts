@@ -1,8 +1,8 @@
-import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { Materia } from 'src/materia/entities/materia.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
+import { Aula } from 'src/aulas/entities/aula.entity';
 import { Entity, PrimaryGeneratedColumn, ManyToOne, Column } from 'typeorm';
 
 @Entity('horarios')
@@ -19,18 +19,18 @@ export class Horario {
   @Column('time')
   hora_fin_Horario: string;
 
-  @ManyToOne(() => Profesor, (profesor) => profesor.horarios, { nullable: true })
+  @ManyToOne(() => Profesor, (profesor) => profesor.horarios, { nullable: true, eager: true })
   profesor: Profesor;
 
-  @ManyToOne(() => Estudiante, (estudiante) => estudiante.horarios, { nullable: true })
-  estudiante: Estudiante;
-
-  @ManyToOne(() => Materia, (materia) => materia.horarios)
+  @ManyToOne(() => Materia, (materia) => materia.horarios, { eager: true })
   materia: Materia;
 
-  @ManyToOne(() => Grado, (grado) => grado.horarios)
+  @ManyToOne(() => Grado, (grado) => grado.horarios, { eager: true })
   grado: Grado;
 
-  @ManyToOne(() => Seccion, (seccion) => seccion.horarios)
+  @ManyToOne(() => Seccion, (seccion) => seccion.horarios, { nullable: true, eager: true })
   seccion: Seccion;
+
+  @ManyToOne(() => Aula, { eager: true })
+  aula: Aula;
 }

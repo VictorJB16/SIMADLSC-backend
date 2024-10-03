@@ -1,19 +1,34 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProfesorDto } from './dto/create-profesor.dto';
 import { UpdateProfesorDto } from './dto/update-profesor.dto';
+import { Profesor } from './entities/profesor.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class ProfesorService {
-  create(createProfesorDto: CreateProfesorDto) {
-    return 'This action adds a new profesor';
+
+  constructor(
+    @InjectRepository(Profesor)
+     private readonly profesorRepository: Repository<Profesor>, 
+  ) {}
+
+  async create(createProfesorDto: CreateProfesorDto): Promise<Profesor> {
+    const newProfesor = this.profesorRepository.create(createProfesorDto);
+    return this.profesorRepository.save(newProfesor);
   }
 
-  findAll() {
-    return `This action returns all profesor`;
+  async findAll(): Promise<Profesor[]> {
+    const allProfesores = await this.profesorRepository.find();
+    return allProfesores;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} profesor`;
+  async findOne(id: number): Promise<Profesor> {
+    const profesor = await this.profesorRepository.findOne({ where: { id_Profesor: id } });
+    if (!profesor) {
+      throw new NotFoundException(`Profesor con ID ${id} no encontrado`);
+    }
+    return profesor;
   }
 
   update(id: number, updateProfesorDto: UpdateProfesorDto) {

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Post, Body, NotFoundException, Param, ParseIntPipe } from '@nestjs/common';
 import { SeccionesService } from './secciones.service';
 import { CreateSeccionDto } from './dto/create-seccion.dto';
 
@@ -10,19 +10,19 @@ export class SeccionesController {
   async findAll() {
     return this.seccionesService.findAll();
   }
-
-  @Get(':id')
-  async findOne(@Body() id: number) {
-    if(!id) {
-      throw new NotFoundException('Seccion no encontrada');
-    }
-    return this.seccionesService.findOne(id);
-  }
-
+  
   @Post()
   async create(@Body() createSeccionDto: CreateSeccionDto) {
     return this.seccionesService.create(createSeccionDto);
   }
+  
+    @Get(':id')
+    async findOne(@Param( 'id', ParseIntPipe) id: number) {
+      if(!id) {
+        throw new NotFoundException('Seccion no encontrada');
+      }
+      return this.seccionesService.findOne(id);
+    }
 
 
 }

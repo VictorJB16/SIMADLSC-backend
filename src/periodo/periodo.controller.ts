@@ -3,7 +3,7 @@ import { PeriodoService } from './periodo.service';
 import { CreatePeriodoDto } from './dto/create-periodo.dto';
 import { UpdatePeriodoDto } from './dto/update-periodo.dto';
 
-@Controller('periodo')
+@Controller('periodos')
 export class PeriodoController {
   constructor(private readonly periodoService: PeriodoService) {}
 
