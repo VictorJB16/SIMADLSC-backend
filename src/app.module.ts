@@ -5,11 +5,11 @@ import { ProfileController } from './profile/profile.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerMiddleware } from './middleware/logger.middleware';  // Middleware de logging
-import { CorsMiddleware } from './middleware/cors.middleware';  // Middleware de CORS
-import { AuditMiddleware } from './middleware/audit.middleware';  // Middleware de auditoría
-import { XssProtectionMiddleware } from './middleware/xss.middleware';  // Middleware de protección contra XSS
-import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Middleware de rate limiting
+import { LoggerMiddleware } from './middleware/logger.middleware';  
+import { CorsMiddleware } from './middleware/cors.middleware';  
+import { AuditMiddleware } from './middleware/audit.middleware';  
+import { XssProtectionMiddleware } from './middleware/xss.middleware';   
+import { rateLimitMiddleware } from './middleware/rate-limit.middleware';   
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
 import { MailerCustomModule } from './mailer/mailer.module';
@@ -18,6 +18,7 @@ import { ProfesorModule } from './profesor/profesor.module';
 import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
 import { PeriodoModule } from './periodo/periodo.module';
+import { AulasModule } from './aulas/aulas.module';
 
 @Module({
   imports: [ 
@@ -47,6 +48,7 @@ import { PeriodoModule } from './periodo/periodo.module';
     EstudianteModule,
     MateriaModule,
     PeriodoModule,
+    AulasModule,
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],

@@ -1,34 +1,84 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { CreateHorarioDto } from './dto/create-horario.dto';
-import { UpdateHorarioDto } from './dto/update-horario.dto';
-import { HorariosService } from './horario.service';
+import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe } from '@nestjs/common';
+import { HorarioService } from './horario.service';
+import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
+import { CreateHorarioProfesorDto } from './dto/create-horario-profesor.dto';
+import { Horario } from './entities/horario.entity';
 
 @Controller('horarios')
-export class HorariosController {
-  // constructor(private readonly horariosService: HorariosService) {}
+export class HorarioController {
+  constructor(private readonly horarioService: HorarioService) {}
 
-  // @Post()
-  // create(@Body() createHorarioDto: CreateHorarioDto) {
-  //   return this.horariosService.create(createHorarioDto);
-  // }
+  /**
+   * Endpoint para crear Horario para Estudiantes
+   * Ruta: POST /horarios/estudiante
+   * @param createHorarioDto Datos para crear el horario
+   * @returns Horario creado
+   */
 
-  // @Get()
-  // findAll() {
-  //   return this.horariosService.findAll();
-  // }
+  @Get()
+  async findAll(): Promise<Horario[]> {
+    try {
+      return await this.horarioService.findAll();
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: number) {
-  //   return this.horariosService.findOne(id);
-  // }
+   @Get('seccion/:seccionId')
+   async findBySeccion(
+     @Param('seccionId', ParseIntPipe) seccionId: number
+   ): Promise<Horario[]> {
+     try {
+       return await this.horarioService.findBySeccion(seccionId);
+     } catch (error) {
+       throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+     }
+   }
+ 
+   @Get('profesor/:profesorId')
+   async findByProfesor(
+     @Param('profesorId', ParseIntPipe) profesorId: number
+   ): Promise<Horario[]> {
+     try {
+       return await this.horarioService.findByProfesor(profesorId);
+     } catch (error) {
+       throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+     }
+   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: number, @Body() updateHorarioDto: UpdateHorarioDto) {
-  //   return this.horariosService.update(id, updateHorarioDto);
-  // }
+  @Post('estudiante')
+  async createEstudiante(@Body() createHorarioDto: CreateHorarioEstudianteDto): Promise<Horario> {
+    try {
+      return await this.horarioService.createHorarioEstudiante(createHorarioDto);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: number) {
-  //   return this.horariosService.remove(id);
-  // }
+  /**
+   * Endpoint para crear Horario para Profesores
+   * Ruta: POST /horarios/profesor
+   * @param createHorarioDto Datos para crear el horario
+   * @returns Horario creado
+   */
+  @Post('profesor')
+  async createProfesor(@Body() createHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {
+    try {
+      return await this.horarioService.createHorarioProfesor(createHorarioDto);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @Get(':id')
+  async findOne(
+    @Param('id', ParseIntPipe) id: number
+  ): Promise<Horario> {
+    try {
+      return await this.horarioService.findOne(id);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
 }

@@ -9,6 +9,15 @@ export class Profesor {
   @PrimaryGeneratedColumn()
   id_Profesor: number;  
 
+  @Column({ length: 100 })
+  nombre_Profesor: string;
+
+  @Column({ length: 100 })
+  apellido1_Profesor: string;
+
+  @Column({ length: 100 })
+  apellido2_Profesor: string;
+
   @ManyToOne(() => Usuario, (usuario) => usuario.profesores)
   usuario: Usuario;
 
