@@ -1,71 +1,92 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { AsistenciaModule } from './asistencia/asistencia.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfileController } from './profile/profile.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerMiddleware } from './middleware/logger.middleware';  // Middleware de logging
-import { CorsMiddleware } from './middleware/cors.middleware';  // Middleware de CORS
-import { AuditMiddleware } from './middleware/audit.middleware';  // Middleware de auditoría
-import { XssProtectionMiddleware } from './middleware/xss.middleware';  // Middleware de protección contra XSS
-import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Middleware de rate limiting
-import { Seccion } from './secciones/entities/seccion.entity';
+import { LoggerMiddleware } from './middleware/logger.middleware';  
+import { CorsMiddleware } from './middleware/cors.middleware';  
+import { AuditMiddleware } from './middleware/audit.middleware';  
+import { XssProtectionMiddleware } from './middleware/xss.middleware';   
+import { rateLimitMiddleware } from './middleware/rate-limit.middleware';   
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
-import { MatriculaModule } from './matricula/matricula.module';
-import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula.module';
+
+import { MailerCustomModule } from './mailer/mailer.module';
+import { HorarioModule } from './horario/horario.module';
+import { ProfesorModule } from './profesor/profesor.module';
 import { EstudianteModule } from './estudiante/estudiante.module';
-import { MateriasModule } from './materias/materias.module';
+import { MateriaModule } from './materia/materia.module';
+import { PeriodoModule } from './periodo/periodo.module';
+import { AulasModule } from './aulas/aulas.module';
+>>>>>>> a79488361e48b0df4a72f78322f343424ad7a55a
 
 @Module({
   imports: [ 
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true, // Hace que ConfigService esté disponible en toda la aplicación
+      envFilePath: '.env', // Opcional si el archivo .env está en la raíz
+    }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
+<<<<<<< HEAD
       host: 'localhost',
       port: 3333,
       username: 'root',
       password: '3210',
       database: 'simadlscc',
+=======
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+>>>>>>> a79488361e48b0df4a72f78322f343424ad7a55a
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
-    AsistenciaModule,
     AuthModule,
     UsersModule,
     RolesModule,
     SeccionesModule,
     GradosModule,
+<<<<<<< HEAD
     MatriculaModule,
     DetallesMatriculaModule,
     EstudianteModule,
     MateriasModule
+=======
+    MailerCustomModule,
+    HorarioModule,
+    ProfesorModule,
+    EstudianteModule,
+    MateriaModule,
+    PeriodoModule,
+    AulasModule,
+>>>>>>> a79488361e48b0df4a72f78322f343424ad7a55a
   ],
   controllers: [ProfileController],
+  providers: [MailerCustomModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      // LoggerMiddleware: Aplicar globalmente para registrar todas las solicitudes
+      
       .apply(LoggerMiddleware)
-      .forRoutes('*')  // Aplica a todas las rutas
+      .forRoutes('*') 
 
-      // CorsMiddleware: Permitir solicitudes de todos los orígenes (puedes ajustarlo según sea necesario)
       .apply(CorsMiddleware)
-      .forRoutes('*')  // Aplica a todas las rutas
+      .forRoutes('*')  
 
-      // AuditMiddleware: Registrar acciones importantes para auditoría
       .apply(AuditMiddleware)
-      .forRoutes('*')  // Aplica a todas las rutas
+      .forRoutes('*')  
 
-      // XssProtectionMiddleware: Proteger contra ataques XSS sanitizando las entradas de las solicitudes
       .apply(XssProtectionMiddleware)
-      .forRoutes('*')  // Aplica a todas las rutas
+      .forRoutes('*')  
 
-      // Rate Limiting Middleware: Limitar la cantidad de solicitudes a 100 por IP cada 15 minutos
       .apply(rateLimitMiddleware)
-      .forRoutes('*');  // Aplica a todas las rutas
+      .forRoutes('*');  
   }
 }

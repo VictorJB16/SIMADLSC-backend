@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
@@ -10,7 +10,7 @@ import { Roles } from 'src/roles/entities/role.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectRepository(Usuario)
+    @InjectRepository(Usuario)  
     private readonly usersRepository: Repository<Usuario>,
 
     @InjectRepository(Roles)
@@ -56,7 +56,7 @@ export class UsersService {
 
   // Buscar un usuario por email
   async findByEmail(email: string): Promise<Usuario | undefined> {
-    return this.usersRepository.findOne({ where: { email_Usuario: email },relations: ['rol_Usuario'], });
+    return this.usersRepository.findOne({ where: { email_Usuario: email }, relations: ['rol_Usuario'] });
   }
 
   // Actualizar un usuario por su ID
@@ -77,4 +77,34 @@ export class UsersService {
     const user = await this.findById(id);
     await this.usersRepository.remove(user);
   }
+
+  // Bloquear o desbloquear un usuario
+  async toggleBlockUser(id: number, bloqueado_Usuario: boolean): Promise<Usuario> {
+    const user = await this.findById(id); 
+    user.bloqueado_Usuario = bloqueado_Usuario;
+    return this.usersRepository.save(user); 
+  }
+
+  // Actualizar la contraseña de un usuario
+  async updatePassword(id_usuario: number,  hashedPassword: string): Promise<void> {
+    try {
+      console.log('Actualizando contraseña en la base de datos para el usuario:', id_usuario);
+  
+      // Aquí usamos un objeto con el campo 'contrasenia_Usuario' para actualizar la contraseña
+      const resultado = await this.usersRepository.update(
+        { id_usuario }, // condición para buscar el usuario
+        { contraseña_Usuario: hashedPassword } // objeto que contiene el campo a actualizar
+      );
+  
+      console.log('Resultado de la actualización:', resultado);
+  
+      if (resultado.affected === 0) {
+        throw new Error('No se actualizó ningún registro. Verifica que el ID del usuario es correcto.');
+      }
+    } catch (error) {
+      console.error('Error al actualizar la contraseña en la base de datos:', error);
+      throw new InternalServerErrorException('Error al actualizar la contraseña');
+    }
+  }
+  
 }
