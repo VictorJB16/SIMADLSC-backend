@@ -52,8 +52,6 @@ import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula
     MailerCustomModule,
     HorarioModule,
     ProfesorModule,
-    EstudianteModule,
-    MateriaModule,
     PeriodoModule,
     AulasModule,
   ],
