@@ -1,3 +1,5 @@
+
+import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe, Put } from '@nestjs/common';
 import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe,Delete } from '@nestjs/common';
 import { HorarioService } from './horario.service';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
@@ -28,22 +30,48 @@ export class HorarioController {
   }
 
   @Post('estudiante')
-  async createEstudiante(
-    @Body() createHorarioDto: CreateHorarioEstudianteDto
-  ): Promise<Horario> {
-    return this.horarioService.createHorarioEstudiante(createHorarioDto);
+
+  async createHorarioEstudiante(@Body() createHorarioDto: CreateHorarioEstudianteDto): Promise<Horario> {
+    try {
+      return await this.horarioService.createHorarioEstudiante(createHorarioDto);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+   
   }
 
   @Post('profesor')
-  async createProfesor(
-    @Body() createHorarioDto: CreateHorarioProfesorDto
-  ): Promise<Horario> {
-    return this.horarioService.createHorarioProfesor(createHorarioDto);
+
+  async createHorarioProfesor(@Body() createHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {
+    try {
+      return await this.horarioService.createHorarioProfesor(createHorarioDto);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Horario> {
     return this.horarioService.findOne(id);
+  }
+
+
+  @Put('estudiante/:id')
+  async updateHorarioEstudiante(@Param('id', ParseIntPipe) id: number,@Body() updateHorarioDto: CreateHorarioEstudianteDto): Promise<Horario> {
+    try {
+      return await this.horarioService.updateHorarioEstudante(id, updateHorarioDto);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  
+  @Put('profesor/:id')
+  async updateHorarioProfesor(@Param('id', ParseIntPipe) id: number,@Body() updateHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {
+    try {
+      return await this.horarioService.updateHorarioProfesor(id, updateHorarioDto);
+    } catch (error) {
+      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 
   @Delete(':id_Horario')
