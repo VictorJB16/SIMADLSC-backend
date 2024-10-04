@@ -39,6 +39,7 @@ import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula
       autoLoadEntities: true,
       synchronize: true,
     }),
+    
     AuthModule,
     UsersModule,
     RolesModule,
