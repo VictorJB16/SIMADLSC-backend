@@ -1,5 +1,4 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { AsistenciaModule } from './asistencia/asistencia.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfileController } from './profile/profile.controller';
@@ -14,6 +13,7 @@ import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Mi
 import { Seccion } from './secciones/entities/seccion.entity';
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
+import { EventosModule } from './eventos/eventos.module';
 
 @Module({
   imports: [ 
@@ -28,12 +28,13 @@ import { GradosModule } from './grados/grados.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    AsistenciaModule,
+    
     AuthModule,
     UsersModule,
     RolesModule,
     SeccionesModule,
-    GradosModule
+    GradosModule,
+    EventosModule
   ],
   controllers: [ProfileController],
 })
