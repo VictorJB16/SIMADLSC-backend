@@ -14,6 +14,10 @@ import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Mi
 import { Seccion } from './secciones/entities/seccion.entity';
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
+import { MatriculaModule } from './matricula/matricula.module';
+import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula.module';
+import { EstudianteModule } from './estudiante/estudiante.module';
+import { MateriasModule } from './materias/materias.module';
 
 @Module({
   imports: [ 
@@ -23,7 +27,7 @@ import { GradosModule } from './grados/grados.module';
       host: 'localhost',
       port: 3333,
       username: 'root',
-      password: 'Andreylxi$$3',
+      password: '3210',
       database: 'simadlscc',
       autoLoadEntities: true,
       synchronize: true,
@@ -33,7 +37,11 @@ import { GradosModule } from './grados/grados.module';
     UsersModule,
     RolesModule,
     SeccionesModule,
-    GradosModule
+    GradosModule,
+    MatriculaModule,
+    DetallesMatriculaModule,
+    EstudianteModule,
+    MateriasModule
   ],
   controllers: [ProfileController],
 })
