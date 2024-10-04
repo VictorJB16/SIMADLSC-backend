@@ -1,6 +1,5 @@
 
-import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe, Put } from '@nestjs/common';
-import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe,Delete } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe,Delete,Put } from '@nestjs/common';
 import { HorarioService } from './horario.service';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
 import { CreateHorarioProfesorDto } from './dto/create-horario-profesor.dto';
