@@ -10,9 +10,10 @@ describe('EventosService', () => {
     }).compile();
 
     service = module.get<EventosService>(EventosService);
-  });
+
+  
 
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
-});
+})});

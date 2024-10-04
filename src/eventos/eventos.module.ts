@@ -9,7 +9,6 @@ import { EstadoEvento } from './entities/estado-eventos.entity';
 import { DirigidoA } from './entities/dirigido-a.entity';
 import { TipoEvento } from './entities/tipo-eventos.entity';
 import { Ubicacion } from './entities/ubicacion.entity';
-import { APP_GUARD } from '@nestjs/core';
 
 @Module({
   imports: [

@@ -1,6 +1,8 @@
-import { IsNotEmpty } from "class-validator";
+
+import { IsOptional, IsString } from "class-validator";
 
 export class CreateSeccionDto {
-  @IsNotEmpty()
-  nombre: string;
+  @IsOptional()
+  @IsString()
+  nombre_Seccion?: string;
 }

@@ -5,60 +5,59 @@ import { ProfileController } from './profile/profile.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerMiddleware } from './middleware/logger.middleware';  // Middleware de logging
-import { CorsMiddleware } from './middleware/cors.middleware';  // Middleware de CORS
-import { AuditMiddleware } from './middleware/audit.middleware';  // Middleware de auditoría
-import { XssProtectionMiddleware } from './middleware/xss.middleware';  // Middleware de protección contra XSS
-import { rateLimitMiddleware } from './middleware/rate-limit.middleware';  // Middleware de rate limiting
-import { Seccion } from './secciones/entities/seccion.entity';
+import { LoggerMiddleware } from './middleware/logger.middleware';  
+import { CorsMiddleware } from './middleware/cors.middleware';  
+import { AuditMiddleware } from './middleware/audit.middleware';  
+import { XssProtectionMiddleware } from './middleware/xss.middleware';   
+import { rateLimitMiddleware } from './middleware/rate-limit.middleware';   
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
-import { EventosModule } from './eventos/eventos.module';
+import { MailerCustomModule } from './mailer/mailer.module';
 
 @Module({
   imports: [ 
-    ConfigModule.forRoot(),
+    ConfigModule.forRoot({
+      isGlobal: true, // Hace que ConfigService esté disponible en toda la aplicación
+      envFilePath: '.env', // Opcional si el archivo .env está en la raíz
+    }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
-      host: 'localhost',
-      port: 3333,
-      username: 'root',
-      password: 'Andreylxi$$3',
-      database: 'simadlscc',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT, 10),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     
     AuthModule,
     UsersModule,
     RolesModule,
     SeccionesModule,
-    GradosModule,
-    EventosModule
+    GradosModule
   ],
   controllers: [ProfileController],
+  providers: [MailerCustomModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      // LoggerMiddleware: Aplicar globalmente para registrar todas las solicitudes
+      
       .apply(LoggerMiddleware)
-      .forRoutes('*')  // Aplica a todas las rutas
+      .forRoutes('*') 
 
-      // CorsMiddleware: Permitir solicitudes de todos los orígenes (puedes ajustarlo según sea necesario)
       .apply(CorsMiddleware)
-      .forRoutes('*')  // Aplica a todas las rutas
+      .forRoutes('*')  
 
-      // AuditMiddleware: Registrar acciones importantes para auditoría
       .apply(AuditMiddleware)
-      .forRoutes('*')  // Aplica a todas las rutas
+      .forRoutes('*')  
 
-      // XssProtectionMiddleware: Proteger contra ataques XSS sanitizando las entradas de las solicitudes
       .apply(XssProtectionMiddleware)
-      .forRoutes('*')  // Aplica a todas las rutas
+      .forRoutes('*')  
 
-      // Rate Limiting Middleware: Limitar la cantidad de solicitudes a 100 por IP cada 15 minutos
       .apply(rateLimitMiddleware)
-      .forRoutes('*');  // Aplica a todas las rutas
+      .forRoutes('*');  
   }
 }
