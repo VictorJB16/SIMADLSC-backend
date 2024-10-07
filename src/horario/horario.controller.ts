@@ -1,8 +1,9 @@
-import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe, Put } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe, Put, UseGuards } from '@nestjs/common';
 import { HorarioService } from './horario.service';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
 import { CreateHorarioProfesorDto } from './dto/create-horario-profesor.dto';
 import { Horario } from './entities/horario.entity';
+import { JwtAuthGuard } from '../auth/guard/jwt-auth/jwt-auth.guard';
 
 @Controller('horarios')
 export class HorarioController {
@@ -15,6 +16,7 @@ export class HorarioController {
    * @returns Horario creado
    */
 
+  @UseGuards(JwtAuthGuard)
   @Get()
   async findAll(): Promise<Horario[]> {
     try {
@@ -23,7 +25,8 @@ export class HorarioController {
       throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-
+  
+  @UseGuards(JwtAuthGuard)
    @Get('seccion/:seccionId')
    async findBySeccion(
      @Param('seccionId', ParseIntPipe) seccionId: number
@@ -34,7 +37,8 @@ export class HorarioController {
        throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
      }
    }
- 
+   
+   @UseGuards(JwtAuthGuard)
    @Get('profesor/:profesorId')
    async findByProfesor(
      @Param('profesorId', ParseIntPipe) profesorId: number
@@ -46,6 +50,7 @@ export class HorarioController {
      }
    }
 
+  @UseGuards(JwtAuthGuard)
   @Post('estudiante')
   async createHorarioEstudiante(@Body() createHorarioDto: CreateHorarioEstudianteDto): Promise<Horario> {
     try {
@@ -61,6 +66,8 @@ export class HorarioController {
    * @param createHorarioDto Datos para crear el horario
    * @returns Horario creado
    */
+
+  @UseGuards(JwtAuthGuard)
   @Post('profesor')
   async createHorarioProfesor(@Body() createHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {
     try {
@@ -70,6 +77,7 @@ export class HorarioController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async findOne(
     @Param('id', ParseIntPipe) id: number
@@ -81,6 +89,7 @@ export class HorarioController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Put('estudiante/:id')
   async updateHorarioEstudiante(@Param('id', ParseIntPipe) id: number,@Body() updateHorarioDto: CreateHorarioEstudianteDto): Promise<Horario> {
     try {
@@ -90,6 +99,8 @@ export class HorarioController {
     }
   }
   
+
+  @UseGuards(JwtAuthGuard)
   @Put('profesor/:id')
   async updateHorarioProfesor(@Param('id', ParseIntPipe) id: number,@Body() updateHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {
     try {
