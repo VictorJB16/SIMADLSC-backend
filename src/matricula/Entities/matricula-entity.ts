@@ -1,6 +1,6 @@
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
-import { DetalleMatricula } from 'src/detalles_matricula/entities/detalles_matricula-entity';
+import { DetallesMatricula } from 'src/detalles_matricula/entities/detalles_matricula-entity';
 @Entity('matriculas')
 export class Matricula {
   @PrimaryGeneratedColumn()
@@ -21,6 +21,6 @@ export class Matricula {
   @Column()
   id_grado: number;
 
-  @OneToMany(() => DetalleMatricula, detalle => detalle.matricula)
-  detalles: DetalleMatricula[];
+  @OneToMany(() => DetallesMatricula, (detalles) => detalles.matricula)
+  detalles: DetallesMatricula[];  
 }
