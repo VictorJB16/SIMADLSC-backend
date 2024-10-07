@@ -12,6 +12,7 @@ import { XssProtectionMiddleware } from './middleware/xss.middleware';
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';   
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
+
 import { MailerCustomModule } from './mailer/mailer.module';
 import { HorarioModule } from './horario/horario.module';
 import { ProfesorModule } from './profesor/profesor.module';
@@ -19,6 +20,7 @@ import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
+>>>>>>> a79488361e48b0df4a72f78322f343424ad7a55a
 
 @Module({
   imports: [ 
@@ -28,20 +30,34 @@ import { AulasModule } from './aulas/aulas.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
+<<<<<<< HEAD
+      host: 'localhost',
+      port: 3333,
+      username: 'root',
+      password: '3210',
+      database: 'simadlscc',
+=======
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
+>>>>>>> a79488361e48b0df4a72f78322f343424ad7a55a
       autoLoadEntities: true,
-      synchronize: false,
+      synchronize: true,
     }),
     AuthModule,
     UsersModule,
     RolesModule,
     SeccionesModule,
     GradosModule,
+<<<<<<< HEAD
+    MatriculaModule,
+    DetallesMatriculaModule,
+    EstudianteModule,
+    MateriasModule
+=======
     MailerCustomModule,
     HorarioModule,
     ProfesorModule,
@@ -49,6 +65,7 @@ import { AulasModule } from './aulas/aulas.module';
     MateriaModule,
     PeriodoModule,
     AulasModule,
+>>>>>>> a79488361e48b0df4a72f78322f343424ad7a55a
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],

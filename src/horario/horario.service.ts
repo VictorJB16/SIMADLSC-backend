@@ -200,6 +200,11 @@ export class HorarioService {
     }
     return horario;
   }
+  
+  async eliminarHorario(id_Horario: number): Promise<boolean> {
+    const resultado = await this.horarioRepository.delete(id_Horario);
+    return resultado.affected > 0; // Retorna true si se eliminó el horario
+  }
 
   async updateHorarioEstudante(id: number, updateHorarioEstudianteDto: UpdateHorarioEstudianteDto): Promise<Horario> {
     const horario = await this.horarioRepository.findOne({ where: { id_Horario: id }, relations: ['profesor', 'materia', 'grado', 'seccion', 'aula'] });
