@@ -21,6 +21,7 @@ import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula.module';
+import { EventosModule } from './eventos/eventos.module';
 
 @Module({
   imports: [ 
@@ -49,9 +50,12 @@ import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula
     DetallesMatriculaModule,
     EstudianteModule,
     MateriaModule,
+    EventosModule,
     MailerCustomModule,
     HorarioModule,
     ProfesorModule,
+    EstudianteModule,
+    MateriaModule,
     PeriodoModule,
     AulasModule,
   ],
