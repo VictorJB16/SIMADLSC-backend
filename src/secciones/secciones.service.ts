@@ -15,6 +15,12 @@ export class SeccionesService {
     return this.seccionRepository.find();
   }
 
+  async findByGrado(gradoId: number): Promise<Seccion[]> {
+    return this.seccionRepository.find({
+      where: { gradoId },
+    });
+  }
+
   async create(createSeccionDto: CreateSeccionDto): Promise<Seccion> {
     const newseccion = this.seccionRepository.create(createSeccionDto);
     return this.seccionRepository.save(newseccion);

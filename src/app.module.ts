@@ -23,6 +23,7 @@ import { MatriculaModule } from './matricula/matricula.module';
 import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula.module';
 import { EventosModule } from './eventos/eventos.module';
 
+
 @Module({
   imports: [ 
     ConfigModule.forRoot({
@@ -46,8 +47,6 @@ import { EventosModule } from './eventos/eventos.module';
     RolesModule,
     SeccionesModule,
     GradosModule,
-    MatriculaModule,
-    DetallesMatriculaModule,
     EstudianteModule,
     MateriaModule,
     EventosModule,
@@ -78,7 +77,5 @@ export class AppModule implements NestModule {
       .apply(XssProtectionMiddleware)
       .forRoutes('*')  
 
-      .apply(rateLimitMiddleware)
-      .forRoutes('*');  
   }
 }

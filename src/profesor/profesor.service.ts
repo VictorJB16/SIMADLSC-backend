@@ -3,7 +3,8 @@ import { CreateProfesorDto } from './dto/create-profesor.dto';
 import { UpdateProfesorDto } from './dto/update-profesor.dto';
 import { Profesor } from './entities/profesor.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { Horario } from 'src/horario/entities/horario.entity';
 
 @Injectable()
 export class ProfesorService {
@@ -11,6 +12,8 @@ export class ProfesorService {
   constructor(
     @InjectRepository(Profesor)
      private readonly profesorRepository: Repository<Profesor>, 
+     @InjectRepository(Horario)
+     private readonly horarioRepository: Repository<Horario>,
   ) {}
 
   async create(createProfesorDto: CreateProfesorDto): Promise<Profesor> {
@@ -38,4 +41,37 @@ export class ProfesorService {
   remove(id: number) {
     return `This action removes a #${id} profesor`;
   }
+
+  async obtenerHorarioProfesor(id: number) {
+    // Obtener el profesor
+    const profesor = await this.profesorRepository.findOne({
+      where: { id_Profesor: id },
+    });
+
+    if (!profesor) {
+      throw new NotFoundException('Profesor no encontrado');
+    }
+
+    // Obtener los horarios del profesor
+    const horarios = await this.horarioRepository.find({
+      where: { profesor: { id_Profesor: id } },
+      relations: ['materia', 'aula', 'seccion'],
+    });
+
+    // Transformar los datos al formato esperado por el frontend
+    const horariosFormateados = horarios.map((horario) => ({
+      dia: horario.dia_semana_Horario,
+      horaInicio: horario.hora_inicio_Horario,
+      horaFin: horario.hora_fin_Horario,
+      asignatura: horario.materia.nombre_Materia,
+      aula: horario.aula.nombre_Aula,
+      seccion: horario.seccion.nombre_Seccion,
+    }));
+
+    return {
+      nombreProfesor: `${profesor.nombre_Profesor} ${profesor.apellido1_Profesor} ${profesor.apellido2_Profesor}`,
+      horarios: horariosFormateados,
+    };
+  }
+
 }

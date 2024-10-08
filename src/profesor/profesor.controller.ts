@@ -16,6 +16,10 @@ export class ProfesorController {
   findAll() {
     return this.profesorService.findAll();
   }
+  @Get(':id/horario')
+  async obtenerHorarioProfesor(@Param('id') id: number) {
+    return this.profesorService.obtenerHorarioProfesor(id);
+  }
 
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: string) {
