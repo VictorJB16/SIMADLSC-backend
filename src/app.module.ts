@@ -19,8 +19,6 @@ import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
-import { MatriculaModule } from './matricula/matricula.module';
-import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula.module';
 
 @Module({
   imports: [ 
@@ -45,8 +43,6 @@ import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula
     RolesModule,
     SeccionesModule,
     GradosModule,
-    MatriculaModule,
-    DetallesMatriculaModule,
     EstudianteModule,
     MateriaModule,
     MailerCustomModule,
@@ -74,7 +70,5 @@ export class AppModule implements NestModule {
       .apply(XssProtectionMiddleware)
       .forRoutes('*')  
 
-      .apply(rateLimitMiddleware)
-      .forRoutes('*');  
   }
 }

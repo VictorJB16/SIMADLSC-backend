@@ -1,9 +1,7 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateHorarioEstudianteDto } from './create-horario-estudiante.dto';
-import { IsIn, IsNotEmpty, IsNumber, IsString, Matches } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, IsIn, Matches } from 'class-validator';
 
-export class UpdateHorarioEstudianteDto extends PartialType(CreateHorarioEstudianteDto) {
-    @IsNotEmpty()
+export class UpdateHorarioEstudianteDto {
+  @IsNotEmpty()
   @IsNumber()
   gradoId: number;
 
@@ -21,13 +19,14 @@ export class UpdateHorarioEstudianteDto extends PartialType(CreateHorarioEstudia
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'])
+  @IsIn(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'])
   dia_semana_Horario: string;
 
   @IsNotEmpty()
   @IsString()
   @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, { message: 'Hora de inicio inválida' })
   hora_inicio_Horario: string;
+
 
   @IsNotEmpty()
   @IsString()

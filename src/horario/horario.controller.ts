@@ -4,6 +4,7 @@ import { HorarioService } from './horario.service';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
 import { CreateHorarioProfesorDto } from './dto/create-horario-profesor.dto';
 import { Horario } from './entities/horario.entity';
+import { UpdateHorarioEstudianteDto } from './dto/update-horario-estudiante.dto';
 
 @Controller('horarios')
 export class HorarioController {
@@ -56,13 +57,14 @@ export class HorarioController {
 
 
   @Put('estudiante/:id')
-  async updateHorarioEstudiante(@Param('id', ParseIntPipe) id: number,@Body() updateHorarioDto: CreateHorarioEstudianteDto): Promise<Horario> {
-    try {
-      return await this.horarioService.updateHorarioEstudante(id, updateHorarioDto);
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+  async updateHorarioEstudiante(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateHorarioDto: UpdateHorarioEstudianteDto
+  ): Promise<Horario> {
+    // Llama al servicio para convertir horas y luego actualizar el horario
+    return await this.horarioService.updateHorarioEstudante(id, updateHorarioDto);
   }
+  
   
   @Put('profesor/:id')
   async updateHorarioProfesor(@Param('id', ParseIntPipe) id: number,@Body() updateHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {

@@ -1,14 +1,19 @@
-import { Controller, Get, Post, Body, NotFoundException, Param, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, NotFoundException, Param, ParseIntPipe, Query } from '@nestjs/common';
 import { SeccionesService } from './secciones.service';
 import { CreateSeccionDto } from './dto/create-seccion.dto';
-
+import { Seccion } from './entities/seccion.entity';
 @Controller('secciones')
 export class SeccionesController {
   constructor(private readonly seccionesService: SeccionesService) {}
 
   @Get()
-  async findAll() {
-    return this.seccionesService.findAll();
+  async findAll(@Query('gradoId') gradoId?: string): Promise<Seccion[]> {
+    if (gradoId) {
+      const id = parseInt(gradoId, 10);
+      return this.seccionesService.findByGrado(id);
+    } else {
+      return this.seccionesService.findAll();
+    }
   }
   
   @Post()
