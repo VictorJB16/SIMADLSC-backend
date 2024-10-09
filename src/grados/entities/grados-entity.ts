@@ -3,7 +3,7 @@ import { Horario } from 'src/horario/entities/horario.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
 
-@Entity('grados')
+@Entity('grado')
 export class Grado {
   @PrimaryGeneratedColumn()
   id_grado: number;
@@ -17,7 +17,6 @@ export class Grado {
   @OneToMany(() => Horario, (horario) => horario.grado)
   horarios: Horario[];
   
-  @ManyToOne(() => Seccion)
-  @JoinColumn({ name: 'seccionId' })
-  seccion: Seccion;
+  @OneToMany(() => Seccion, (seccion) => seccion.grado)
+  seccion: Seccion[];
 }
