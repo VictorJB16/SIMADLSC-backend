@@ -18,6 +18,6 @@ export class DetallesMatricula {
   @Column()
   fecha_actualizacion_Detalle_Matricula: Date;
 
-  @ManyToOne(() => Matricula, matricula => matricula.detalles, { nullable: true, eager: true })
-  matricula: Matricula;
+  // @ManyToOne(() => Matricula, matricula => matricula.detalles, { nullable: true, eager: true })
+  // matricula: Matricula;
 }

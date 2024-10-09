@@ -21,6 +21,8 @@ import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula.module';
+import { AsistenciasModule } from './asistencias/asistencias.module';
+import { JustificacionAusenciaModule } from './justificacion_ausencia/justificacion_ausencia.module';
 
 @Module({
   imports: [ 
@@ -54,6 +56,8 @@ import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula
     ProfesorModule,
     PeriodoModule,
     AulasModule,
+    AsistenciasModule,
+    JustificacionAusenciaModule,
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],

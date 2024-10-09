@@ -41,11 +41,9 @@ export class Usuario {
   @UpdateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_actualizacion_Usuario: Date;
 
-  // Relación con los profesores
   @OneToMany(() => Profesor, (profesor) => profesor.usuario)
   profesores: Profesor[];
 
-  // Relación con los estudiantes
   @OneToMany(() => Estudiante, (estudiante) => estudiante.usuario)
   estudiantes: Estudiante[];
 

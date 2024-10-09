@@ -21,6 +21,6 @@ export class Matricula {
   @Column()
   id_grado: number;
 
-  @OneToMany(() => DetallesMatricula, (detalles) => detalles.matricula)
-  detalles: DetallesMatricula[];  
+  // @OneToMany(() => DetallesMatricula, (detalles) => detalles.matricula)
+  // detalles: DetallesMatricula[];  
 }

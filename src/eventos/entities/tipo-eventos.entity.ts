@@ -1,16 +1,16 @@
-// src/events/entities/tipo-evento.entity.ts
+// // src/events/entities/tipo-evento.entity.ts
 
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Eventos } from './eventos.entity';
+// import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+// import { Eventos } from './eventos.entity';
 
-@Entity('Tipo_Evento')
-export class TipoEvento {
-  @PrimaryGeneratedColumn()
-  id_tipo_evento: number;
+// @Entity('Tipo_Evento')
+// export class TipoEvento {
+//   @PrimaryGeneratedColumn()
+//   id_tipo_evento: number;
 
-  @Column({ length: 100 })
-  nombre_Tipo_Evento: string;
+//   @Column({ length: 100 })
+//   nombre_Tipo_Evento: string;
 
-  @ManyToOne(() => Eventos, (eventos) => eventos.tipo_Eventos, { onDelete: 'CASCADE' })
-  evento: Eventos;
-}
+//   @ManyToOne(() => Eventos, (eventos) => eventos.tipo_Eventos, { onDelete: 'CASCADE' })
+//   evento: Eventos;
+// }
