@@ -1,20 +1,25 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { getManager, Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Usuario } from './entities/user.entity';
 import { Roles } from 'src/roles/entities/role.entity';
+import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
+import { Profesor } from 'src/profesor/entities/profesor.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(Usuario)  
     private readonly usersRepository: Repository<Usuario>,
-
     @InjectRepository(Roles)
     private readonly rolesRepository: Repository<Roles>,
+    @InjectRepository(Estudiante)
+    private readonly EstudianteRepository: Repository<Estudiante>,
+    @InjectRepository(Profesor)
+    private readonly ProfesorRepository: Repository<Profesor>,
   ) {}
 
   // Crear un nuevo usuario
@@ -31,18 +36,44 @@ export class UsersService {
       throw new NotFoundException(`Rol con ID ${rol_Usuario} no encontrado`);
     }
 
+    // Crear una instancia de Usuario
     const newUser = this.usersRepository.create({
       ...rest,
       contraseña_Usuario: hashedPassword,
       rol_Usuario: rol,
     });
 
-    return this.usersRepository.save(newUser);
+    // Aquí es donde añadimos la lógica para crear Estudiante o Profesor
+    if (rol.nombre_Rol.toLocaleLowerCase() === 'Estudiante') {
+      // Crear y vincular la entidad Estudiante
+      const estudiante = new Estudiante();
+      estudiante.usuario = newUser; // Establecer la relación OneToOne
+
+      // Usamos una transacción para asegurar la atomicidad
+      await getManager().transaction(async transactionalEntityManager => {
+        await transactionalEntityManager.save(newUser);
+        await transactionalEntityManager.save(estudiante);
+      });
+    } else if (rol.nombre_Rol.toLocaleLowerCase() === 'Profesor') {
+      // Crear y vincular la entidad Profesor
+      const profesor = new Profesor();
+      profesor.usuario = newUser; // Establecer la relación OneToOne
+
+      await getManager().transaction(async transactionalEntityManager => {
+        await transactionalEntityManager.save(newUser);
+        await transactionalEntityManager.save(profesor);
+      });
+    } else {
+      // Si es Admin o SuperAdmin, solo guardamos el usuario
+      await this.usersRepository.save(newUser);
+    }
+
+    return newUser;
   }
 
   // Buscar un usuario por su ID
   async findById(id: number): Promise<Usuario> {
-    const user = await this.usersRepository.findOne({ where: { id_usuario: id }, relations: ['rol_Usuario'] });
+    const user = await this.usersRepository.findOne({ where: { id_usuario: id }, relations: ['rol_Usuario', 'estudiante', 'profesor'] });
     if (!user) {
       throw new NotFoundException(`Usuario con ID ${id} no encontrado`);
     }

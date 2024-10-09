@@ -207,42 +207,46 @@ export class HorarioService {
   }
 
   async updateHorarioEstudante(id: number, updateHorarioEstudianteDto: UpdateHorarioEstudianteDto): Promise<Horario> {
-    const horario = await this.horarioRepository.findOne({ where: { id_Horario: id }, relations: ['profesor', 'materia', 'grado', 'seccion', 'aula'] });
+    const horario = await this.horarioRepository.findOne({
+        where: { id_Horario: id },
+        relations: ['profesor', 'materia', 'grado', 'seccion', 'aula'],
+    });
+
     if (!horario) {
-      throw new NotFoundException(`Horario con id ${id} no encontrado`);
+        throw new NotFoundException(`Horario con id ${id} no encontrado`);
     }
 
     const { gradoId, seccionId, materiaId, profesorId, aulaId, dia_semana_Horario, hora_inicio_Horario, hora_fin_Horario } = updateHorarioEstudianteDto;
 
     // Actualizar entidades relacionadas si se han proporcionado
     if (gradoId) {
-      const grado = await this.gradoRepository.findOne({ where: { id_grado: gradoId } });
-      if (!grado) throw new NotFoundException(`Grado con id ${gradoId} no encontrado`);
-      horario.grado = grado;
+        const grado = await this.gradoRepository.findOne({ where: { id_grado: gradoId } });
+        if (!grado) throw new NotFoundException(`Grado con id ${gradoId} no encontrado`);
+        horario.grado = grado;
     }
 
     if (seccionId) {
-      const seccion = await this.seccionRepository.findOne({ where: { id_Seccion: seccionId } });
-      if (!seccion) throw new NotFoundException(`Sección con id ${seccionId} no encontrada`);
-      horario.seccion = seccion;
+        const seccion = await this.seccionRepository.findOne({ where: { id_Seccion: seccionId } });
+        if (!seccion) throw new NotFoundException(`Sección con id ${seccionId} no encontrada`);
+        horario.seccion = seccion;
     }
 
     if (materiaId) {
-      const materia = await this.materiaRepository.findOne({ where: { id_Materia: materiaId } });
-      if (!materia) throw new NotFoundException(`Materia con id ${materiaId} no encontrada`);
-      horario.materia = materia;
+        const materia = await this.materiaRepository.findOne({ where: { id_Materia: materiaId } });
+        if (!materia) throw new NotFoundException(`Materia con id ${materiaId} no encontrada`);
+        horario.materia = materia;
     }
 
     if (profesorId) {
-      const profesor = await this.profesorRepository.findOne({ where: { id_Profesor: profesorId } });
-      if (!profesor) throw new NotFoundException(`Profesor con id ${profesorId} no encontrado`);
-      horario.profesor = profesor;
+        const profesor = await this.profesorRepository.findOne({ where: { id_Profesor: profesorId } });
+        if (!profesor) throw new NotFoundException(`Profesor con id ${profesorId} no encontrado`);
+        horario.profesor = profesor;
     }
 
     if (aulaId) {
-      const aula = await this.aulaRepository.findOne({ where: { id_aula: aulaId } });
-      if (!aula) throw new NotFoundException(`Aula con id ${aulaId} no encontrada`);
-      horario.aula = aula;
+        const aula = await this.aulaRepository.findOne({ where: { id_aula: aulaId } });
+        if (!aula) throw new NotFoundException(`Aula con id ${aulaId} no encontrada`);
+        horario.aula = aula;
     }
 
     // Actualizar otros campos
@@ -252,7 +256,7 @@ export class HorarioService {
 
     // Guardar el horario actualizado
     return await this.horarioRepository.save(horario);
-  }
+}
 
   async updateHorarioProfesor(id: number, updateHorarioProfesorDto: UpdateHorarioProfesorDto): Promise<Horario> {
     const horario = await this.horarioRepository.findOne({ where: { id_Horario: id }, relations: ['profesor', 'materia', 'grado', 'aula'] });
@@ -295,5 +299,9 @@ export class HorarioService {
     // Guardar el horario actualizado
     return await this.horarioRepository.save(horario);
   }
+  
+  
 
+
+  
 }

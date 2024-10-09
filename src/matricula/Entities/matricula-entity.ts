@@ -24,3 +24,4 @@ export class Matricula {
   // @OneToMany(() => DetallesMatricula, (detalles) => detalles.matricula)
   // detalles: DetallesMatricula[];  
 }
+
