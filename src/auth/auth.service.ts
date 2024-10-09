@@ -42,11 +42,14 @@ export class AuthService {
       apellido1: user.apellido1_Usuario,
       apellido2: user.apellido2_Usuario,
       rol: user.rol_Usuario.nombre_Rol,
+      id_Estudiante: user.estudiante? user.estudiante.id_estudiante : null,
+      id_Profesor: user.profesor? user.profesor.id_profesor : null
     };
 
     return {
       access_token: this.jwtService.sign(payload),
       role: user.rol_Usuario.nombre_Rol,
+      payload,
     };
   }
 
