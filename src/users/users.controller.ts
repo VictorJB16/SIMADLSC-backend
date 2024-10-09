@@ -8,11 +8,11 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth/jwt-auth.guard';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  // Ruta para registrar un nuevo usuario
-  @Post('register')
-  async createUser(@Body() createUserDto: CreateUserDto, @Request() req) {
-    return this.usersService.createUser(createUserDto);
-  }
+   // Ruta para registrar un nuevo usuario
+   @Post('register')
+   async createUser(@Body() createUserDto: CreateUserDto) {
+     return this.usersService.createUser(createUserDto);
+   }
 
   // Ruta para obtener un usuario por ID (protegida con JWT)
   @UseGuards(JwtAuthGuard)

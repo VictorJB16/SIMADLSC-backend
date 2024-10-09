@@ -1,7 +1,7 @@
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { Roles } from 'src/roles/entities/role.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity('usuario')
 export class Usuario {
@@ -41,13 +41,14 @@ export class Usuario {
   @UpdateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_actualizacion_Usuario: Date;
 
-  // Relación con los profesores
-  @OneToMany(() => Profesor, (profesor) => profesor.usuario)
-  profesores: Profesor[];
+  @OneToOne(() => Profesor, (profesor) => profesor.usuario, { nullable: true })
+  @JoinColumn()
+  profesor: Profesor;
 
-  // Relación con los estudiantes
-  @OneToMany(() => Estudiante, (estudiante) => estudiante.usuario)
-  estudiantes: Estudiante[];
+  // Relación con el estudiante
+  @OneToOne(() => Estudiante, (estudiante) => estudiante.usuario, { nullable: true })
+  @JoinColumn()
+  estudiante: Estudiante;
 
- 
+
 }

@@ -2,7 +2,7 @@ import { Grado } from 'src/grados/entities/grados-entity';
 import { Horario } from 'src/horario/entities/horario.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Usuario } from 'src/users/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne } from 'typeorm';
 
 @Entity('estudiantes')
 export class Estudiante {
@@ -21,8 +21,9 @@ export class Estudiante {
   @Column({ default:"Activo" })
   estado_Estudiante?: string;
   
-  @ManyToOne(() => Usuario, (usuario) => usuario.estudiantes)
-  usuario: Usuario;
+  // En Estudiante
+@OneToOne(() => Usuario, (usuario) => usuario.estudiante)
+usuario: Usuario;
 
   @ManyToOne(() => Grado, (grado) => grado.estudiantes)
   grado: Grado;

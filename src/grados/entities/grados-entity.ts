@@ -17,7 +17,6 @@ export class Grado {
   @OneToMany(() => Horario, (horario) => horario.grado)
   horarios: Horario[];
   
-  @ManyToOne(() => Seccion)
-  @JoinColumn({ name: 'seccionId' })
-  seccion: Seccion;
+  @OneToMany(() => Seccion, (seccion) => seccion.grado)
+  seccion: Seccion[];
 }
