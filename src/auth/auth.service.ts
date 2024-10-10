@@ -35,6 +35,8 @@ export class AuthService {
   async login(email_Usuario: string, password: string) {
     const user = await this.validateUser(email_Usuario, password);
 
+    console.log('Usuario encontrado:', user); // Agregar este log
+
     const payload = {
       sub: user.id_usuario,
       email: user.email_Usuario,
@@ -42,8 +44,8 @@ export class AuthService {
       apellido1: user.apellido1_Usuario,
       apellido2: user.apellido2_Usuario,
       rol: user.rol_Usuario.nombre_Rol,
-      id_Estudiante: user.estudiante? user.estudiante.id_estudiante : null,
-      id_Profesor: user.profesor? user.profesor.id_profesor : null
+      id_Profesor: user.profesor ? user.profesor.id_Profesor : null,
+      id_Estudiante: user.estudiante ? user.estudiante.id_Estudiante : null,
     };
 
     return {

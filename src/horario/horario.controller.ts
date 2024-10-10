@@ -85,6 +85,12 @@ export class HorarioController {
       throw new HttpException('Horario no encontrado', HttpStatus.NOT_FOUND);
     }
   }
+
+  @Get('profesor/:id')
+  async getHorarioProfesor(@Param('id') id: number) {
+    return await this.horarioService.getHorarioByProfesorId(id);
+
+  }
 }
 
 

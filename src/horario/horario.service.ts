@@ -302,7 +302,45 @@ export class HorarioService {
     return await this.horarioRepository.save(horario);
   }
   
-  
+   // Método para obtener el horario de un profesor basado en su ID
+   async getHorarioByProfesorId(profesorId: number): Promise<any> {
+    const horarios = await this.horarioRepository.find({
+      where: { profesor: { id_Profesor: profesorId } },
+      relations: ['profesor', 'seccion', 'materia'], // Carga las relaciones necesarias
+    });
+
+    // Formatear la respuesta para adaptarse al frontend
+    return {
+      nombreProfesor: horarios[0]?.profesor?.nombre_Profesor || 'Profesor Desconocido',
+      horarios: horarios.map(horario => ({
+        dia: horario.dia_semana_Horario,
+        horaInicio: horario.hora_inicio_Horario,
+        horaFin: horario.hora_fin_Horario,
+        seccion: horario.seccion.nombre_Seccion,
+        aula: horario.aula,
+        asignatura: horario.materia.nombre_Materia,
+      })),
+      horasLecciones: this.obtenerHorasLecciones(horarios),
+      diasSemana: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'], // Puedes ajustar según los días que tengas
+    };
+  }
+
+  // Método para obtener todas las horas de lecciones únicas
+  private obtenerHorasLecciones(horarios: Horario[]): { inicio: string; fin: string }[] {
+    const horasLecciones = horarios.map(horario => ({
+      inicio: horario.hora_inicio_Horario,
+      fin: horario.hora_fin_Horario,
+    }));
+
+    // Filtrar para obtener solo las horas únicas
+    return horasLecciones.filter(
+      (hora, index, self) =>
+        index ===
+        self.findIndex(
+          (h) => h.inicio === hora.inicio && h.fin === hora.fin,
+        ),
+    );
+  }
 
 
   

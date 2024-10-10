@@ -22,55 +22,60 @@ export class UsersService {
     private readonly ProfesorRepository: Repository<Profesor>,
   ) {}
 
-  // Crear un nuevo usuario
   async createUser(createUserDto: CreateUserDto): Promise<Usuario> {
-    const { contraseña_Usuario, rol_Usuario, ...rest } = createUserDto;
+    try {
+      const { nombre_Usuario, apellido1_Usuario, apellido2_Usuario, email_Usuario, contraseña_Usuario, rol_Usuario } = createUserDto;
+  
+      // Buscar el rol en la base de datos
+      const rol = await this.rolesRepository.findOne({ where: { id_Rol: rol_Usuario } });
+      if (!rol) {
+        throw new Error('Rol no encontrado');
+      }
+  
+      // Crear una instancia del usuario
+      const usuario = new Usuario();
+      usuario.nombre_Usuario = nombre_Usuario;
+      usuario.apellido1_Usuario = apellido1_Usuario;
+      usuario.apellido2_Usuario = apellido2_Usuario;
+      usuario.email_Usuario = email_Usuario;
+      usuario.contraseña_Usuario = await bcrypt.hash(contraseña_Usuario, 10);
+      usuario.rol_Usuario = rol;
+  
+      // Guardar el usuario en la base de datos
+      const savedUser = await this.usersRepository.save(usuario);
+      console.log('Usuario creado con ID:', savedUser.id_usuario); // Verificar que se haya creado correctamente
+  
+      // Crear una entidad `Estudiante` o `Profesor` según el rol
+      if (rol_Usuario === 3) { // Si el rol es profesor
+        const profesor = new Profesor();
+        profesor.usuario = savedUser; // Relacionar el profesor con el usuario recién creado
+        profesor.nombre_Profesor = nombre_Usuario;
+        profesor.apellido1_Profesor = apellido1_Usuario;
+        profesor.apellido2_Profesor = apellido2_Usuario;
+  
+        const savedProfesor = await this.ProfesorRepository.save(profesor);
+        console.log('Profesor creado con ID:', savedProfesor.id_Profesor); // Verificar que se haya creado correctamente
+        console.log('Profesor guardado:', savedProfesor);
 
-    // Cifrar la contraseña antes de guardarla
-    const hashedPassword = await bcrypt.hash(contraseña_Usuario, 10);
-
-    // Buscar el rol en la base de datos
-    const rol = await this.rolesRepository.findOne({ where: { id_Rol: rol_Usuario } });
-
-    if (!rol) {
-      throw new NotFoundException(`Rol con ID ${rol_Usuario} no encontrado`);
+      } else if (rol_Usuario === 4) { // Si el rol es estudiante
+        const estudiante = new Estudiante();
+        estudiante.usuario = savedUser; // Relacionar el estudiante con el usuario recién creado
+        estudiante.nombre_Estudiante = nombre_Usuario;
+        estudiante.apellido1_Estudiante = apellido1_Usuario;
+        estudiante.apellido2_Estudiante = apellido2_Usuario;
+  
+        const savedEstudiante = await this.EstudianteRepository.save(estudiante);
+        console.log('Estudiante creado con ID:', savedEstudiante.id_Estudiante); // Verificar que se haya creado correctamente
+      }
+  
+      return savedUser; // Devuelve el usuario creado
+    } catch (error) {
+      console.error('Error al crear el usuario:', error);
+      throw new Error('No se pudo crear el usuario');
     }
-
-    // Crear una instancia de Usuario
-    const newUser = this.usersRepository.create({
-      ...rest,
-      contraseña_Usuario: hashedPassword,
-      rol_Usuario: rol,
-    });
-
-    // Aquí es donde añadimos la lógica para crear Estudiante o Profesor
-    if (rol.nombre_Rol.toLocaleLowerCase() === 'Estudiante') {
-      // Crear y vincular la entidad Estudiante
-      const estudiante = new Estudiante();
-      estudiante.usuario = newUser; // Establecer la relación OneToOne
-
-      // Usamos una transacción para asegurar la atomicidad
-      await getManager().transaction(async transactionalEntityManager => {
-        await transactionalEntityManager.save(newUser);
-        await transactionalEntityManager.save(estudiante);
-      });
-    } else if (rol.nombre_Rol.toLocaleLowerCase() === 'Profesor') {
-      // Crear y vincular la entidad Profesor
-      const profesor = new Profesor();
-      profesor.usuario = newUser; // Establecer la relación OneToOne
-
-      await getManager().transaction(async transactionalEntityManager => {
-        await transactionalEntityManager.save(newUser);
-        await transactionalEntityManager.save(profesor);
-      });
-    } else {
-      // Si es Admin o SuperAdmin, solo guardamos el usuario
-      await this.usersRepository.save(newUser);
-    }
-
-    return newUser;
   }
-
+  
+  
   // Buscar un usuario por su ID
   async findById(id: number): Promise<Usuario> {
     const user = await this.usersRepository.findOne({ where: { id_usuario: id }, relations: ['rol_Usuario', 'estudiante', 'profesor'] });
@@ -87,7 +92,7 @@ export class UsersService {
 
   // Buscar un usuario por email
   async findByEmail(email: string): Promise<Usuario | undefined> {
-    return this.usersRepository.findOne({ where: { email_Usuario: email }, relations: ['rol_Usuario'] });
+    return this.usersRepository.findOne({ where: { email_Usuario: email }, relations: ['rol_Usuario', 'estudiante', 'profesor'] });
   }
 
   // Actualizar un usuario por su ID
@@ -103,12 +108,16 @@ export class UsersService {
     return this.usersRepository.save(updatedUser);
   }
 
-  // Eliminar un usuario
-  async deleteUser(id: number): Promise<void> {
-    const user = await this.findById(id);
-    await this.usersRepository.remove(user);
+  async deleteUser(userId: number): Promise<void> {
+    const user = await this.usersRepository.findOne({ where: { id_usuario: userId } });
+  
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+  
+    await this.usersRepository.remove(user); // Esto debería desencadenar la eliminación en cascada
   }
-
+  
   // Bloquear o desbloquear un usuario
   async toggleBlockUser(id: number, bloqueado_Usuario: boolean): Promise<Usuario> {
     const user = await this.findById(id); 

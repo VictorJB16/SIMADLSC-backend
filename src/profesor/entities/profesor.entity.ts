@@ -2,7 +2,7 @@ import { Horario } from 'src/horario/entities/horario.entity';
 import { Materia } from 'src/materia/entities/materia.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Usuario } from 'src/users/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity('profesores')
 export class Profesor {
@@ -18,15 +18,17 @@ export class Profesor {
   @Column({ length: 100 })
   apellido2_Profesor: string;
 
-  @OneToOne(() => Usuario, (usuario) => usuario.profesor)
+  @OneToOne(() => Usuario, (usuario) => usuario.profesor, { onDelete: 'CASCADE' })
+  @JoinColumn()
   usuario: Usuario;
 
-  @ManyToOne(() => Seccion, (seccion) => seccion.profesores)
+  @ManyToOne(() => Seccion, (seccion) => seccion.profesores )
   seccion: Seccion;
+  
 
   @ManyToOne(() => Materia, (materia) => materia.profesores)
   materia: Materia;
 
-  @OneToMany(() => Horario, (horario) => horario.profesor)
+  @OneToMany(() => Horario, (horario) => horario.profesor, { cascade: true})
   horarios: Horario[];
 }

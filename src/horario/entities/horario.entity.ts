@@ -19,16 +19,16 @@ export class Horario {
   @Column('time')
   hora_fin_Horario: string;
 
-  @ManyToOne(() => Profesor, (profesor) => profesor.horarios, { nullable: true, eager: true })
+  @ManyToOne(() => Profesor, (profesor) => profesor.horarios, {onDelete: 'CASCADE', nullable: true, eager: true })
   profesor: Profesor;
 
-  @ManyToOne(() => Materia, (materia) => materia.horarios, { eager: true })
+  @ManyToOne(() => Materia, (materia) => materia.horarios, { eager: false })
   materia: Materia;
 
-  @ManyToOne(() => Grado, (grado) => grado.horarios, { eager: true })
+  @ManyToOne(() => Grado, (grado) => grado.horarios, { eager: false})
   grado: Grado;
 
-  @ManyToOne(() => Seccion, (seccion) => seccion.horarios, { nullable: true, eager: true })
+  @ManyToOne(() => Seccion, (seccion) => seccion.horarios, { nullable: true, eager: false })
   seccion: Seccion;
 
   @ManyToOne(() => Aula, { eager: true })

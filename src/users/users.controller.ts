@@ -14,6 +14,7 @@ export class UsersController {
      return this.usersService.createUser(createUserDto);
    }
 
+
   // Ruta para obtener un usuario por ID (protegida con JWT)
   @UseGuards(JwtAuthGuard)
   @Get(':id')
