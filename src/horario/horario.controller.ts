@@ -2,7 +2,6 @@
 import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe,Delete,Put } from '@nestjs/common';
 import { HorarioService } from './horario.service';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
-import { CreateHorarioProfesorDto } from './dto/create-horario-profesor.dto';
 import { Horario } from './entities/horario.entity';
 import { UpdateHorarioEstudianteDto } from './dto/update-horario-estudiante.dto';
 
@@ -40,16 +39,6 @@ export class HorarioController {
    
   }
 
-  @Post('profesor')
-
-  async createHorarioProfesor(@Body() createHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {
-    try {
-      return await this.horarioService.createHorarioProfesor(createHorarioDto);
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Horario> {
     return this.horarioService.findOne(id);
@@ -65,16 +54,6 @@ export class HorarioController {
     return await this.horarioService.updateHorarioEstudante(id, updateHorarioDto);
   }
   
-  
-  @Put('profesor/:id')
-  async updateHorarioProfesor(@Param('id', ParseIntPipe) id: number,@Body() updateHorarioDto: CreateHorarioProfesorDto): Promise<Horario> {
-    try {
-      return await this.horarioService.updateHorarioProfesor(id, updateHorarioDto);
-    } catch (error) {
-      throw new HttpException(error.message, error.status || HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
   @Delete(':id_Horario')
   async eliminarHorario(
     @Param('id_Horario', ParseIntPipe) id_Horario: number

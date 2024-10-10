@@ -6,14 +6,12 @@ import { Repository } from 'typeorm';
 
 import { Horario } from './entities/horario.entity';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
-import { CreateHorarioProfesorDto } from './dto/create-horario-profesor.dto';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { Materia } from 'src/materia/entities/materia.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Aula } from 'src/aulas/entities/aula.entity';
 import { UpdateHorarioEstudianteDto } from './dto/update-horario-estudiante.dto';
-import { UpdateHorarioProfesorDto } from './dto/update-horario-profesor.dto';
 
 @Injectable()
 export class HorarioService {
@@ -37,138 +35,68 @@ export class HorarioService {
     private readonly aulaRepository: Repository<Aula>,
   ) {}
 
-  /**
-   * Crear Horario para Estudiantes (Asignado a una Sección con un Profesor específico)
-   * @param createHorarioDto Datos para crear el horario
-   * @returns Horario creado
-   */
-
   
 
-  async createHorarioEstudiante(createHorarioDto: CreateHorarioEstudianteDto): Promise<Horario> {
+  async createHorarioEstudiante(createHorarioDto: CreateHorarioEstudianteDto): Promise<any> {
     const {
-      gradoId,
-      seccionId,
-      materiaId,
-      profesorId,
-      dia_semana_Horario,
-      hora_inicio_Horario,
-      hora_fin_Horario,
-      aulaId,
+        gradoId,
+        seccionId,
+        materiaId,
+        profesorId,
+        dia_semana_Horario,
+        hora_inicio_Horario,
+        hora_fin_Horario,
+        aulaId,
     } = createHorarioDto;
 
     // Buscar las entidades relacionadas
     const [grado, seccion, materia, profesor, aula] = await Promise.all([
-      this.gradoRepository.findOne({ where: { id_grado: gradoId } }),
-      this.seccionRepository.findOne({ where: { id_Seccion: seccionId } }),
-      this.materiaRepository.findOne({ where: { id_Materia: materiaId } }),
-      this.profesorRepository.findOne({ where: { id_Profesor: profesorId } }),
-      this.aulaRepository.findOne({ where: { id_aula: aulaId } }),
+        this.gradoRepository.findOne({ where: { id_grado: gradoId } }),
+        this.seccionRepository.findOne({ where: { id_Seccion: seccionId } }),
+        this.materiaRepository.findOne({ where: { id_Materia: materiaId } }),
+        this.profesorRepository.findOne({ where: { id_Profesor: profesorId } }),
+        this.aulaRepository.findOne({ where: { id_aula: aulaId } }),
     ]);
 
     // Verificar si las entidades existen
-    if (!grado) {
-      throw new NotFoundException(`Grado con id ${gradoId} no encontrado`);
+    if (!grado || !seccion || !materia || !profesor || !aula) {
+        throw new NotFoundException('Una o más entidades no se encontraron.');
     }
-
-    if (!seccion) {
-      throw new NotFoundException(`Sección con id ${seccionId} no encontrada`);
-    }
-
-    if (!materia) {
-      throw new NotFoundException(`Materia con id ${materiaId} no encontrada`);
-    }
-
-    if (!profesor) {
-      throw new NotFoundException(`Profesor con id ${profesorId} no encontrado`);
-    }
-
-    if (!aula) {
-      throw new NotFoundException(`Aula con id ${aulaId} no encontrada`);
-    }
-
-    // Verificar si el profesor puede impartir la materia (Opcional)
-    // Aquí podrías agregar lógica para verificar si el profesor está asignado a la materia
-    // Por ejemplo, si hay una relación entre Profesor y Materia
 
     // Crear una nueva instancia de Horario
     const horario = this.horarioRepository.create({
-      dia_semana_Horario,
-      hora_inicio_Horario,
-      hora_fin_Horario,
-      grado,
-      seccion,
-      materia,
-      aula,
-      profesor,
+        dia_semana_Horario,
+        hora_inicio_Horario,
+        hora_fin_Horario,
+        grado,
+        seccion,
+        materia,
+        aula,
+        profesor,
     });
 
     // Guardar el horario en la base de datos
-    return await this.horarioRepository.save(horario);
-  }
+    const savedHorario = await this.horarioRepository.save(horario);
 
-  /**
-   * Crear Horario para Profesores (Asignado a un Profesor específico)
-   * @param createHorarioProfesorDto Datos para crear el horario
-   * @returns Horario creado
-   */
-  async createHorarioProfesor(createHorarioProfesorDto: CreateHorarioProfesorDto): Promise<Horario> {
-    const {
-      profesorId,
-      gradoId,
-      materiaId,
-      dia_semana_Horario,
-      hora_inicio_Horario,
-      hora_fin_Horario,
-      aulaId,
-    } = createHorarioProfesorDto;
+    // Retornar el horario guardado, incluyendo las relaciones
+    return {
+        ...savedHorario,
+        seccion: seccion.nombre_Seccion,
+        materia: materia.nombre_Materia,
+        profesor: `${profesor.nombre_Profesor} ${profesor.apellido1_Profesor} ${profesor.apellido2_Profesor}`,
+    };
+}
 
-    // Buscar las entidades relacionadas
-    const [profesor, grado, materia, aula] = await Promise.all([
-      this.profesorRepository.findOne({ where: { id_Profesor: profesorId } }),
-      this.gradoRepository.findOne({ where: { id_grado: gradoId } }),
-      this.materiaRepository.findOne({ where: { id_Materia: materiaId } }),
-      this.aulaRepository.findOne({ where: { id_aula: aulaId } }),
-    ]);
 
-    // Verificar si las entidades existen
-    if (!profesor) {
-      throw new NotFoundException(`Profesor con id ${profesorId} no encontrado`);
-    }
 
-    if (!grado) {
-      throw new NotFoundException(`Grado con id ${gradoId} no encontrado`);
-    }
 
-    if (!materia) {
-      throw new NotFoundException(`Materia con id ${materiaId} no encontrada`);
-    }
 
-    if (!aula) {
-      throw new NotFoundException(`Aula con id ${aulaId} no encontrada`);
-    }
-
-    // Verificar si el profesor puede impartir la materia (Opcional)
-    // Aquí podrías agregar lógica para verificar si el profesor está asignado a la materia
-
-    // Crear una nueva instancia de Horario
-    const horario = this.horarioRepository.create({
-      dia_semana_Horario,
-      hora_inicio_Horario,
-      hora_fin_Horario,
-      grado,
-      materia,
-      aula,
-      profesor,
-      seccion: null, // No asignado a ninguna sección
-    });
-
-    // Guardar el horario en la base de datos
-    return await this.horarioRepository.save(horario);
-  }
 
   async findAll(): Promise<Horario[]> {
-    return await this.horarioRepository.find();
+    return await this.horarioRepository.find(
+      { relations: ['profesor', 'seccion', 'materia', 'aula'] },
+    );
+
   }
 
   async findBySeccion(seccionId: number): Promise<Horario[]> {
@@ -182,18 +110,23 @@ export class HorarioService {
       where: { seccion: { id_Seccion: seccionId } },
     });
   }
-
   async findByProfesor(profesorId: number): Promise<Horario[]> {
+    // Verificar si el profesor existe
     const profesor = await this.profesorRepository.findOne({ where: { id_Profesor: profesorId } });
-
+  
     if (!profesor) {
       throw new NotFoundException(`Profesor con id ${profesorId} no encontrado`);
     }
-
-    return await this.horarioRepository.find({
+  
+    // Buscar horarios del profesor y cargar las relaciones necesarias
+    const horarios = await this.horarioRepository.find({
       where: { profesor: { id_Profesor: profesorId } },
+      relations: ['materia', 'seccion', 'aula'], // Cargar las relaciones que necesitas
     });
+  
+    return horarios;
   }
+  
 
   async findOne(id: number): Promise<Horario> {
     const horario = await this.horarioRepository.findOne({ where: { id_Horario: id } });
@@ -260,47 +193,6 @@ export class HorarioService {
     return await this.horarioRepository.save(horario);
 }
 
-  async updateHorarioProfesor(id: number, updateHorarioProfesorDto: UpdateHorarioProfesorDto): Promise<Horario> {
-    const horario = await this.horarioRepository.findOne({ where: { id_Horario: id }, relations: ['profesor', 'materia', 'grado', 'aula'] });
-    if (!horario) {
-      throw new NotFoundException(`Horario con id ${id} no encontrado`);
-    }
-
-    const { profesorId, gradoId, materiaId, aulaId, dia_semana_Horario, hora_inicio_Horario, hora_fin_Horario } = updateHorarioProfesorDto;
-
-    // Actualizar entidades relacionadas si se han proporcionado
-    if (profesorId) {
-      const profesor = await this.profesorRepository.findOne({ where: { id_Profesor: profesorId } });
-      if (!profesor) throw new NotFoundException(`Profesor con id ${profesorId} no encontrado`);
-      horario.profesor = profesor;
-    }
-
-    if (gradoId) {
-      const grado = await this.gradoRepository.findOne({ where: { id_grado: gradoId } });
-      if (!grado) throw new NotFoundException(`Grado con id ${gradoId} no encontrado`);
-      horario.grado = grado;
-    }
-
-    if (materiaId) {
-      const materia = await this.materiaRepository.findOne({ where: { id_Materia: materiaId } });
-      if (!materia) throw new NotFoundException(`Materia con id ${materiaId} no encontrada`);
-      horario.materia = materia;
-    }
-
-    if (aulaId) {
-      const aula = await this.aulaRepository.findOne({ where: { id_aula: aulaId } });
-      if (!aula) throw new NotFoundException(`Aula con id ${aulaId} no encontrada`);
-      horario.aula = aula;
-    }
-
-    // Actualizar otros campos
-    horario.dia_semana_Horario = dia_semana_Horario || horario.dia_semana_Horario;
-    horario.hora_inicio_Horario = hora_inicio_Horario || horario.hora_inicio_Horario;
-    horario.hora_fin_Horario = hora_fin_Horario || horario.hora_fin_Horario;
-
-    // Guardar el horario actualizado
-    return await this.horarioRepository.save(horario);
-  }
   
    // Método para obtener el horario de un profesor basado en su ID
    async getHorarioByProfesorId(profesorId: number): Promise<any> {
@@ -308,10 +200,17 @@ export class HorarioService {
       where: { profesor: { id_Profesor: profesorId } },
       relations: ['profesor', 'seccion', 'materia'], // Carga las relaciones necesarias
     });
-
+  
+    // Asegúrate de que hay horarios disponibles
+    if (horarios.length === 0) {
+      throw new Error('No se encontraron horarios para este profesor.');
+    }
+  
     // Formatear la respuesta para adaptarse al frontend
     return {
       nombreProfesor: horarios[0]?.profesor?.nombre_Profesor || 'Profesor Desconocido',
+      apellido1Profesor: horarios[0]?.profesor?.apellido1_Profesor || '',
+      apellido2Profesor: horarios[0]?.profesor?.apellido2_Profesor || '',
       horarios: horarios.map(horario => ({
         dia: horario.dia_semana_Horario,
         horaInicio: horario.hora_inicio_Horario,
@@ -321,9 +220,10 @@ export class HorarioService {
         asignatura: horario.materia.nombre_Materia,
       })),
       horasLecciones: this.obtenerHorasLecciones(horarios),
-      diasSemana: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'], // Puedes ajustar según los días que tengas
+      diasSemana: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'],
     };
   }
+  
 
   // Método para obtener todas las horas de lecciones únicas
   private obtenerHorasLecciones(horarios: Horario[]): { inicio: string; fin: string }[] {
