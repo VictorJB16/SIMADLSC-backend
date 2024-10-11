@@ -10,7 +10,7 @@ export class CreateUserDto {
   apellido1_Usuario: string;
 
   @MaxLength(100, { message: 'El segundo apellido no puede exceder 100 caracteres' })
-  apellido2_Usuario: string; // Añadir validación para apellido2_Usuario
+  apellido2_Usuario: string; 
 
   @IsEmail({}, { message: 'El correo electrónico no es válido' })
   email_Usuario: string;
@@ -20,7 +20,7 @@ export class CreateUserDto {
   contraseña_Usuario: string;
 
   @IsNotEmpty({ message: 'Debe seleccionar un rol' })
-  rol_Usuario: number;  // Referencia al ID del Rol
+  rol_Usuario: number;  
  
 
 }

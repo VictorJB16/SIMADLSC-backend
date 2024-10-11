@@ -6,6 +6,8 @@ export class CreateSeccionDto {
   @IsString()
   nombre_Seccion?: string;
 
+
   @IsNumber()
   gradoId: number; // Grado al que pertenece la sección
+
 }

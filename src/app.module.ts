@@ -19,6 +19,11 @@ import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
+import { EventosModule } from './eventos/eventos.module';
+import { DirigidoAModule } from './dirigido-a/dirigido-a.module';
+import { TipoEventoModule } from './tipo-evento/tipo-evento.module';
+import { EstadoEventoModule } from './estado-evento/estado-evento.module';
+import { UbicacionModule } from './ubicacion/ubicacion.module';
 
 @Module({
   imports: [ 
@@ -35,7 +40,7 @@ import { AulasModule } from './aulas/aulas.module';
       database: process.env.DB_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     
     AuthModule,
@@ -48,8 +53,15 @@ import { AulasModule } from './aulas/aulas.module';
     MailerCustomModule,
     HorarioModule,
     ProfesorModule,
+    EstudianteModule,
+    MateriaModule,
     PeriodoModule,
+    EventosModule,
     AulasModule,
+    DirigidoAModule,
+    TipoEventoModule,
+    EstadoEventoModule,
+    UbicacionModule,
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],

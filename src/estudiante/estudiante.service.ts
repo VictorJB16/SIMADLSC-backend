@@ -76,4 +76,14 @@ export class EstudianteService {
  }
 
 
+ async findBySeccion(id_Seccion: number): Promise<Estudiante[]> {
+  const estudiantes = await this.estudianteRepository.find({  
+    where: { seccion: { id_Seccion: id_Seccion } },
+  });
+  if (!estudiantes.length) {
+    throw new NotFoundException(`No se encontraron estudiantes para la sección con ID ${id_Seccion}`);
+  }
+  return estudiantes;
+}
+
 }

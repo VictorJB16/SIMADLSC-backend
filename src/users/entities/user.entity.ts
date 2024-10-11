@@ -41,12 +41,14 @@ export class Usuario {
   @UpdateDateColumn({ type: 'datetime', default: () => 'CURRENT_TIMESTAMP' })
   fecha_actualizacion_Usuario: Date;
 
+
   @OneToOne(() => Estudiante, (estudiante) => estudiante.usuario, { cascade: true ,nullable: true})
   @JoinColumn()
   estudiante?: Estudiante;
   
   @OneToOne(() => Profesor, (profesor) => profesor.usuario, { cascade: true, nullable: true})
   profesor?: Profesor;
+
 
 
 }
