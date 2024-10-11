@@ -18,18 +18,15 @@ export class AsistenciasController {
     return this.asistenciasService.findAll();
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.asistenciasService.findOne(+id);
-  // }
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.asistenciasService.findById(+id);
+  
+  }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateAsistenciaDto: UpdateAsistenciaDto) {
-  //   return this.asistenciasService.update(+id, updateAsistenciaDto);
-  // }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.asistenciasService.remove(+id);
-  // }
+  @Delete(':id')
+  async deleteAsistencia(@Param('id') id: string): Promise<void> {
+    return this.asistenciasService.eliminarAsistencia(+id);
+  }
 }

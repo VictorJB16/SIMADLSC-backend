@@ -31,4 +31,5 @@ export class SeccionesService {
     return this.seccionRepository.findOne({ where: { id_Seccion: id } });
   }
 
+
 }

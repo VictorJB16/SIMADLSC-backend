@@ -29,5 +29,10 @@ export class SeccionesController {
       return this.seccionesService.findOne(id);
     }
 
+    @Get('grado/:id_grado')
+  async findByGrado(@Param('id_grado') id_grado: string): Promise<Seccion[]> {
+    const idGradoNumber = parseInt(id_grado, 10);
+    return this.seccionesService.findByGrado(idGradoNumber);
+  }
 
 }

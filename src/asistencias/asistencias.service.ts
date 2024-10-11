@@ -95,4 +95,22 @@ export class AsistenciasService {
       relations: ['id_Estudiante', 'id_Materia', 'id_grado', 'id_Seccion', 'id_Profesor'],
     });
   }
+
+  async findById(id: number): Promise<Asistencia> {
+    const asistencia = await this.asistenciaRepository.findOne({ where: { asistencia_id: id }, relations: ['id_Estudiante', 'id_Materia', 'id_grado', 'id_Seccion', 'id_Profesor'] });
+    if (!asistencia) {
+      throw new NotFoundException(`Asistencia con ID ${id} no encontrada`);
+    }
+    return asistencia;
+  }
+
+
+  async eliminarAsistencia(id: number): Promise<void> {
+    const asistencia = await this.findById(id);
+    if (!asistencia) {
+      throw new NotFoundException(`Asistencia con ID ${id} no encontrada`);
+    }
+    await this.asistenciaRepository.delete(asistencia);
+  }
+  
 }

@@ -1,26 +1,46 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { JustificacionAusencia } from './entities/justificacion_ausencia.entity';
+import { Asistencia } from 'src/asistencias/entities/asistencia.entity';
+import { AsistenciaStatus } from '../asistencias/entities/asistencia-status.enum';
 import { CreateJustificacionAusenciaDto } from './dto/create-justificacion_ausencia.dto';
-import { UpdateJustificacionAusenciaDto } from './dto/update-justificacion_ausencia.dto';
 
 @Injectable()
 export class JustificacionAusenciaService {
-  create(createJustificacionAusenciaDto: CreateJustificacionAusenciaDto) {
-    return 'This action adds a new justificacionAusencia';
-  }
+  constructor(
+    @InjectRepository(JustificacionAusencia)
+    private justificacionRepository: Repository<JustificacionAusencia>,
+    
+    @InjectRepository(Asistencia)
+    private asistenciaRepository: Repository<Asistencia>,
+  ) {}
 
-  findAll() {
-    return `This action returns all justificacionAusencia`;
-  }
+  async justificarAsistencia(id: number, createJustificacionDto: CreateJustificacionAusenciaDto): Promise<JustificacionAusencia> {
+    const asistencia = await this.asistenciaRepository.findOne({ where: { asistencia_id: id } });
+    if (!asistencia) {
+      throw new NotFoundException(`Asistencia con ID ${id} no encontrada`);
+    }
 
-  findOne(id: number) {
-    return `This action returns a #${id} justificacionAusencia`;
-  }
+    const justificacion = this.justificacionRepository.create({
+      ...createJustificacionDto,
+      fecha: new Date(), 
+      asistencia, 
+    });
 
-  update(id: number, updateJustificacionAusenciaDto: UpdateJustificacionAusenciaDto) {
-    return `This action updates a #${id} justificacionAusencia`;
-  }
+    
+    await this.justificacionRepository.save(justificacion);
 
-  remove(id: number) {
-    return `This action removes a #${id} justificacionAusencia`;
+    
+    asistencia.estado = AsistenciaStatus.JUSTIFICADO;
+    asistencia.justificacionAusencia = justificacion; 
+    await this.asistenciaRepository.save(asistencia);
+
+    return justificacion;
+  }
+  
+  async obtenerJustificaciones(): Promise<JustificacionAusencia[]> {
+    return this.justificacionRepository.find({ relations: ['asistencia'] });
   }
 }
+

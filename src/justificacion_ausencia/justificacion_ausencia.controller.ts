@@ -1,34 +1,23 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { JustificacionAusenciaService } from './justificacion_ausencia.service';
 import { CreateJustificacionAusenciaDto } from './dto/create-justificacion_ausencia.dto';
-import { UpdateJustificacionAusenciaDto } from './dto/update-justificacion_ausencia.dto';
+import { JustificacionAusencia } from './entities/justificacion_ausencia.entity';
 
 @Controller('justificacion-ausencia')
 export class JustificacionAusenciaController {
   constructor(private readonly justificacionAusenciaService: JustificacionAusenciaService) {}
 
-  @Post()
-  create(@Body() createJustificacionAusenciaDto: CreateJustificacionAusenciaDto) {
-    return this.justificacionAusenciaService.create(createJustificacionAusenciaDto);
+
+  @Post(':id')
+  async justificar(@Param('id') id: string, @Body() createJustificacionDto: CreateJustificacionAusenciaDto): Promise<JustificacionAusencia> {
+      return this.justificacionAusenciaService.justificarAsistencia(+id, createJustificacionDto);
   }
 
   @Get()
-  findAll() {
-    return this.justificacionAusenciaService.findAll();
+  async obtenerJustificaciones(): Promise<JustificacionAusencia[]> {
+    return this.justificacionAusenciaService.obtenerJustificaciones();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.justificacionAusenciaService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateJustificacionAusenciaDto: UpdateJustificacionAusenciaDto) {
-    return this.justificacionAusenciaService.update(+id, updateJustificacionAusenciaDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.justificacionAusenciaService.remove(+id);
-  }
+  
+  
 }
