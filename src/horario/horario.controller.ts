@@ -2,7 +2,6 @@
 import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe, Put, UseGuards, Delete } from '@nestjs/common';
 import { HorarioService } from './horario.service';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
-import { CreateHorarioProfesorDto } from './dto/create-horario-profesor.dto';
 import { Horario } from './entities/horario.entity';
 import { JwtAuthGuard } from '../auth/guard/jwt-auth/jwt-auth.guard';
 import { UpdateHorarioEstudianteDto } from './dto/update-horario-estudiante.dto';
@@ -46,9 +45,8 @@ export class HorarioController {
     }
     
   }
-  
-  
- 
+
+    
  @UseGuards(JwtAuthGuard)
  @Post('profesor')
  
@@ -100,6 +98,12 @@ export class HorarioController {
     if (!resultado) {
       throw new HttpException('Horario no encontrado', HttpStatus.NOT_FOUND);
     }
+  }
+
+  @Get('profesor/:id')
+  async getHorarioProfesor(@Param('id') id: number) {
+    return await this.horarioService.getHorarioByProfesorId(id);
+
   }
 }
 

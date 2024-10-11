@@ -6,5 +6,6 @@ export class updateSeccionesDto {
   nombre_Seccion?: string;
 
   @IsNumber()
-  gradoId: number;
+  gradoId: number; // Grado al que pertenece la sección
+
 }

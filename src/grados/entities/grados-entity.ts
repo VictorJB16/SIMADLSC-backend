@@ -6,6 +6,7 @@ import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 
+
 @Entity('grado')
 export class Grado {
   @PrimaryGeneratedColumn()

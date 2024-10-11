@@ -3,7 +3,7 @@ import { Grado } from 'src/grados/entities/grados-entity';
 import { Horario } from 'src/horario/entities/horario.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Usuario } from 'src/users/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity('estudiantes')
 export class Estudiante {
@@ -22,14 +22,15 @@ export class Estudiante {
   @Column({ default:"Activo" })
   estado_Estudiante?: string;
   
-  // En Estudiante
-@OneToOne(() => Usuario, (usuario) => usuario.estudiante)
-usuario: Usuario;
 
-  @ManyToOne(() => Grado, (grado) => grado.estudiantes)
+  @OneToOne(() => Usuario, (usuario) => usuario.estudiante, {  onDelete: 'CASCADE' })
+  @JoinColumn()
+  usuario: Usuario;
+
+@ManyToOne(() => Grado, (grado) => grado.estudiantes)
   grado: Grado;
 
-  @ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
+@ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
   seccion: Seccion;
 
   @OneToMany(() => Asistencia, asistencia => asistencia.id_Estudiante)

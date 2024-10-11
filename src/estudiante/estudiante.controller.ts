@@ -8,11 +8,26 @@ import { Estudiante } from './entities/estudiante.entity';
 export class EstudianteController {
   constructor(private readonly estudianteService: EstudianteService) {}
 
-  @Post()
-  async create(@Body() createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
-    return this.estudianteService.create(createEstudianteDto);
+  @Get('seccion/:seccionId/grado/:gradoId')
+  async getStudentsBySectionAndGrade(
+    @Param('seccionId') seccionId: number,
+    @Param('gradoId') gradoId: number,
+  ): Promise<Estudiante[]> {
+    return this.estudianteService.findStudentsBySectionAndGrade(seccionId, gradoId);
   }
 
+  @Post()
+  async createStudent(@Body() data: {
+    nombre_Estudiante: string;
+    apellido1_Estudiante: string;
+    apellido2_Estudiante: string;
+    estado_Estudiante?: string;
+    seccionId: number;
+    gradoId: number;
+  }): Promise<Estudiante> {
+    return this.estudianteService.createStudent(data);
+  }
+  
   @Get()
   async findAll(): Promise<Estudiante[]> {
     return this.estudianteService.findAll();

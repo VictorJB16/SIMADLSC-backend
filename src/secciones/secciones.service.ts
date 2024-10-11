@@ -10,6 +10,7 @@ export class SeccionesService {
     @InjectRepository(Seccion)
     private seccionRepository: Repository<Seccion>,
   ) {}
+  
 
   async findAll(): Promise<Seccion[]> {
     return this.seccionRepository.find();
