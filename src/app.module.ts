@@ -40,7 +40,7 @@ import { UbicacionModule } from './ubicacion/ubicacion.module';
       database: process.env.DB_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: false,
+      synchronize: true,
     }),
     
     AuthModule,

@@ -1,7 +1,6 @@
 // src/horario/horario.service.ts
 
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
-
 import { InjectRepository } from '@nestjs/typeorm';
 import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
