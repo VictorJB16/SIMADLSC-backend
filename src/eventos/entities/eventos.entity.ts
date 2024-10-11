@@ -1,60 +1,49 @@
-// // src/events/entities/evento.entity.ts
+// src/evento/entities/evento.entity.ts
 
-// import {
-//   Entity,
-//   PrimaryGeneratedColumn,
-//   Column,
-//   CreateDateColumn,
-//   UpdateDateColumn,
-//   ManyToOne,
-//   OneToMany,
-// } from 'typeorm';
-// import { EstadoEvento } from './estado-eventos.entity';
-// import { DirigidoA } from './dirigido-a.entity';
-// import { TipoEvento } from './tipo-eventos.entity';
-// import { Ubicacion } from './ubicacion.entity';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { EstadoEvento } from 'src/estado-evento/entities/estado-evento.entity';
+import { Ubicacion } from '../../ubicacion/entities/ubicacion.entity';
+import { TipoEvento } from 'src/tipo-evento/entities/tipo-evento.entity';
+import { DirigidoA } from 'src/dirigido-a/entities/dirigido-a.entity';
+@Entity()
+export class Eventos {
+  @PrimaryGeneratedColumn()
+  id_Evento: number;
 
-// @Entity('Eventos')
-// export class Eventos {
-//   @PrimaryGeneratedColumn()
-//   id_Evento: number;
+  @Column()
+  nombre_Evento: string;
 
-//   @Column({ length: 255 })
-//   nombre_Evento: string;
+  @Column({ nullable: true })
+  descripcion_Evento: string;
 
-//   @Column('text', { nullable: true })
-//   descripcion_Evento: string;
+  @Column()
+  fecha_Evento: Date;
 
-//   @Column({ type: 'date' })
-//   fecha_Evento: Date;
+  @Column()
+  hora_inicio_Evento: string;
 
-//   @Column({ type: 'time' })
-//   hora_inicio_Evento: string;
+  @Column()
+  hora_fin_Evento: string;
 
-//   @Column({ type: 'time' })
-//   hora_fin_Evento: string;
+  @ManyToOne(() => DirigidoA, (dirigidoA) => dirigidoA.eventos, { eager: true })
+  @JoinColumn({ name: 'id_dirigido_a' })
+  dirigidoA: DirigidoA;
 
-//   @Column()
-//   id_estado_evento: number;
+  @ManyToOne(() => EstadoEvento, (estado) => estado.eventos, { eager: true })
+  @JoinColumn({ name: 'id_estado_evento' })
+  estadoEvento: EstadoEvento;
 
-//   @Column()
-//   id_dirigido_a: number;
+  @ManyToOne(() => Ubicacion, (ubicacion) => ubicacion.eventos, { eager: true })
+  @JoinColumn({ name: 'id_ubicacion' })
+  ubicacion: Ubicacion;
 
-//   @ManyToOne(() => EstadoEvento, (estadoEvento) => estadoEvento.eventos, { eager: true })
-//   estado_Evento: EstadoEvento;
-
-//   @ManyToOne(() => DirigidoA, (dirigidoA) => dirigidoA.eventos, { eager: true })
-//   dirigido_a_Evento: DirigidoA;
-
-//   @OneToMany(() => TipoEvento, (tipoEvento) => tipoEvento.evento, { cascade: true })
-//   tipo_Eventos: TipoEvento[];
-
-//   @OneToMany(() => Ubicacion, (ubicacion) => ubicacion.evento, { cascade: true })
-//   ubicaciones: Ubicacion[];
-
-//   @CreateDateColumn()
-//   createdAt: Date;
-
-//   @UpdateDateColumn()
-//   updatedAt: Date;
-// }
+  @ManyToOne(() => TipoEvento, (tipo) => tipo.eventos, { eager: true })
+  @JoinColumn({ name: 'id_tipo_evento' })
+  tipoEvento: TipoEvento;
+}

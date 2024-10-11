@@ -19,9 +19,11 @@ import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
-import { AsistenciasModule } from './asistencias/asistencias.module';
-import { JustificacionAusenciaModule } from './justificacion_ausencia/justificacion_ausencia.module';
-
+import { EventosModule } from './eventos/eventos.module';
+import { DirigidoAModule } from './dirigido-a/dirigido-a.module';
+import { TipoEventoModule } from './tipo-evento/tipo-evento.module';
+import { EstadoEventoModule } from './estado-evento/estado-evento.module';
+import { UbicacionModule } from './ubicacion/ubicacion.module';
 
 @Module({
   imports: [ 
@@ -38,7 +40,7 @@ import { JustificacionAusenciaModule } from './justificacion_ausencia/justificac
       database: process.env.DB_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: false,
     }),
     
     AuthModule,
@@ -54,9 +56,12 @@ import { JustificacionAusenciaModule } from './justificacion_ausencia/justificac
     EstudianteModule,
     MateriaModule,
     PeriodoModule,
+    EventosModule,
     AulasModule,
-    AsistenciasModule,
-    JustificacionAusenciaModule,
+    DirigidoAModule,
+    TipoEventoModule,
+    EstadoEventoModule,
+    UbicacionModule,
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],
