@@ -1,8 +1,8 @@
 // src/horario/horario.service.ts
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
 
 import { Horario } from './entities/horario.entity';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
@@ -34,9 +34,6 @@ export class HorarioService {
     @InjectRepository(Aula)
     private readonly aulaRepository: Repository<Aula>,
   ) {}
-
-  
-
   async createHorarioEstudiante(createHorarioDto: CreateHorarioEstudianteDto): Promise<any> {
     const {
         gradoId,
@@ -63,6 +60,24 @@ export class HorarioService {
         throw new NotFoundException('Una o más entidades no se encontraron.');
     }
 
+    // Validar si el aula está disponible
+    const aulaDisponible = await this.isAulaDisponible(aulaId, dia_semana_Horario, hora_inicio_Horario, hora_fin_Horario);
+    if (!aulaDisponible) {
+        throw new HttpException('El aula ya está ocupada en el horario especificado.', HttpStatus.CONFLICT);
+    }
+
+    // Validar si el profesor está disponible
+    const profesorDisponible = await this.isProfesorDisponible(profesorId, dia_semana_Horario, hora_inicio_Horario, hora_fin_Horario);
+    if (!profesorDisponible) {
+        throw new HttpException('El profesor ya tiene otro horario asignado en el horario especificado.', HttpStatus.CONFLICT);
+    }
+
+    // Validar si la sección está disponible
+    const seccionDisponible = await this.isSeccionDisponible(seccionId, dia_semana_Horario, hora_inicio_Horario, hora_fin_Horario);
+    if (!seccionDisponible) {
+        throw new HttpException('La sección ya tiene un horario asignado en el horario especificado.', HttpStatus.CONFLICT);
+    }
+
     // Crear una nueva instancia de Horario
     const horario = this.horarioRepository.create({
         dia_semana_Horario,
@@ -86,6 +101,12 @@ export class HorarioService {
         profesor: `${profesor.nombre_Profesor} ${profesor.apellido1_Profesor} ${profesor.apellido2_Profesor}`,
     };
 }
+
+
+
+
+
+  
 
 
 
@@ -242,6 +263,48 @@ export class HorarioService {
     );
   }
 
+//Validaciones 
 
+async isAulaDisponible(aulaId: number, dia: string, inicio: string, fin: string): Promise<boolean> {
+  // Buscar si ya existe un horario en el aula en el mismo día que se solape con las horas propuestas
+  const conflicto = await this.horarioRepository.findOne({
+    where: {
+      aula: { id_aula: aulaId },
+      dia_semana_Horario: dia,
+      hora_inicio_Horario: LessThanOrEqual(fin),
+      hora_fin_Horario: MoreThanOrEqual(inicio),
+    },
+  });
+  return !conflicto; // Retorna true si no hay conflictos, false si el aula está ocupada
+}
+
+async isProfesorDisponible(profesorId: number, dia: string, inicio: string, fin: string): Promise<boolean> {
+  // Buscar si ya existe un horario asignado al profesor en el mismo día que se solape con las horas propuestas
+  const conflicto = await this.horarioRepository.findOne({
+    where: {
+      profesor: { id_Profesor: profesorId },
+      dia_semana_Horario: dia,
+      hora_inicio_Horario: LessThanOrEqual(fin),
+      hora_fin_Horario: MoreThanOrEqual(inicio),
+    },
+  });
+  return !conflicto; // Retorna true si no hay conflictos, false si el profesor está ocupado
+}
   
+
+async isSeccionDisponible(seccionId: number, dia: string, inicio: string, fin: string): Promise<boolean> {
+  // Buscar si ya existe un horario asignado a la sección en el mismo día que se solape con las horas propuestas
+  const conflicto = await this.horarioRepository.findOne({
+    where: {
+      seccion: { id_Seccion: seccionId },
+      dia_semana_Horario: dia,
+      hora_inicio_Horario: LessThanOrEqual(fin),
+      hora_fin_Horario: MoreThanOrEqual(inicio),
+    },
+  });
+  return !conflicto; // Retorna true si no hay conflictos, false si la sección está ocupada
+}
+
+
+
 }
