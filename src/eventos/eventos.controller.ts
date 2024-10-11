@@ -1,90 +1,93 @@
-// src/events/events.controller.ts
+// src/evento/evento.controller.ts
 
 import {
   Controller,
   Get,
   Post,
+  Body,
+  Param,
   Put,
   Delete,
-  Patch,
-  Param,
-  Body,
-  UseGuards,
-  ParseIntPipe,
+  Query,
 } from '@nestjs/common';
 import { EventosService } from './eventos.service';
 import { CreateEventoDto } from './dto/create-eventos.dto';
 import { UpdateEventoDto } from './dto/update-eventos.dto';
 import { Eventos } from './entities/eventos.entity';
-
 @Controller('eventos')
-
 export class EventosController {
-  constructor(private readonly eventosService: EventosService) {}
+  constructor(private readonly eventoService: EventosService) {}
 
   /**
-   * Obtiene todos los eventos.
-   */
-  @Get()
-  async findAll(): Promise<Eventos[]> {
-    return this.eventosService.findAll();
-  }
-
-  /**
-   * Obtiene un evento por su ID.
-   * @param id - ID del evento.
-   */
-  @Get(':id')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Eventos> {
-    return this.eventosService.findOne(id);
-  }
-
-  /**
-   * Crea un nuevo evento.
-   * @param createEventoDto - Datos para crear el evento.
+   * Crear un nuevo evento.
+   * @param createEventoDto DTO para crear un evento.
+   * @returns El evento creado.
    */
   @Post()
-  async create(@Body() createEventoDto: CreateEventoDto): Promise<Eventos> {
-    return this.eventosService.create(createEventoDto);
+  create(@Body() createEventoDto: CreateEventoDto): Promise<Eventos> {
+    return this.eventoService.create(createEventoDto);
   }
 
   /**
-   * Actualiza un evento existente.
-   * @param id - ID del evento a actualizar.
-   * @param updateEventoDto - Datos para actualizar el evento.
+   * Obtener todos los eventos.
+   * @returns Una lista de eventos.
+   */
+  @Get()
+  findAll(): Promise<Eventos[]> {
+    return this.eventoService.findAll();
+  }
+
+  
+  /**
+   * Obtener un evento por su ID.
+   * @param id ID del evento.
+   * @returns El evento encontrado.
+   */
+  @Get(':id')
+  findOne(@Param('id') id: string): Promise<Eventos> {
+    return this.eventoService.findOne(+id);
+  }
+
+  /**
+   * Actualizar un evento existente.
+   * @param id ID del evento a actualizar.
+   * @param updateEventoDto DTO con los datos a actualizar.
+   * @returns El evento actualizado.
    */
   @Put(':id')
-  async update(
-    @Param('id', ParseIntPipe) id: number,
+  update(
+    @Param('id') id: string,
     @Body() updateEventoDto: UpdateEventoDto,
   ): Promise<Eventos> {
-    return this.eventosService.update(id, updateEventoDto);
+    return this.eventoService.update(+id, updateEventoDto);
   }
 
   /**
-   * Elimina un evento por su ID.
-   * @param id - ID del evento a eliminar.
+   * Eliminar un evento por su ID.
+   * @param id ID del evento a eliminar.
    */
   @Delete(':id')
-  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.eventosService.remove(id);
+  remove(@Param('id') id: string): Promise<void> {
+    return this.eventoService.remove(+id);
   }
 
   /**
-   * Aprueba un evento.
-   * @param id - ID del evento a aprobar.
+   * Aprobar un evento.
+   * @param id ID del evento a aprobar.
+   * @returns El evento actualizado.
    */
-  @Patch(':id/approve')
-  async approve(@Param('id', ParseIntPipe) id: number): Promise<Eventos> {
-    return this.eventosService.approve(id);
+  @Post(':id/approve')
+  approve(@Param('id') id: string): Promise<Eventos> {
+    return this.eventoService.approve(+id);
   }
 
   /**
-   * Rechaza un evento.
-   * @param id - ID del evento a rechazar.
+   * Rechazar un evento.
+   * @param id ID del evento a rechazar.
+   * @returns El evento actualizado.
    */
-  @Patch(':id/reject')
-  async reject(@Param('id', ParseIntPipe) id: number): Promise<Eventos> {
-    return this.eventosService.reject(id);
+  @Post(':id/reject')
+  reject(@Param('id') id: string): Promise<Eventos> {
+    return this.eventoService.reject(+id);
   }
 }
