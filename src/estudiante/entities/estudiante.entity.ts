@@ -1,3 +1,4 @@
+import { Asistencia } from 'src/asistencias/entities/asistencia.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { Horario } from 'src/horario/entities/horario.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
@@ -30,4 +31,7 @@ usuario: Usuario;
 
   @ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
   seccion: Seccion;
+
+  @OneToMany(() => Asistencia, asistencia => asistencia.id_Estudiante)
+  asistencias: Asistencia[];
 }

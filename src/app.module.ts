@@ -19,9 +19,8 @@ import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
-import { MatriculaModule } from './matricula/matricula.module';
-import { DetallesMatriculaModule } from './detalles_matricula/detalles_matricula.module';
-import { EventosModule } from './eventos/eventos.module';
+import { AsistenciasModule } from './asistencias/asistencias.module';
+import { JustificacionAusenciaModule } from './justificacion_ausencia/justificacion_ausencia.module';
 
 
 @Module({
@@ -49,7 +48,6 @@ import { EventosModule } from './eventos/eventos.module';
     GradosModule,
     EstudianteModule,
     MateriaModule,
-    EventosModule,
     MailerCustomModule,
     HorarioModule,
     ProfesorModule,
@@ -57,6 +55,8 @@ import { EventosModule } from './eventos/eventos.module';
     MateriaModule,
     PeriodoModule,
     AulasModule,
+    AsistenciasModule,
+    JustificacionAusenciaModule,
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],
