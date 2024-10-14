@@ -24,6 +24,8 @@ import { DirigidoAModule } from './dirigido-a/dirigido-a.module';
 import { TipoEventoModule } from './tipo-evento/tipo-evento.module';
 import { EstadoEventoModule } from './estado-evento/estado-evento.module';
 import { UbicacionModule } from './ubicacion/ubicacion.module';
+import { AsistenciasModule } from './asistencias/asistencias.module';
+import { JustificacionAusenciaModule } from './justificacion_ausencia/justificacion_ausencia.module';
 
 @Module({
   imports: [ 
@@ -42,7 +44,8 @@ import { UbicacionModule } from './ubicacion/ubicacion.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    
+    AsistenciasModule,
+    JustificacionAusenciaModule,
     AuthModule,
     UsersModule,
     RolesModule,

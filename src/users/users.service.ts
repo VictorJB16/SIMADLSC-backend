@@ -44,7 +44,6 @@ export class UsersService {
       // Guardar el usuario en la base de datos
       const savedUser = await this.usersRepository.save(usuario);
       console.log('Usuario creado con ID:', savedUser.id_usuario); // Verificar que se haya creado correctamente
-  
       // Crear una entidad `Estudiante` o `Profesor` según el rol
       if (rol_Usuario === 3) { // Si el rol es profesor
         const profesor = new Profesor();
@@ -52,7 +51,6 @@ export class UsersService {
         profesor.nombre_Profesor = nombre_Usuario;
         profesor.apellido1_Profesor = apellido1_Usuario;
         profesor.apellido2_Profesor = apellido2_Usuario;
-  
         const savedProfesor = await this.ProfesorRepository.save(profesor);
         console.log('Profesor creado con ID:', savedProfesor.id_Profesor); // Verificar que se haya creado correctamente
         console.log('Profesor guardado:', savedProfesor);
