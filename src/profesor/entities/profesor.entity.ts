@@ -40,6 +40,6 @@ export class Profesor {
   @OneToMany(() => Horario, (horario) => horario.profesor, { cascade: true})
   horarios: Horario[];
 
-  @OneToMany(() => Asistencia, asistencia => asistencia.id_Profesor)
+  @OneToMany(() => Asistencia, asistencia => asistencia.id_Profesor, { cascade: true })
   asistencias: Asistencia[];
 }

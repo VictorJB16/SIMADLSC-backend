@@ -4,6 +4,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth/jwt-auth.guard';
 import { CreateEstudianteDto } from 'src/estudiante/dto/create-estudiante.dto';
+import { Usuario } from './entities/user.entity';
+import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 
 @Controller('users')
 export class UsersController {
@@ -17,14 +19,13 @@ export class UsersController {
  }
 
 
- // Ruta para registrar un nuevo usuario con rol de Estudiante
  @Post('register-student')
- async createUserAsStudent(
-   @Body() createUserDto: CreateUserDto,
-   @Body() createEstudianteDto: CreateEstudianteDto,
- ) {
-   return this.usersService.createUserAsStudent(createUserDto, createEstudianteDto);
- }
+async createUserAsStudent(
+  @Body() { createUserDto, createEstudianteDto }: { createUserDto: CreateUserDto, createEstudianteDto: CreateEstudianteDto }
+): Promise<{ usuario: Usuario, estudiante: Estudiante }> {
+  return this.usersService.createUserAsStudent(createUserDto, createEstudianteDto);
+}
+ 
 
    
 

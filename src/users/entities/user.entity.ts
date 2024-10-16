@@ -43,7 +43,6 @@ export class Usuario {
 
 
   @OneToOne(() => Estudiante, (estudiante) => estudiante.usuario, { cascade: true ,nullable: true})
-  @JoinColumn()
   estudiante?: Estudiante;
   
   @OneToOne(() => Profesor, (profesor) => profesor.usuario, { cascade: true, nullable: true})
