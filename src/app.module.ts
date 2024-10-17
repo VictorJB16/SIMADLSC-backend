@@ -24,12 +24,13 @@ import { DirigidoAModule } from './dirigido-a/dirigido-a.module';
 import { TipoEventoModule } from './tipo-evento/tipo-evento.module';
 import { EstadoEventoModule } from './estado-evento/estado-evento.module';
 import { UbicacionModule } from './ubicacion/ubicacion.module';
+import { AsistenciasModule } from './asistencias/asistencias.module';
 
 @Module({
   imports: [ 
     ConfigModule.forRoot({
-      isGlobal: true, // Hace que ConfigService esté disponible en toda la aplicación
-      envFilePath: '.env', // Opcional si el archivo .env está en la raíz
+      isGlobal: true, 
+      envFilePath: '.env', 
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
@@ -42,7 +43,7 @@ import { UbicacionModule } from './ubicacion/ubicacion.module';
       autoLoadEntities: true,
       synchronize: false,
     }),
-    
+    AsistenciasModule,
     AuthModule,
     UsersModule,
     RolesModule,

@@ -36,6 +36,7 @@ export class AsistenciasService {
   ) {}
 
   async crearAsistencia(createAsistenciaDtoArray: CreateAsistenciaDto[]): Promise<Asistencia[]> {
+    
     const asistencias: Asistencia[] = [];
 
     for (const createAsistenciaDto of createAsistenciaDtoArray) {

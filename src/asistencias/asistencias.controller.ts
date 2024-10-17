@@ -9,8 +9,8 @@ export class AsistenciasController {
   constructor(private readonly asistenciasService: AsistenciasService) {}
 
   @Post()
-  async crearAsistencia(@Body() createAsistenciaDto: CreateAsistenciaDto[]): Promise<Asistencia[]> {
-    return this.asistenciasService.crearAsistencia(createAsistenciaDto);
+  async crearAsistencia(@Body() createAsistenciaDtoArray: CreateAsistenciaDto[]): Promise<Asistencia[]> {
+    return this.asistenciasService.crearAsistencia(createAsistenciaDtoArray);
   }
 
   @Get()

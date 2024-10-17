@@ -31,11 +31,9 @@ export class AuthService {
     return result;
   }
 
-  // Generar el token JWT
   async login(email_Usuario: string, password: string) {
     const user = await this.validateUser(email_Usuario, password);
 
-    console.log('Usuario encontrado:', user); // Agregar este log
 
     const payload = {
       sub: user.id_usuario,
