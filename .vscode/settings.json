@@ -1,5 +1,10 @@
 {
 
-   "material-icon-theme.activeIconPack": "nest"
+   "material-icon-theme.activeIconPack": "nest",
+   "material-icon-theme.inactiveIconPack": "nest",
+   "material-icon-theme.iconPacks": [
+      "nest",
+      "material"
+   ]
 
 }

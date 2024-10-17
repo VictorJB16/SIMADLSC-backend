@@ -14,13 +14,11 @@ export class HorarioController {
     return this.horarioService.findAll();
   }
 
-  @Get('seccion/:seccionId')
-  async findBySeccion(
-    @Param('seccionId', ParseIntPipe) seccionId: number
-  ): Promise<Horario[]> {
+  @Get('seccion/:id_Seccion')
+  async findBySeccion(@Param('id_Seccion') id_Seccion: string): Promise<Horario[]> {
+    const seccionId = Number(id_Seccion);
     return this.horarioService.findBySeccion(seccionId);
   }
-
   @Get('profesor/:profesorId')
   async findByProfesor(
     @Param('profesorId', ParseIntPipe) profesorId: number
