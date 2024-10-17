@@ -106,12 +106,6 @@ export class HorarioService {
 
 
 
-  
-
-
-
-
-
 
   async findAll(): Promise<Horario[]> {
     return await this.horarioRepository.find(
@@ -120,16 +114,17 @@ export class HorarioService {
 
   }
 
-  async findBySeccion(seccionId: number): Promise<Horario[]> {
-    const seccion = await this.seccionRepository.findOne({ where: { id_Seccion: seccionId } });
+  async findBySeccion(id_Seccion: number): Promise<Horario[]> {
+    const horarios = await this.horarioRepository.find({
+      where: { seccion: { id_Seccion } },
+      relations: ['materia', 'aula', 'profesor'],
+    });
 
-    if (!seccion) {
-      throw new NotFoundException(`Sección con id ${seccionId} no encontrada`);
+    if (horarios.length === 0) {
+      throw new NotFoundException(`No se encontraron horarios para la sección con ID ${id_Seccion}`);
     }
 
-    return await this.horarioRepository.find({
-      where: { seccion: { id_Seccion: seccionId } },
-    });
+    return horarios;
   }
   async findByProfesor(profesorId: number): Promise<Horario[]> {
     // Verificar si el profesor existe
