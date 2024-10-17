@@ -25,6 +25,8 @@ import { TipoEventoModule } from './tipo-evento/tipo-evento.module';
 import { EstadoEventoModule } from './estado-evento/estado-evento.module';
 import { UbicacionModule } from './ubicacion/ubicacion.module';
 import { AsistenciasModule } from './asistencias/asistencias.module';
+import { JustificacionAusenciaModule } from './justificacion_ausencia/justificacion_ausencia.module';
+
 
 @Module({
   imports: [ 
@@ -41,9 +43,9 @@ import { AsistenciasModule } from './asistencias/asistencias.module';
       database: process.env.DB_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: false,
+      synchronize: true,
     }),
-    AsistenciasModule,
+    JustificacionAusenciaModule,
     AuthModule,
     UsersModule,
     RolesModule,

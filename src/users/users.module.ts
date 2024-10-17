@@ -7,9 +7,11 @@ import { Roles } from 'src/roles/entities/role.entity';
 import { RolesService } from 'src/roles/roles.service';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
+import { Grado } from 'src/grados/entities/grados-entity';
+import { Seccion } from 'src/secciones/entities/seccion.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Usuario,Roles,Estudiante,Profesor])],
+  imports: [TypeOrmModule.forFeature([Usuario,Roles,Estudiante,Profesor,Grado,Seccion])],
   controllers: [UsersController],
   providers: [UsersService,RolesService],
   exports: [UsersService],

@@ -3,16 +3,31 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth/jwt-auth.guard';
+import { CreateEstudianteDto } from 'src/estudiante/dto/create-estudiante.dto';
+import { Usuario } from './entities/user.entity';
+import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-   // Ruta para registrar un nuevo usuario
-   @Post('register')
-   async createUser(@Body() createUserDto: CreateUserDto) {
-     return this.usersService.createUser(createUserDto);
-   }
+  
+ // Ruta para registrar un nuevo usuario (general)
+ @Post('register')
+ async createUser(@Body() createUserDto: CreateUserDto) {
+   return this.usersService.createUser(createUserDto);
+ }
+
+
+ @Post('register-student')
+async createUserAsStudent(
+  @Body() { createUserDto, createEstudianteDto }: { createUserDto: CreateUserDto, createEstudianteDto: CreateEstudianteDto }
+): Promise<{ usuario: Usuario, estudiante: Estudiante }> {
+  return this.usersService.createUserAsStudent(createUserDto, createEstudianteDto);
+}
+ 
+
+   
 
 
   // Ruta para obtener un usuario por ID (protegida con JWT)

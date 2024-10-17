@@ -1,9 +1,8 @@
 
-import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe, Put, UseGuards, Delete } from '@nestjs/common';
+import { Controller, Post, Body, HttpException, HttpStatus, Get, Param, ParseIntPipe,Delete,Put } from '@nestjs/common';
 import { HorarioService } from './horario.service';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
 import { Horario } from './entities/horario.entity';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth/jwt-auth.guard';
 import { UpdateHorarioEstudianteDto } from './dto/update-horario-estudiante.dto';
 
 @Controller('horarios')
@@ -73,4 +72,3 @@ export class HorarioController {
   }
 
 }
-

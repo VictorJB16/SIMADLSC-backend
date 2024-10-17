@@ -39,7 +39,7 @@ export class Asistencia {
   id_Profesor: Profesor;
 
   @OneToOne(() => JustificacionAusencia, justificacion => justificacion.asistencia, {
-    cascade: true,
+    onDelete: 'CASCADE',
     eager: true,
   })
   @JoinColumn({ name: 'justificacion_ausencia_id' })

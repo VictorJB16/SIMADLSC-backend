@@ -27,10 +27,10 @@ export class Estudiante {
   @JoinColumn()
   usuario: Usuario;
 
-@ManyToOne(() => Grado, (grado) => grado.estudiantes)
+  @ManyToOne(() => Grado, (grado) => grado.estudiantes)
   grado: Grado;
 
-@ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
+  @ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
   seccion: Seccion;
 
   @OneToMany(() => Asistencia, asistencia => asistencia.id_Estudiante)
