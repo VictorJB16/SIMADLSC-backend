@@ -1,20 +1,69 @@
-export class UpdateMatriculaDT{
-    
-    id_Matricula: number;
+import { IsNotEmpty, IsNumber, IsString } from "class-validator";
+
+
+export class UpdateMatriculaDto {
+
+    @IsNotEmpty()
+@IsNumber()
+    id_grado: number;
 
     
-    estado_Matricula: string;
+
+    @IsNotEmpty()
+    @IsString()
+    nivel: string;
   
-    
-    fecha_matricula_Matricula?: Date;
+
+
+    @IsNotEmpty()
+    @IsNumber()
+    id_Seccion: number;
+
+
+
+    @IsNotEmpty()
+    @IsString()
+    nombre_Seccion: string;
   
+
+    @IsNotEmpty()
+    @IsString()
+    direccion: string;
     
-    fecha_creacion_Matricula?: Date;
-  
     
-    fecha_actualizacion_Matricula?: Date;
-  
+    @IsNotEmpty()
+    @IsNumber()
+    telefono_celular:number;
     
-    id_grado: number;
+    @IsNotEmpty()
+    @IsString()
+    habitacion:string;
+    
+    @IsNotEmpty()
+    @IsString()
+    correo:string;
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

@@ -1,5 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
-import { Matricula } from 'src/matricula/Entities/matricula-entity';
+import { Matricula } from "src/matricula/entities/matricula.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('detalles_matricula')
 export class DetalleMatricula {
@@ -18,6 +18,9 @@ export class DetalleMatricula {
   @Column()
   fecha_actualizacion_Detalle_Matricula: Date;
 
-  @ManyToOne(() => Matricula, matricula => matricula.detalles)
+  @ManyToOne(() => Matricula, (matricula) => matricula.detalles, {
+    nullable: true,
+    eager: true,
+  })
   matricula: Matricula;
 }

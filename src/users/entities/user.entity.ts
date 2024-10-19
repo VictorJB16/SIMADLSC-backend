@@ -1,4 +1,5 @@
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
+import { Matricula } from 'src/matricula/entities/matricula.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { Roles } from 'src/roles/entities/role.entity';
 import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany } from 'typeorm';
@@ -49,5 +50,8 @@ export class Usuario {
   @OneToMany(() => Estudiante, (estudiante) => estudiante.usuario)
   estudiantes: Estudiante[];
 
- 
+
+//nueva
+  @OneToMany(() => Matricula, (matricula) => matricula.usuario)
+  matriculas: Matricula[];
 }

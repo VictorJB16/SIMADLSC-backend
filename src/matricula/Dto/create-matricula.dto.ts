@@ -1,20 +1,52 @@
-export class CreateMatriculaDT{
-    
-    id_Matricula?: number;
+import { Type } from "class-transformer";
+import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { CreateEncargadoLegalDto } from "src/encargado-legal/dto/create-encargado-legal.dto";
+import { CreateEstudianteDto } from "src/estudiante/dto/create-estudiante.dto";
 
-    
-    estado_Matricula: string;
-  
-    
-    fecha_matricula_Matricula: Date;
-  
-    
-    fecha_creacion_Matricula: Date;
-  
-    
-    fecha_actualizacion_Matricula: Date;
-  
-    
-    id_grado: number;
+export class CreateMatriculaDto {
 
-}
+  
+    @IsNotEmpty()
+  
+  
+    @IsString()
+      estado_Matricula: string;
+    
+      @IsNotEmpty()
+      @IsNumber()
+      
+     
+    gradoId: number;
+    
+      @IsNotEmpty()
+      @IsNumber()
+      seccionId: number;
+    
+      @IsNotEmpty()
+      @IsDateString()
+      fecha_matricula_Matricula: string; // Formato ISO 8601
+    
+      @IsNotEmpty()
+      @IsString()
+      rol_Usuario: string;
+    
+      @IsOptional()
+      @IsString()
+      Presenta_adecuacion: string;
+    
+      @IsOptional()
+      @IsString()
+      tipo_de_adecuacion: string;
+    
+      // Datos del Estudiante
+      @IsNotEmpty()
+      @ValidateNested()
+      @Type(() => CreateEstudianteDto)
+      estudiante: CreateEstudianteDto;
+    
+      // Datos del Encargado Legal
+      @IsNotEmpty()
+      @ValidateNested()
+      @Type(() => CreateEncargadoLegalDto)
+      encargadoLegal: CreateEncargadoLegalDto;
+    }
