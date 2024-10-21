@@ -15,14 +15,15 @@ export class Matricula {
     @Column()
     estado_Matricula: string;
   
-    @Column()
-    fecha_matricula_Matricula: Date;
+    @Column({type:'date'})
+    fecha_matricula_Matricula: string;
   
     @CreateDateColumn()
-    fecha_creacion_Matricula: Date;
+    fecha_creacion_Matricula: string;
   
-    @UpdateDateColumn()
-    fecha_actualizacion_Matricula: Date;
+    @Column({type:'date' })
+
+    fecha_actualizacion_Matricula: string;
     
    
   

@@ -6,38 +6,9 @@ import { CreateEstudianteDto } from "src/estudiante/dto/create-estudiante.dto";
 export class CreateMatriculaDto {
 
   
-    @IsNotEmpty()
-  
-  
+    @IsNotEmpty()  
     @IsString()
       estado_Matricula: string;
-    
-      @IsNotEmpty()
-      @IsNumber()
-      
-     
-    gradoId: number;
-    
-      @IsNotEmpty()
-      @IsNumber()
-      seccionId: number;
-    
-      @IsNotEmpty()
-      @IsDateString()
-      fecha_matricula_Matricula: string; // Formato ISO 8601
-    
-      @IsNotEmpty()
-      @IsString()
-      rol_Usuario: string;
-    
-      @IsOptional()
-      @IsString()
-      Presenta_adecuacion: string;
-    
-      @IsOptional()
-      @IsString()
-      tipo_de_adecuacion: string;
-    
       // Datos del Estudiante
       @IsNotEmpty()
       @ValidateNested()

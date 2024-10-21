@@ -38,11 +38,11 @@ correo_estudiantil  : string;
 
   @Column({type:'varchar',length:80})
   lugar_de_nacimiento: string;
-  @Column({type:'varchar',length:80})
 
+  @Column({type:'varchar',length:80})
   codición_migratoria: string;
+  
   @Column({type:'varchar',length:80})
-
     Repite_alguna_materia: string;
 
   @Column({type:'varchar',length:80})
