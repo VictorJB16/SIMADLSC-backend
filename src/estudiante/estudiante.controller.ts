@@ -3,6 +3,8 @@ import { EstudianteService } from './estudiante.service';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { Estudiante } from './entities/estudiante.entity';
+import { Horario } from 'src/horario/entities/horario.entity';
+
 
 @Controller('estudiantes')
 export class EstudianteController {
@@ -18,18 +20,15 @@ export class EstudianteController {
     return await this.estudianteService.findAll();
   }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Estudiante> {
-    return await this.estudianteService.findOne(id);
+ @Get(':id')
+  async findOne(@Param('id') id: string): Promise<Estudiante> {
+    return this.estudianteService.findOne(+id); // Llama al servicio para obtener el estudiante
   }
 
-  @Put(':id')
-  async update(@Param('id') id: number, @Body() updateEstudianteDto: UpdateEstudianteDto): Promise<Estudiante> {
-    return await this.estudianteService.update(id, updateEstudianteDto);
+  @Get(':id/horarios')
+  async obtenerHorariosPorEstudiante(@Param('id') id: string): Promise<Horario[]> {
+    return this.estudianteService.obtenerHorariosPorEstudiante(+id);
   }
 
-  @Delete(':id')
-  async remove(@Param('id') id: number): Promise<void> {
-    return await this.estudianteService.remove(id);
-  }
 }
+

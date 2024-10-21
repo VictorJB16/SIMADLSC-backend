@@ -19,7 +19,7 @@ export class CreateHorarioEstudianteDto {
 
   @IsNotEmpty()
   @IsString()
-  @IsIn(['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'])
+  @IsIn(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'])
   dia_semana_Horario: string;
 
   @IsNotEmpty()

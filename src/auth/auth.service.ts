@@ -13,42 +13,52 @@ export class AuthService {
     private readonly mailerService: MailerCustomService,
   ) {}
 
-  // Validar el usuario y la contraseña
+   // Validación de credenciales del usuario
   async validateUser(email_Usuario: string, password: string): Promise<any> {
     const user = await this.usersService.findByEmail(email_Usuario);
-
     if (!user || !user.contraseña_Usuario) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.contraseña_Usuario);
-
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
-
+    console.log('Usuario con relaciones cargadas:', user); // Verifica si `estudiante` está presente aquí
     const { contraseña_Usuario, ...result } = user;
+
     return result;
+    
   }
 
-  // Generar el token JWT
+  // Inicio de sesión y generación de token JWT
   async login(email_Usuario: string, password: string) {
-    const user = await this.validateUser(email_Usuario, password);
+   const user = await this.validateUser(email_Usuario, password);
 
-    const payload = {
-      sub: user.id_usuario,
-      email: user.email_Usuario,
-      nombre: user.nombre_Usuario,
-      apellido1: user.apellido1_Usuario,
-      apellido2: user.apellido2_Usuario,
-      rol: user.rol_Usuario.nombre_Rol,
-    };
+console.log('Usuario encontrado:', user); // Para debug
+console.log('Datos del estudiante:', user.estudiante); // Para verificar el estudiante
+
+const payload = {
+  sub: user.id_usuario,
+  email: user.email_Usuario,
+  nombre: user.nombre_Usuario,
+  apellido1: user.apellido1_Usuario,
+  apellido2: user.apellido2_Usuario,
+  rol: user.rol_Usuario.nombre_Rol,
+  id_Profesor: user.profesor ? user.profesor.id_Profesor : null,
+  id_Estudiante: user.estudiante ? user.estudiante.id_Estudiante : null,
+};
+
+console.log('Payload generado:', payload);
+
 
     return {
       access_token: this.jwtService.sign(payload),
       role: user.rol_Usuario.nombre_Rol,
+      payload,
     };
   }
+
 
   async forgotPassword(email_Usuario: string) {
     const user = await this.usersService.findByEmail(email_Usuario);

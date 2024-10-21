@@ -2,7 +2,7 @@ import { Matricula } from "src/matricula/entities/matricula.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity('detalles_matricula')
-export class DetalleMatricula {
+export class DetallesMatricula {
   @PrimaryGeneratedColumn()
   id_Detalle_Matricula: number;
 

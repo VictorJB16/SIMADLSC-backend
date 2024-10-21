@@ -10,6 +10,7 @@ export class GradosController {
   async findAll() {
     return this.gradosService.findAll();
   }
+  
 
   @Post()
   async create(@Body() createGradoDto: CreateGradoDto) {

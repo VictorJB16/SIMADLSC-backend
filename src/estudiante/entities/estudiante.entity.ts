@@ -1,10 +1,11 @@
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
+import { Asistencia } from 'src/asistencias/entities/asistencia.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { Matricula } from 'src/matricula/entities/matricula.entity';
 //import { Horario } from 'src/horario/entities/horario.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Usuario } from 'src/users/entities/user.entity';
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
 
 @Entity('estudiantes')
 export class Estudiante {
@@ -68,15 +69,14 @@ recibe_religion?: string;
 @Column({type:'varchar',length:50})
 presenta_carta?: string;
 
-  @ManyToOne(() => Usuario, (usuario) => usuario.estudiantes)
+  @OneToOne(() => Usuario, (usuario) => usuario.estudiante, {  onDelete: 'CASCADE' })
+  @JoinColumn()
   usuario: Usuario;
 
   @ManyToOne(() => Grado, (grado) => grado.estudiantes)
   grado: Grado;
 
   @ManyToOne(() => EncargadoLegal, (encargadoLegal) => encargadoLegal.estudiantes)
-  
- 
 encargadoLegal: EncargadoLegal;
 
 
@@ -89,4 +89,7 @@ encargadoLegal: EncargadoLegal;
 
   @ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
   seccion: Seccion;
+
+  @OneToMany(() => Asistencia, asistencia => asistencia.id_Estudiante)
+  asistencias: Asistencia[];
 }

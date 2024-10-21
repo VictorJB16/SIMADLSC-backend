@@ -2,19 +2,26 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe } from 
 import { ProfesorService } from './profesor.service';
 import { CreateProfesorDto } from './dto/create-profesor.dto';
 import { UpdateProfesorDto } from './dto/update-profesor.dto';
+import { Profesor } from './entities/profesor.entity';
 
-@Controller('profesor')
+@Controller('profesores')
 export class ProfesorController {
   constructor(private readonly profesorService: ProfesorService) {}
 
   @Post()
-  create(@Body() createProfesorDto: CreateProfesorDto) {
-    return this.profesorService.create(createProfesorDto);
+  async crearProfesor(
+    @Body() createProfesorDto: CreateProfesorDto,
+  ): Promise<Profesor> {
+    return this.profesorService.crearProfesor(createProfesorDto);
   }
 
   @Get()
   findAll() {
     return this.profesorService.findAll();
+  }
+  @Get(':id/horario')
+  async obtenerHorarioProfesor(@Param('id') id: number) {
+    return this.profesorService.obtenerHorarioProfesor(id);
   }
 
   @Get(':id')

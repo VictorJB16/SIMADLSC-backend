@@ -4,31 +4,34 @@ import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './jwt.strategy';
-import { LoggerMiddleware } from '../middleware/logger.middleware';  // Middleware para logging
+import { LoggerMiddleware } from '../middleware/logger.middleware';
+import { XssProtectionMiddleware } from '../middleware/xss.middleware';
 import { MailerCustomModule } from '../mailer/mailer.module';
-import { ConfigModule, ConfigService } from '@nestjs/config'; // Importa ConfigModule para manejar .env
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
+
 
 @Module({
   imports: [
-    UsersModule, // Importamos el módulo de usuarios
-    ConfigModule.forRoot({ isGlobal: true }), // Cargar variables de entorno de .env de forma global
+    UsersModule,
+    ConfigModule.forRoot({ isGlobal: true }),
     JwtModule.registerAsync({
-      imports: [ConfigModule], // Importa ConfigModule para tener acceso a las variables de entorno
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'defaultSecretKey', // JWT_SECRET desde .env
-        signOptions: { expiresIn: '1h' },  // Tiempo de expiración del token
+        secret: configService.get<string>('JWT_SECRET') || 'defaultSecretKey',
+        signOptions: { expiresIn: '1h' },
       }),
     }),
-    MailerCustomModule, // Módulo para manejar correos
+    MailerCustomModule,
   ],
-  providers: [AuthService, JwtStrategy], // Proveedor del servicio de autenticación y JWT Strategy
-  controllers: [AuthController], // Controlador que expone la ruta /auth/login
+  providers: [AuthService, JwtStrategy],
+  controllers: [AuthController],
 })
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(LoggerMiddleware)  // Aplica el middleware de logging
-      .forRoutes(AuthController);  // Aplica a todas las rutas del controlador AuthController
+      .apply(LoggerMiddleware, XssProtectionMiddleware) // Aplica ambos middlewares en una sola llamada
+      .forRoutes(AuthController); // Aplica a todas las rutas del controlador AuthController
   }
 }

@@ -12,7 +12,6 @@ import { XssProtectionMiddleware } from './middleware/xss.middleware';
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';   
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
-
 import { MailerCustomModule } from './mailer/mailer.module';
 import { HorarioModule } from './horario/horario.module';
 import { ProfesorModule } from './profesor/profesor.module';
@@ -20,7 +19,13 @@ import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
-
+import { EventosModule } from './eventos/eventos.module';
+import { DirigidoAModule } from './dirigido-a/dirigido-a.module';
+import { TipoEventoModule } from './tipo-evento/tipo-evento.module';
+import { EstadoEventoModule } from './estado-evento/estado-evento.module';
+import { UbicacionModule } from './ubicacion/ubicacion.module';
+import { AsistenciasModule } from './asistencias/asistencias.module';
+import { JustificacionAusenciaModule } from './justificacion_ausencia/justificacion_ausencia.module';
 import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { DetallesmatriculaModule } from './detallesmatricula/detallesmatricula.module';
@@ -34,7 +39,6 @@ import { DetallesmatriculaModule } from './detallesmatricula/detallesmatricula.m
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
-
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT, 10),
       username: process.env.DB_USERNAME,
@@ -44,23 +48,29 @@ import { DetallesmatriculaModule } from './detallesmatricula/detallesmatricula.m
       autoLoadEntities: true,
       synchronize: true,
     }),
+    AsistenciasModule,
+    JustificacionAusenciaModule,
     AuthModule,
     UsersModule,
     RolesModule,
     SeccionesModule,
     GradosModule,
-   
     EstudianteModule,
+    MateriaModule, 
     MailerCustomModule,
     HorarioModule,
-    ProfesorModule,
-  
+    ProfesorModule,  
     MateriaModule,
     PeriodoModule,
+    EventosModule,
     AulasModule,
     EncargadoLegalModule,
     MatriculaModule,
     DetallesmatriculaModule,
+    DirigidoAModule,
+    TipoEventoModule,
+    EstadoEventoModule,
+    UbicacionModule,
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],
@@ -81,7 +91,5 @@ export class AppModule implements NestModule {
       .apply(XssProtectionMiddleware)
       .forRoutes('*')  
 
-      .apply(rateLimitMiddleware)
-      .forRoutes('*');  
   }
 }

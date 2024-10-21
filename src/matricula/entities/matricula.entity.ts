@@ -1,6 +1,5 @@
-import { DetalleMatricula } from "src/detallesmatricula/entities/detallesmatricula.entity";
 import { EncargadoLegal } from "src/encargado-legal/entities/encargado-legal.entity";
-
+import { DetallesMatricula } from "src/detallesmatricula/entities/detallesmatricula.entity";
 import { Estudiante } from "src/estudiante/entities/estudiante.entity";
 import { Grado } from "src/grados/entities/grados-entity";
 import { Seccion } from "src/secciones/entities/seccion.entity";
@@ -45,9 +44,9 @@ grado: Grado;
     @ManyToOne(() => Seccion, (seccion) => seccion.matriculas)
     seccion: Seccion;
   
-    @OneToMany(() => DetalleMatricula, (detalleMatricula) => detalleMatricula.matricula, {
+    @OneToMany(() => DetallesMatricula, (detalleMatricula) => detalleMatricula.matricula, {
         cascade: true,
       })
-      detalles: DetalleMatricula[];
+      detalles: DetallesMatricula[];
   
   }
