@@ -1,25 +1,25 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, HttpStatus, Put } from '@nestjs/common';
 import { EstudianteService } from './estudiante.service';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { Estudiante } from './entities/estudiante.entity';
 import { Horario } from 'src/horario/entities/horario.entity';
 
-@Controller('estudiante')
+
+@Controller('estudiantes')
 export class EstudianteController {
   constructor(private readonly estudianteService: EstudianteService) {}
-
   @Post()
-  create(@Body() createEstudianteDto: CreateEstudianteDto) {
-    return this.estudianteService.create(createEstudianteDto);
+  async create(@Body() createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
+    return await this.estudianteService.create(createEstudianteDto);
   }
 
   @Get()
-  findAll() {
-    return this.estudianteService.findAll();
+  async findAll(): Promise<Estudiante[]> {
+    return await this.estudianteService.findAll();
   }
 
-  @Get(':id')
+ @Get(':id')
   async findOne(@Param('id') id: string): Promise<Estudiante> {
     return this.estudianteService.findOne(+id); // Llama al servicio para obtener el estudiante
   }
@@ -29,4 +29,12 @@ export class EstudianteController {
     return this.estudianteService.obtenerHorariosPorEstudiante(+id);
   }
 
+
+  //creates estudiantes todos sus datos y encargadoLegal
+
+  @Post('matricula')
+  async creates(@Body() createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
+    return await this.estudianteService.createEstudiante(createEstudianteDto);
+  }
 }
+

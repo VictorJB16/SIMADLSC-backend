@@ -104,7 +104,6 @@ export class UsersService {
       estudiante.nombre_Estudiante = nombre_Usuario;
       estudiante.apellido1_Estudiante = apellido1_Usuario;
       estudiante.apellido2_Estudiante = apellido2_Usuario;
-      estudiante.estado_Estudiante = createEstudianteDto.estado_Estudiante || 'Activo';
       estudiante.grado = await this.GradoRepository.findOne({ where: { id_grado: createEstudianteDto.gradoId } });
       estudiante.seccion = await this.seccionRepository.findOne({ where: { id_Seccion: createEstudianteDto.seccionId } });
       const savedEstudiante = await this.EstudianteRepository.save(estudiante);

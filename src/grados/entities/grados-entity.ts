@@ -1,8 +1,8 @@
 import { Asistencia } from 'src/asistencias/entities/asistencia.entity';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { Horario } from 'src/horario/entities/horario.entity';
+import { Matricula } from 'src/matricula/entities/matricula.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
-
 import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
 
 
@@ -17,6 +17,9 @@ export class Grado {
 
   @OneToMany(() => Estudiante, (estudiante) => estudiante.grado)
   estudiantes: Estudiante[];
+
+  @OneToMany(() => Matricula, (matricula) => matricula.grado)
+  matriculas: Matricula[];
 
   @OneToMany(() => Horario, (horario) => horario.grado)
   horarios: Horario[];

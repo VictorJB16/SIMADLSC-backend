@@ -1,7 +1,8 @@
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
+import { Matricula } from 'src/matricula/entities/matricula.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { Roles } from 'src/roles/entities/role.entity';
-import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToOne, JoinColumn, OneToMany } from 'typeorm';
 
 @Entity('usuario')
 export class Usuario {
@@ -48,6 +49,8 @@ export class Usuario {
   @OneToOne(() => Profesor, (profesor) => profesor.usuario, { cascade: true, nullable: true})
   profesor?: Profesor;
 
+  @OneToMany(() => Matricula, (matricula) => matricula.usuario)
+  matriculas: Matricula[];
 
 
 }

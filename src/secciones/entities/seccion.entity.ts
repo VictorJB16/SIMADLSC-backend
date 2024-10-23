@@ -3,6 +3,8 @@ import { Asistencia } from 'src/asistencias/entities/asistencia.entity';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { Horario } from 'src/horario/entities/horario.entity';
+import { Matricula } from 'src/matricula/entities/matricula.entity';
+
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, JoinColumn } from 'typeorm';
@@ -32,9 +34,15 @@ export class Seccion {
   @OneToMany(() => Estudiante, (estudiante) => estudiante.seccion)
   estudiantes: Estudiante[];
 
+  @OneToMany(() => Matricula, (matricula) => matricula.seccion)
+  matriculas: Matricula[];
+  disponible: boolean;
+
+
   @OneToMany(() => Asistencia, asistencia => asistencia.id_Seccion)
   asistencias: Asistencia[];
 
 
 
 }
+

@@ -27,7 +27,6 @@ async createUserAsStudent(
 }
  
 
-   
 
 
   // Ruta para obtener un usuario por ID (protegida con JWT)

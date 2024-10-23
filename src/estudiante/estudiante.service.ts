@@ -1,11 +1,16 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateEstudianteDto } from './dto/create-estudiante.dto';
-import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+//import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Estudiante } from './entities/estudiante.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
+import { CreateEstudianteDto } from './dto/create-estudiante.dto';
+import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { Horario } from 'src/horario/entities/horario.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
+import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
+import { tipoadecuacion } from './entities/tipo-adecuacion.enum';
+import { Grado } from 'src/grados/entities/grados-entity';
+
 
 @Injectable()
 export class EstudianteService {
@@ -14,26 +19,58 @@ export class EstudianteService {
     @InjectRepository(Estudiante)
     private readonly estudianteRepository: Repository<Estudiante>,
 
+
     @InjectRepository(Horario)
     private readonly horarioRepository: Repository<Horario>,
 
     @InjectRepository(Seccion)
     private readonly seccionRepository: Repository<Seccion>,
 
+    @InjectRepository(EncargadoLegal)
+    private readonly encargadoLegalRepository: Repository<EncargadoLegal>,
+
+    @InjectRepository(Grado)
+    private readonly gradoRepository: Repository<Grado>,
+
   ) { }
+  
+
   async create(createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
-    const newEstudiante = this.estudianteRepository.create(createEstudianteDto);
-    return await this.estudianteRepository.save(newEstudiante);
+    try {
+      const estudiante = this.estudianteRepository.create(createEstudianteDto);
+      return await this.estudianteRepository.save(estudiante);
+    } catch (error) {
+      console.error('Error creando el estudiante:', error);
+      throw new InternalServerErrorException('No se pudo crear el estudiante');
+    }
   }
 
+    async createEstudiante (createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
+      const { encargadoLegal, gradoId ,...estudianteData } = createEstudianteDto;
+
+      const encargadoLegalEntity = this.encargadoLegalRepository.create(encargadoLegal);
+
+      await this.encargadoLegalRepository.save(encargadoLegalEntity);
+
+      const grado = await this.gradoRepository.findOne({ where: { id_grado: gradoId } });
+      if (!grado) {
+        throw new NotFoundException(`Grado con ID ${gradoId} no encontrado`);
+      }
+
+      const estudiante = this.estudianteRepository.create({
+        ...estudianteData,
+        tipo_de_adecuacion: estudianteData.tipo_de_adecuacion as tipoadecuacion,
+        encargadoLegal: encargadoLegalEntity,
+        grado: grado,
+      });
+
+      return await this.estudianteRepository.save(estudiante);
+    }
 
   async findAll(): Promise<Estudiante[]> {
-    const allEstudiantes = await this.estudianteRepository.find();
-    if (!allEstudiantes) {
-      throw new NotFoundException('No se encontraron estudiantes');
-    }
-    return allEstudiantes;
+    return await this.estudianteRepository.find();
   }
+
 
 
   async findOne(id: number): Promise<Estudiante> {
@@ -42,8 +79,9 @@ export class EstudianteService {
       relations: ['seccion'], // Incluye la relación con Seccion
     });
     
+
     if (!estudiante) {
-      throw new NotFoundException(`Estudiante con ID ${id} no encontrado`);
+      throw new NotFoundException('Estudiante no encontrado');
     }
   
     return estudiante;
@@ -77,4 +115,24 @@ export class EstudianteService {
   }
 
 
+  async update(id: number, updateEstudianteDto: UpdateEstudianteDto): Promise<Estudiante> {
+    const estudiante = await this.findOne(id);
+    try {
+      Object.assign(estudiante, updateEstudianteDto);
+      return await this.estudianteRepository.save(estudiante);
+    } catch (error) {
+      console.error('Error actualizando el estudiante:', error);
+      throw new InternalServerErrorException('No se pudo actualizar el estudiante');
+    }
+  }
+
+  async remove(id: number): Promise<void> {
+    const estudiante = await this.findOne(id);
+    try {
+      await this.estudianteRepository.remove(estudiante);
+    } catch (error) {
+      console.error('Error eliminando el estudiante:', error);
+      throw new InternalServerErrorException('No se pudo eliminar el estudiante');
+    }
+  }
 }
