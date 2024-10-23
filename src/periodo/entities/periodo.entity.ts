@@ -5,15 +5,7 @@ export class Periodo {
     @PrimaryGeneratedColumn()
     id_Periodo: number;
 
-    @Column()
-    Anio: number;
-
-    @Column()
+    @Column({ length: 100 })
     nombre_Periodo: string;
 
-    @Column()
-    fecha_inicio: Date;
-
-    @Column()
-    fecha_fin: Date;
 }

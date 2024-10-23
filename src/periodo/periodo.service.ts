@@ -1,26 +1,42 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Periodo } from './entities/periodo.entity';
 import { CreatePeriodoDto } from './dto/create-periodo.dto';
 import { UpdatePeriodoDto } from './dto/update-periodo.dto';
 
 @Injectable()
 export class PeriodoService {
-  create(createPeriodoDto: CreatePeriodoDto) {
-    return 'This action adds a new periodo';
+  constructor(
+    @InjectRepository(Periodo)
+    private readonly periodoRepository: Repository<Periodo>,
+  ) {}
+
+  async findAll(): Promise<Periodo[]> {
+    return await this.periodoRepository.find();
   }
 
-  findAll() {
-    return `This action returns all periodo`;
+  async findOne(id: number): Promise<Periodo> {
+    const periodo = await this.periodoRepository.findOne({ where: { id_Periodo: id } });
+    if (!periodo) {
+      throw new NotFoundException(`El periodo con ID ${id} no fue encontrado`);
+    }
+    return periodo;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} periodo`;
+  async create(createPeriodoDto: CreatePeriodoDto): Promise<Periodo> {
+    const periodo = this.periodoRepository.create(createPeriodoDto);
+    return await this.periodoRepository.save(periodo);
   }
 
-  update(id: number, updatePeriodoDto: UpdatePeriodoDto) {
-    return `This action updates a #${id} periodo`;
+  async update(id: number, updatePeriodoDto: UpdatePeriodoDto): Promise<Periodo> {
+    const periodo = await this.findOne(id);
+    Object.assign(periodo, updatePeriodoDto);
+    return await this.periodoRepository.save(periodo);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} periodo`;
+  async remove(id: number): Promise<void> {
+    const periodo = await this.findOne(id);
+    await this.periodoRepository.remove(periodo);
   }
 }
