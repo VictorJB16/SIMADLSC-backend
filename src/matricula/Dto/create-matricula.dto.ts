@@ -6,8 +6,8 @@ import { CreateEstudianteDto } from "src/estudiante/dto/create-estudiante.dto";
 export class CreateMatriculaDto {
 
   
-    @IsNotEmpty()  
-    @IsString()
+      @IsNotEmpty()  
+      @IsString()
       estado_Matricula: string;
       // Datos del Estudiante
       @IsNotEmpty()

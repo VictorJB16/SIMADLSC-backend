@@ -2,11 +2,14 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 //import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Estudiante } from './entities/estudiante.entity';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { Horario } from 'src/horario/entities/horario.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
+import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
+import { tipoadecuacion } from './entities/tipo-adecuacion.enum';
+import { Grado } from 'src/grados/entities/grados-entity';
 
 
 @Injectable()
@@ -23,6 +26,12 @@ export class EstudianteService {
     @InjectRepository(Seccion)
     private readonly seccionRepository: Repository<Seccion>,
 
+    @InjectRepository(EncargadoLegal)
+    private readonly encargadoLegalRepository: Repository<EncargadoLegal>,
+
+    @InjectRepository(Grado)
+    private readonly gradoRepository: Repository<Grado>,
+
   ) { }
   
 
@@ -35,6 +44,28 @@ export class EstudianteService {
       throw new InternalServerErrorException('No se pudo crear el estudiante');
     }
   }
+
+    async createEstudiante (createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
+      const { encargadoLegal, gradoId ,...estudianteData } = createEstudianteDto;
+
+      const encargadoLegalEntity = this.encargadoLegalRepository.create(encargadoLegal);
+
+      await this.encargadoLegalRepository.save(encargadoLegalEntity);
+
+      const grado = await this.gradoRepository.findOne({ where: { id_grado: gradoId } });
+      if (!grado) {
+        throw new NotFoundException(`Grado con ID ${gradoId} no encontrado`);
+      }
+
+      const estudiante = this.estudianteRepository.create({
+        ...estudianteData,
+        tipo_de_adecuacion: estudianteData.tipo_de_adecuacion as tipoadecuacion,
+        encargadoLegal: encargadoLegalEntity,
+        grado: grado,
+      });
+
+      return await this.estudianteRepository.save(estudiante);
+    }
 
   async findAll(): Promise<Estudiante[]> {
     return await this.estudianteRepository.find();

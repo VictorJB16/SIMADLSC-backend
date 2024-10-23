@@ -6,70 +6,77 @@ import { Matricula } from 'src/matricula/entities/matricula.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Usuario } from 'src/users/entities/user.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne, JoinColumn } from 'typeorm';
+import { tipoadecuacion } from './tipo-adecuacion.enum';
 
 @Entity('estudiantes')
 export class Estudiante {
+
   @PrimaryGeneratedColumn()
-id_Estudiante: number;
-  
-  @Column({type:'varchar', length: 50 })
+  id_Estudiante: number;
+
+  @Column({ type: 'varchar', length: 50 })
   nombre_Estudiante: string;
 
-  @Column({type:'varchar', length: 50 })
+  @Column({ type: 'varchar', length: 50 })
   apellido1_Estudiante: string;
-  
-  @Column({type:'varchar', length: 50 })
+
+  @Column({ type: 'varchar', length: 50 })
   apellido2_Estudiante: string;
-  
-  @Column({ default:"Activo" })
+
+  @Column({ default: "Activo" })
   estado_Estudiante?: string;
 
-  @Column({type:'varchar',length:40})
-    Cedula: string;
+  @Column({ type: 'varchar', length: 40 })
+  Cedula: string;
 
-  @Column({type:'varchar',length:50})
-  fecha_nacimiento : string;
+  @Column({ type: 'date'})
+  fecha_nacimiento: string;
 
-  @Column({type:'varchar',length:50})
-correo_estudiantil  : string;
+  @Column({ type: 'varchar', length: 50 })
+  correo_estudiantil?: string;
 
-  @Column({type:'varchar',length:10})
+  @Column({ type: 'varchar', length: 10 })
   sexo: string;
 
-  @Column({type:'varchar',length:80})
+  @Column({ type: 'varchar', length: 80 })
   lugar_de_nacimiento: string;
 
-  @Column({type:'varchar',length:80})
-  codición_migratoria: string;
-  
-  @Column({type:'varchar',length:80})
-    Repite_alguna_materia: string;
+  @Column({ type: 'varchar', length: 80 })
+  condicion_migratoria: string;
 
-  @Column({type:'varchar',length:80})
-  institución_de_procedencia: string;
-  
-  @Column({type:'varchar',length:80})
+  @Column({ type: 'varchar', length: 80 })
+  Repite_alguna_materia: string;
+
+  @Column({ type: 'varchar', length: 80 })
+  institucion_de_procedencia: string;
+
+  @Column({ type: 'varchar', length: 80 })
   Presenta_alguna_enfermedad: string;
-  
-  @Column({type:'varchar',length:80})
+
+  @Column({ type: 'varchar', length: 80 })
   medicamentos_que_debe_tomar: string;
 
-  @Column({type:'varchar',length:80})
-Ruta_de_viaje: string;
+  @Column({ type: 'varchar', length: 80 })
+  Ruta_de_viaje: string;
 
-@Column({type:'varchar',length:50})  
-Presenta_adecuacion?: string;
+  @Column({
+    type: 'enum',
+    enum: tipoadecuacion,
+    default: tipoadecuacion.nopresenta,
+  })
+  tipo_de_adecuacion: tipoadecuacion;
 
-@Column({type:'varchar',length:50})
-tipo_de_adecuacion?: string;
+  @Column({ type: 'varchar', length: 50 })
+  recibe_religion?: string;
 
-@Column({type:'varchar',length:50})
-recibe_religion?: string;
+  @Column({ type: 'varchar', length: 50 })
+  presenta_carta?: string;
 
-@Column({type:'varchar',length:50})
-presenta_carta?: string;
 
-  @OneToOne(() => Usuario, (usuario) => usuario.estudiante, {  onDelete: 'CASCADE' })
+  @ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
+  seccion: Seccion;
+
+  @OneToOne(() => Usuario, (usuario) => usuario.estudiante, { onDelete: 'CASCADE' })
   @JoinColumn()
   usuario: Usuario;
 
@@ -77,18 +84,12 @@ presenta_carta?: string;
   grado: Grado;
 
   @ManyToOne(() => EncargadoLegal, (encargadoLegal) => encargadoLegal.estudiantes)
-encargadoLegal: EncargadoLegal;
-
+  encargadoLegal: EncargadoLegal;
 
   @OneToMany(() => Matricula, (matricula) => matricula.estudiantes, {
     cascade: true,
   })
   matriculas: Matricula[];
-
-
-
-  @ManyToOne(() => Seccion, (seccion) => seccion.estudiantes)
-  seccion: Seccion;
 
   @OneToMany(() => Asistencia, asistencia => asistencia.id_Estudiante)
   asistencias: Asistencia[];

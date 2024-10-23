@@ -20,47 +20,47 @@ export class EncargadoLegalController {
     }
   }
 
-  @Get()
-  async findAll(): Promise<EncargadoLegal[]> {
-    try {
-      return await this.encargadoLegalService.findAll();
-    } catch (error) {
-      console.error("Error en el controlador al obtener todos los Encargados Legales:", error);
-      throw error;
-    }
-  }
+  // @Get()
+  // async findAll(): Promise<EncargadoLegal[]> {
+  //   try {
+  //     return await this.encargadoLegalService.findAll();
+  //   } catch (error) {
+  //     console.error("Error en el controlador al obtener todos los Encargados Legales:", error);
+  //     throw error;
+  //   }
+  // }
 
-  @Get(':id')
-  async findOne(@Param('id') id: number): Promise<EncargadoLegal> {
-    try {
-      return await this.encargadoLegalService.findOne(id);
-    } catch (error) {
-      console.error(`Error en el controlador al obtener el Encargado Legal con ID ${id}:`, error);
-      throw error;
-    }
-  }
+  // @Get(':id')
+  // async findOne(@Param('id') id: number): Promise<EncargadoLegal> {
+  //   try {
+  //     return await this.encargadoLegalService.findOne(id);
+  //   } catch (error) {
+  //     console.error(`Error en el controlador al obtener el Encargado Legal con ID ${id}:`, error);
+  //     throw error;
+  //   }
+  // }
 
-  @Put(':id')
-  async update(
-    @Param('id') id: number,
-    @Body() updateEncargadoLegalDto: UpdateEncargadoLegalDto,
-  ): Promise<EncargadoLegal> {
-    try {
-      return await this.encargadoLegalService.update(id, updateEncargadoLegalDto);
-    } catch (error) {
-      console.error(`Error en el controlador al actualizar el Encargado Legal con ID ${id}:`, error);
-      throw error;
-    }
-  }
+  // @Put(':id')
+  // async update(
+  //   @Param('id') id: number,
+  //   @Body() updateEncargadoLegalDto: UpdateEncargadoLegalDto,
+  // ): Promise<EncargadoLegal> {
+  //   try {
+  //     return await this.encargadoLegalService.update(id, updateEncargadoLegalDto);
+  //   } catch (error) {
+  //     console.error(`Error en el controlador al actualizar el Encargado Legal con ID ${id}:`, error);
+  //     throw error;
+  //   }
+  // }
 
-  @Delete(':id')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('id') id: number): Promise<void> {
-    try {
-      await this.encargadoLegalService.remove(id);
-    } catch (error) {
-      console.error(`Error en el controlador al eliminar el Encargado Legal con ID ${id}:`, error);
-      throw error;
-    }
-  }
+  // @Delete(':id')
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // async remove(@Param('id') id: number): Promise<void> {
+  //   try {
+  //     await this.encargadoLegalService.remove(id);
+  //   } catch (error) {
+  //     console.error(`Error en el controlador al eliminar el Encargado Legal con ID ${id}:`, error);
+  //     throw error;
+  //   }
+  // }
 }

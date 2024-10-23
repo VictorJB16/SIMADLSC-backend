@@ -9,7 +9,6 @@ import { Horario } from 'src/horario/entities/horario.entity';
 @Controller('estudiantes')
 export class EstudianteController {
   constructor(private readonly estudianteService: EstudianteService) {}
-
   @Post()
   async create(@Body() createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
     return await this.estudianteService.create(createEstudianteDto);
@@ -30,5 +29,12 @@ export class EstudianteController {
     return this.estudianteService.obtenerHorariosPorEstudiante(+id);
   }
 
+
+  //creates estudiantes todos sus datos y encargadoLegal
+
+  @Post('matricula')
+  async creates(@Body() createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
+    return await this.estudianteService.createEstudiante(createEstudianteDto);
+  }
 }
 

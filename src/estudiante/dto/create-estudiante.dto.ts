@@ -1,7 +1,11 @@
 
-import { IsNotEmpty, IsOptional, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, IsNumber, IsEnum, ValidateNested } from 'class-validator';
+import { tipoadecuacion } from '../entities/tipo-adecuacion.enum';
+import { Type } from 'class-transformer';
+import { CreateEncargadoLegalDto } from 'src/encargado-legal/dto/create-encargado-legal.dto';
 
-export class CreateEstudianteDto {
+export class CreateEstudianteDto {  
+
   @IsNotEmpty()
   @IsString()
   nombre_Estudiante: string;
@@ -13,18 +17,6 @@ export class CreateEstudianteDto {
   @IsNotEmpty()
   @IsString()
   apellido2_Estudiante: string;
-
-  @IsOptional()
-  @IsString()
-  estado_Estudiante?: string;
-
-  @IsNotEmpty()
-  @IsNumber()
-  seccionId: number;
-
-  @IsNotEmpty()
-  @IsNumber()
-  gradoId: number;
 
   @IsNotEmpty()    
   @IsString()
@@ -48,7 +40,7 @@ export class CreateEstudianteDto {
 
   @IsNotEmpty()           
   @IsString()   
-  condicion_migratoria: string; // Corregido con el nombre que aparece en la base de datos
+  condicion_migratoria: string; 
 
   @IsNotEmpty() 
   @IsString()
@@ -56,7 +48,7 @@ export class CreateEstudianteDto {
 
   @IsNotEmpty()
   @IsString()   
-  institucion_de_procedencia: string; // Corregido para aceptar el nombre con acento
+  institucion_de_procedencia: string; 
 
   @IsNotEmpty()   
   @IsString()       
@@ -70,11 +62,9 @@ export class CreateEstudianteDto {
   @IsString()
   Ruta_de_viaje: string;
 
-  @IsString()
-  Presenta_adecuacion: string;
-
-  @IsString()
-  tipo_de_adecuacion: string;
+  @IsNotEmpty()
+  @IsEnum(tipoadecuacion)
+  tipo_de_adecuacion: tipoadecuacion;
 
   @IsString()
   recibe_religion: string;
@@ -82,4 +72,15 @@ export class CreateEstudianteDto {
   @IsString()
   presenta_carta: string;
 
+  @IsNotEmpty()
+  @IsNumber()
+  gradoId: number;
+
+  @IsOptional()
+  @IsNumber()
+  seccionId: number;
+
+  @ValidateNested()
+  @Type(() => CreateEncargadoLegalDto)
+  encargadoLegal: CreateEncargadoLegalDto;
 }

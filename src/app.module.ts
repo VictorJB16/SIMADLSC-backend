@@ -17,7 +17,6 @@ import { HorarioModule } from './horario/horario.module';
 import { ProfesorModule } from './profesor/profesor.module';
 import { EstudianteModule } from './estudiante/estudiante.module';
 import { MateriaModule } from './materia/materia.module';
-import { PeriodoModule } from './periodo/periodo.module';
 import { AulasModule } from './aulas/aulas.module';
 import { EventosModule } from './eventos/eventos.module';
 import { DirigidoAModule } from './dirigido-a/dirigido-a.module';
@@ -29,6 +28,7 @@ import { JustificacionAusenciaModule } from './justificacion_ausencia/justificac
 import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { DetallesmatriculaModule } from './detallesmatricula/detallesmatricula.module';
+import { PeriodoModule } from './periodo/periodo.module';
 
 
 @Module({
@@ -61,7 +61,6 @@ import { DetallesmatriculaModule } from './detallesmatricula/detallesmatricula.m
     HorarioModule,
     ProfesorModule,  
     MateriaModule,
-    PeriodoModule,
     EventosModule,
     AulasModule,
     EncargadoLegalModule,
@@ -71,6 +70,7 @@ import { DetallesmatriculaModule } from './detallesmatricula/detallesmatricula.m
     TipoEventoModule,
     EstadoEventoModule,
     UbicacionModule,
+    PeriodoModule,
   ],
   controllers: [ProfileController],
   providers: [MailerCustomModule],

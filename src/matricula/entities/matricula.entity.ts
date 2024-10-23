@@ -15,33 +15,24 @@ export class Matricula {
     @Column()
     estado_Matricula: string;
   
-    @Column({type:'date'})
-    fecha_matricula_Matricula: string;
-  
-    @CreateDateColumn()
+    @Column({type:'date' })
     fecha_creacion_Matricula: string;
   
     @Column({type:'date' })
-
     fecha_actualizacion_Matricula: string;
-    
-   
   
     @ManyToOne(() => Grado, grado => grado.matriculas, { eager: true })
-grado: Grado;
+    grado: Grado;
 
-  
     @ManyToOne(() => Estudiante, (estudiante) => estudiante.matriculas)
     estudiantes: Estudiante;
   
     @ManyToOne(() => EncargadoLegal, (encargadoLegal) => encargadoLegal.matriculas)
     encargadoLegal: EncargadoLegal;
   
-  //nueva
     @ManyToOne(() => Usuario, (usuario) => usuario.matriculas)
     usuario: Usuario;
-  
-    //nueva
+    
     @ManyToOne(() => Seccion, (seccion) => seccion.matriculas)
     seccion: Seccion;
   

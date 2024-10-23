@@ -11,7 +11,7 @@ direccion: string;
 
 @IsNotEmpty()
 @IsNumber()
-telefono_celular:number;
+telefono_celular:string;
 
 @IsNotEmpty()
 @IsString()
