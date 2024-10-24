@@ -19,7 +19,7 @@ export class CreateEstudianteDto {
 
   @IsNotEmpty()
   @IsNumber()
-  seccionId: number;
+  seccionId?: number;
 
   @IsNotEmpty()
   @IsNumber()

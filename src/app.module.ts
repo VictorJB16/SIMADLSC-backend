@@ -45,6 +45,7 @@ import { JustificacionAusenciaModule } from './justificacion_ausencia/justificac
       autoLoadEntities: true,
       synchronize: true,
     }),
+    AsistenciasModule,
     JustificacionAusenciaModule,
     AuthModule,
     UsersModule,

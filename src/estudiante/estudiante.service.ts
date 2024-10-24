@@ -77,4 +77,26 @@ export class EstudianteService {
   }
 
 
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+  async obtenerEstudiantesPorSeccion(id_Seccion: number): Promise<Estudiante[]> {
+    const seccion = await this.seccionRepository.findOne({ where: { id_Seccion }, relations: ['estudiantes'] });
+    if (!seccion) {
+      throw new NotFoundException(`Sección con ID ${id_Seccion} no encontrada`);
+    }
+    return seccion.estudiantes;
+  }
+
 }

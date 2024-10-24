@@ -29,4 +29,20 @@ export class EstudianteController {
     return this.estudianteService.obtenerHorariosPorEstudiante(+id);
   }
 
+
+
+
+
+
+
+
+
+
+  
+
+  @Get('seccion/:id')
+  async obtenerEstudiantesPorSeccion(@Param('id') id: string): Promise<Estudiante[]> {
+    return this.estudianteService.obtenerEstudiantesPorSeccion(+id);
+  }
+  
 }
