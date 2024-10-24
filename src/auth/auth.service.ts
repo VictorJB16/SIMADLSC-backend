@@ -31,9 +31,10 @@ export class AuthService {
     
   }
 
-  // Inicio de sesión y generación de token JWT
+
   async login(email_Usuario: string, password: string) {
    const user = await this.validateUser(email_Usuario, password);
+
 
 console.log('Usuario encontrado:', user); // Para debug
 console.log('Datos del estudiante:', user.estudiante); // Para verificar el estudiante
@@ -50,6 +51,7 @@ const payload = {
 };
 
 console.log('Payload generado:', payload);
+
 
 
     return {

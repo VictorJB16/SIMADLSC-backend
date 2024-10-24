@@ -42,5 +42,14 @@ export class JustificacionAusenciaService {
   async obtenerJustificaciones(): Promise<JustificacionAusencia[]> {
     return this.justificacionRepository.find({ relations: ['asistencia'] });
   }
+
+
+  async deleteJustificacion(id: number): Promise<void> {
+    const justificacion = await this.justificacionRepository.findOne({ where: { justificacion_ausencia_id: id } });
+    if (!justificacion) {
+      throw new NotFoundException(`Justificación con ID ${id} no encontrada`);
+    }
+    await this.justificacionRepository.remove(justificacion);
+  }
 }
 

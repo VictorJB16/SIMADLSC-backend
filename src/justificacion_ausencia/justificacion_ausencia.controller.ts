@@ -18,6 +18,9 @@ export class JustificacionAusenciaController {
     return this.justificacionAusenciaService.obtenerJustificaciones();
   }
 
-  
+  @Delete(':id')
+  async deleteJustificacion(@Param('id') id: string): Promise<void> {
+    return this.justificacionAusenciaService.deleteJustificacion(+id);
+  }
   
 }

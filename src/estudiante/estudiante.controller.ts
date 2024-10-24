@@ -36,5 +36,10 @@ export class EstudianteController {
   async creates(@Body() createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
     return await this.estudianteService.createEstudiante(createEstudianteDto);
   }
-}
 
+ 
+  @Get('seccion/:id')
+  async obtenerEstudiantesPorSeccion(@Param('id') id: string): Promise<Estudiante[]> {
+    return this.estudianteService.obtenerEstudiantesPorSeccion(+id);
+  }
+}

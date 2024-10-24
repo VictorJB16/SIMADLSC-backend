@@ -14,7 +14,7 @@ export class Asistencia {
   asistencia_id: number;
 
   @Column({ type: 'date' })
-  fecha: Date;
+  fecha: string;
 
   @Column({
     type: 'enum',

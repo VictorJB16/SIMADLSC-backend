@@ -80,6 +80,7 @@ export class CreateEstudianteDto {
   @IsString()
   presenta_carta: string;
 
+
   @IsNotEmpty()
   @IsNumber()
   gradoId: number;

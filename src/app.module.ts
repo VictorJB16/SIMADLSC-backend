@@ -31,11 +31,12 @@ import { DetallesmatriculaModule } from './detallesmatricula/detallesmatricula.m
 import { PeriodoModule } from './periodo/periodo.module';
 
 
+
 @Module({
   imports: [ 
     ConfigModule.forRoot({
-      isGlobal: true, // Hace que ConfigService esté disponible en toda la aplicación
-      envFilePath: '.env', // Opcional si el archivo .env está en la raíz
+      isGlobal: true, 
+      envFilePath: '.env', 
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
