@@ -18,6 +18,14 @@ export class CreateEstudianteDto {
   @IsString()
   apellido2_Estudiante: string;
 
+  @IsNotEmpty()
+  @IsNumber()
+  edad: number;
+
+  @IsNotEmpty()
+  @IsString()
+  telefono: string;
+
   @IsNotEmpty()    
   @IsString()
   Cedula: string;
@@ -38,7 +46,7 @@ export class CreateEstudianteDto {
   @IsString() 
   lugar_de_nacimiento: string;
 
-  @IsNotEmpty()           
+  @IsOptional()           
   @IsString()   
   condicion_migratoria: string; 
 
@@ -54,11 +62,11 @@ export class CreateEstudianteDto {
   @IsString()       
   Presenta_alguna_enfermedad: string;
 
-  @IsNotEmpty()  
+  @IsOptional()  
   @IsString()
   medicamentos_que_debe_tomar: string;
 
-  @IsNotEmpty()    
+  @IsOptional()    
   @IsString()
   Ruta_de_viaje: string;
 

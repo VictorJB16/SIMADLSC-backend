@@ -23,6 +23,12 @@ export class Estudiante {
   @Column({ type: 'varchar', length: 50 })
   apellido2_Estudiante: string;
 
+  @Column({ type: 'int' })
+  edad: number;
+
+  @Column({ type: 'varchar', length: 15 })
+  telefono: string;
+
   @Column({ default: "Activo" })
   estado_Estudiante?: string;
 
@@ -86,9 +92,7 @@ export class Estudiante {
   @ManyToOne(() => EncargadoLegal, (encargadoLegal) => encargadoLegal.estudiantes)
   encargadoLegal: EncargadoLegal;
 
-  @OneToMany(() => Matricula, (matricula) => matricula.estudiantes, {
-    cascade: true,
-  })
+  @OneToMany(() => Matricula, (matricula) => matricula.estudiante, {cascade: true,})
   matriculas: Matricula[];
 
   @OneToMany(() => Asistencia, asistencia => asistencia.id_Estudiante)

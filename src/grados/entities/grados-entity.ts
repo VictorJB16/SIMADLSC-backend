@@ -18,9 +18,6 @@ export class Grado {
   @OneToMany(() => Estudiante, (estudiante) => estudiante.grado)
   estudiantes: Estudiante[];
 
-  @OneToMany(() => Matricula, (matricula) => matricula.grado)
-  matriculas: Matricula[];
-
   @OneToMany(() => Horario, (horario) => horario.grado)
   horarios: Horario[];
 

@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Matricula } from 'src/matricula/entities/matricula.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity('periodos')
 export class Periodo {
@@ -7,5 +8,8 @@ export class Periodo {
 
     @Column({ length: 100 })
     nombre_Periodo: string;
+
+    @OneToMany(() => Matricula, (matricula) => matricula.periodo)
+    matriculas: Matricula[];
 
 }

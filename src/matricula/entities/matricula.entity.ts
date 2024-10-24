@@ -5,6 +5,8 @@ import { Grado } from "src/grados/entities/grados-entity";
 import { Seccion } from "src/secciones/entities/seccion.entity";
 import { Usuario } from "src/users/entities/user.entity";
 import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Periodo } from "src/periodo/entities/periodo.entity";
+import { EstadoMatricula } from "./Estado-Matricula.enum";
 
 @Entity('matriculas')
 export class Matricula {
@@ -12,23 +14,27 @@ export class Matricula {
     @PrimaryGeneratedColumn()
     id_Matricula: number;
   
-    @Column()
-    estado_Matricula: string;
-  
     @Column({type:'date' })
     fecha_creacion_Matricula: string;
   
     @Column({type:'date' })
     fecha_actualizacion_Matricula: string;
-  
-    @ManyToOne(() => Grado, grado => grado.matriculas, { eager: true })
-    grado: Grado;
+
+    @Column({
+        type: 'enum',
+        enum: EstadoMatricula,
+        default: EstadoMatricula.Pendiente,
+      })
+      estado_Matricula: EstadoMatricula;
 
     @ManyToOne(() => Estudiante, (estudiante) => estudiante.matriculas)
-    estudiantes: Estudiante;
+    estudiante: Estudiante;
   
     @ManyToOne(() => EncargadoLegal, (encargadoLegal) => encargadoLegal.matriculas)
     encargadoLegal: EncargadoLegal;
+
+    @ManyToOne(() => Periodo, (periodo) => periodo.matriculas, { eager: true })
+    periodo: Periodo;
   
     @ManyToOne(() => Usuario, (usuario) => usuario.matriculas)
     usuario: Usuario;
@@ -40,5 +46,4 @@ export class Matricula {
         cascade: true,
       })
       detalles: DetallesMatricula[];
-  
   }
