@@ -20,4 +20,22 @@ export class MatriculaController {
   async findAll(): Promise<Matricula[]> {
     return this.matriculaService.findAll();
   }
+
+
+ // Nuevo método para obtener los datos del Encargado Legal y del Estudiante por matrícula ID
+ @Get(':id/encargado-estudiante')
+ async findEncargadoAndEstudiante(@Param('id', ParseIntPipe) id: number): Promise<{ estudiante: Estudiante; encargadoLegal: EncargadoLegal }> {
+   return this.matriculaService.findEncargadoAndEstudianteByMatriculaId(id);
+ }
+
+ // Nuevo método para eliminar una matrícula por su ID
+ @Delete(':id')
+ @HttpCode(HttpStatus.NO_CONTENT)
+ async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+   return this.matriculaService.remove(id);
+ }
+
+
+
+
 }
