@@ -1,39 +1,38 @@
-import { IsNotEmpty, IsString, IsNumber, IsIn, Matches } from 'class-validator';
+import { IsOptional, IsString, IsNumber, IsIn, Matches } from 'class-validator';
 
 export class UpdateHorarioEstudianteDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  gradoId: number;
+  gradoId?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  seccionId: number;
+  seccionId?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  materiaId: number;
+  materiaId?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  profesorId: number;
+  profesorId?: number;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @IsIn(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'])
-  dia_semana_Horario: string;
+  @IsIn(['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'])
+  dia_semana_Horario?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, { message: 'Hora de inicio inválida' })
-  hora_inicio_Horario: string;
+  hora_inicio_Horario?: string;
 
-
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, { message: 'Hora de fin inválida' })
-  hora_fin_Horario: string;
+  hora_fin_Horario?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
-  aulaId: number;
+  aulaId?: number;
 }
