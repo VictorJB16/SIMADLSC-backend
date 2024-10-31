@@ -9,7 +9,7 @@ import {
   Patch,
   Param,
   Body,
-  UseGuards,
+  Query,
   ParseIntPipe,
 } from '@nestjs/common';
 import { EventosService } from './eventos.service';
@@ -18,9 +18,26 @@ import { UpdateEventoDto } from './dto/update-eventos.dto';
 import { Eventos } from './entities/eventos.entity';
 
 @Controller('eventos')
-
 export class EventosController {
   constructor(private readonly eventosService: EventosService) {}
+
+  /**
+   * Aprueba un evento.
+   * @param id - ID del evento a aprobar.
+   */
+  @Patch(':id/approve')
+  async approve(@Param('id', ParseIntPipe) id: number): Promise<Eventos> {
+    return this.eventosService.approve(id);
+  }
+
+  /**
+   * Rechaza un evento.
+   * @param id - ID del evento a rechazar.
+   */
+  @Patch(':id/reject')
+  async reject(@Param('id', ParseIntPipe) id: number): Promise<Eventos> {
+    return this.eventosService.reject(id);
+  }
 
   /**
    * Obtiene todos los eventos.
@@ -71,20 +88,27 @@ export class EventosController {
   }
 
   /**
-   * Aprueba un evento.
-   * @param id - ID del evento a aprobar.
+   * Obtiene la lista de eventos filtrados por fecha, hora y estado.
+   * @param fechaDesde - Fecha inicial para filtrar.
+   * @param fechaHasta - Fecha final para filtrar.
+   * @param horaDesde - Hora inicial para filtrar.
+   * @param horaHasta - Hora final para filtrar.
+   * @param estado - Estado del evento: aprobado, rechazado o pendiente.
    */
-  @Patch(':id/approve')
-  async approve(@Param('id', ParseIntPipe) id: number): Promise<Eventos> {
-    return this.eventosService.approve(id);
-  }
-
-  /**
-   * Rechaza un evento.
-   * @param id - ID del evento a rechazar.
-   */
-  @Patch(':id/reject')
-  async reject(@Param('id', ParseIntPipe) id: number): Promise<Eventos> {
-    return this.eventosService.reject(id);
+  @Get('lista')
+  async findLista(
+    @Query('fechaDesde') fechaDesde?: string,
+    @Query('fechaHasta') fechaHasta?: string,
+    @Query('horaDesde') horaDesde?: string,
+    @Query('horaHasta') horaHasta?: string,
+    @Query('estado') estado?: 'aprobado' | 'rechazado' | 'pendiente',
+  ): Promise<Eventos[]> {
+    return this.eventosService.findFiltered({
+      fechaDesde,
+      fechaHasta,
+      horaDesde,
+      horaHasta,
+      estado,
+    });
   }
 }

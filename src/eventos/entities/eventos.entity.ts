@@ -22,13 +22,13 @@ export class Eventos {
   @Column({ nullable: true })
   descripcion_Evento: string;
 
-  @Column()
+  @Column('date')
   fecha_Evento: Date;
 
-  @Column()
+  @Column('time')
   hora_inicio_Evento: string;
 
-  @Column()
+  @Column('time')
   hora_fin_Evento: string;
 
   @ManyToOne(() => DirigidoA, (dirigidoA) => dirigidoA.eventos, { eager: true })

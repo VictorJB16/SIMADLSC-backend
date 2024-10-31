@@ -9,6 +9,7 @@ import { Grado } from 'src/grados/entities/grados-entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { JustificacionAusencia } from 'src/justificacion_ausencia/entities/justificacion_ausencia.entity';
+import { Periodo } from 'src/periodo/entities/periodo.entity';
 
 @Module({
   imports: [
@@ -20,6 +21,8 @@ import { JustificacionAusencia } from 'src/justificacion_ausencia/entities/justi
       Seccion,
       Profesor,
       JustificacionAusencia,
+      Periodo,
+      
     ]),
   ],
   controllers: [AsistenciasController],

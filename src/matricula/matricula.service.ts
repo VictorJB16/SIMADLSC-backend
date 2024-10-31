@@ -5,9 +5,11 @@ import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.ent
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateMatriculaDto } from './dto/create-matricula.dto';
+//import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
 import { Periodo } from 'src/periodo/entities/periodo.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { EstadoMatricula } from './entities/Estado-Matricula.enum';
+import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
 @Injectable()
 export class MatriculaService {
   constructor(
@@ -101,6 +103,47 @@ async remove(id: number): Promise<void> {
   await this.matriculaRepository.remove(matricula);
 }
 
+
+
+//Actualizar matricula
+async updateMatricula(id: number, updateDto: UpdateMatriculaDto): Promise<Matricula> {
+  // Buscar la matrícula existente
+  const matricula = await this.matriculaRepository.findOne({
+    where: { id_Matricula: id },
+    relations: ['estudiante', 'encargadoLegal'],
+  });
+  if (!matricula) {
+    throw new NotFoundException(`Matrícula con ID ${id} no encontrada`);
+  }
+
+  // Actualizar campos directos en la entidad `Matricula`
+
+
+  // Actualizar los datos de `Estudiante` si están presentes en el DTO
+  if (updateDto.estudiante) {
+    let estudiante = matricula.estudiante;
+    if (!estudiante) {
+      estudiante = this.estudianteRepository.create();
+    }
+    Object.assign(estudiante, updateDto.estudiante);
+    await this.estudianteRepository.save(estudiante);
+    matricula.estudiante = estudiante;
+  }
+
+  // Actualizar los datos de `EncargadoLegal` si están presentes en el DTO
+  if (updateDto.encargadoLegal) {
+    let encargadoLegal = matricula.encargadoLegal;
+    if (!encargadoLegal) {
+      encargadoLegal = this.encargadoLegalRepository.create();
+    }
+    Object.assign(encargadoLegal, updateDto.encargadoLegal);
+    await this.encargadoLegalRepository.save(encargadoLegal);
+    matricula.encargadoLegal = encargadoLegal;
+  }
+
+  // Guardar los cambios en la matrícula y devolver la entidad actualizada
+  return await this.matriculaRepository.save(matricula);
+}
 
 
 

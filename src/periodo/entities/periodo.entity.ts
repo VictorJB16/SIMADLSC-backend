@@ -1,3 +1,4 @@
+import { Asistencia } from 'src/asistencias/entities/asistencia.entity';
 import { Matricula } from 'src/matricula/entities/matricula.entity';
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
@@ -11,5 +12,8 @@ export class Periodo {
 
     @OneToMany(() => Matricula, (matricula) => matricula.periodo)
     matriculas: Matricula[];
+
+    @OneToMany(() => Asistencia, (asistencia) => asistencia.id_Periodo)
+    asistencias: Asistencia[]
 
 }

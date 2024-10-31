@@ -6,6 +6,7 @@ import { Grado } from 'src/grados/entities/grados-entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { JustificacionAusencia } from 'src/justificacion_ausencia/entities/justificacion_ausencia.entity';
+import { Periodo } from 'src/periodo/entities/periodo.entity';
 
 
 @Entity('asistencias')
@@ -22,6 +23,12 @@ export class Asistencia {
     default: AsistenciaStatus.PRESENTE,
   })
   estado: AsistenciaStatus;
+  
+  @CreateDateColumn()
+  creadoEn: Date;
+  
+  @UpdateDateColumn()
+  actualizadoEn: Date;
 
   @ManyToOne(() => Estudiante, estudiante => estudiante.asistencias, { eager: true, onDelete: 'CASCADE' })
   id_Estudiante: Estudiante;
@@ -45,9 +52,6 @@ export class Asistencia {
   @JoinColumn({ name: 'justificacion_ausencia_id' })
   justificacionAusencia: JustificacionAusencia;
 
-  @CreateDateColumn()
-  creadoEn: Date;
-
-  @UpdateDateColumn()
-  actualizadoEn: Date;
+  @ManyToOne(() => Periodo , periodo => periodo.asistencias, { eager: true, onDelete: 'CASCADE' })
+  id_Periodo: Periodo;
 }

@@ -26,6 +26,9 @@ export class Estudiante {
   @Column({ type: 'int' })
   edad: number;
 
+  @Column({ type: 'varchar', length: 50 })
+  nacionalidad: string;
+
   @Column({ type: 'varchar', length: 15 })
   telefono: string;
 
@@ -33,7 +36,7 @@ export class Estudiante {
   estado_Estudiante?: string;
 
   @Column({ type: 'varchar', length: 40 })
-  Cedula: string;
+  cedula: string;
 
   @Column({ type: 'date'})
   fecha_nacimiento: string;
