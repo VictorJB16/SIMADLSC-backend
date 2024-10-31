@@ -70,5 +70,39 @@ export class MatriculaService {
   async findAll(): Promise<Matricula[]> {
     return await this.matriculaRepository.find();
   }
+
+// Nuevo método para obtener los datos del Encargado Legal y del Estudiante
+async findEncargadoAndEstudianteByMatriculaId(id: number) {
+  const matricula = await this.matriculaRepository.findOne({
+    where: { id_Matricula: id },
+    relations: ['estudiante', 'encargadoLegal'],
+  });
+
+  if (!matricula) {
+    throw new NotFoundException(`Matrícula con ID ${id} no encontrada`);
+  }
+
+  const { estudiante, encargadoLegal } = matricula;
+
+  return {
+    estudiante,
+    encargadoLegal,
+  };
+}
+
+// Método para eliminar una matrícula por su ID
+async remove(id: number): Promise<void> {
+  const matricula = await this.matriculaRepository.findOne({ where: { id_Matricula: id } });
+
+  if (!matricula) {
+    throw new NotFoundException(`Matrícula con ID ${id} no encontrada`);
+  }
+
+  await this.matriculaRepository.remove(matricula);
+}
+
+
+
+
 }
 
