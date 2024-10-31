@@ -1,61 +1,13 @@
-import { IsNotEmpty, IsNumber, IsString } from "class-validator";
-
-
-export class UpdateMatriculaDto {
-
-    @IsNotEmpty()
-    @IsNumber()
-    id_grado: number;
-    
-    @IsNotEmpty()
-    @IsString()
-    nivel: string;
-
-    @IsNotEmpty()
-    @IsNumber()
-    id_Seccion: number;
-
-    @IsNotEmpty()
-    @IsString()
-    nombre_Seccion: string;
-
-    @IsNotEmpty()
-    @IsString()
-    direccion: string;
-    
-    @IsNotEmpty()
-    @IsNumber()
-    telefono_celular:number;
-    
-    @IsNotEmpty()
-    @IsString()
-    habitacion:string;
-    
-    @IsNotEmpty()
-    @IsString()
-    correo:string;
-    
+import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
+import { EstadoMatricula } from "../entities/Estado-Matricula.enum";
+import { CreateMatriculaDto } from "./create-matricula.dto";
+import { PartialType } from "@nestjs/mapped-types";
+import { UpdateEstudianteDto } from "src/estudiante/dto/update-estudiante.dto";
+import { UpdateEncargadoLegalDto } from "src/encargado-legal/dto/update-encargado-legal.dto";
+import { Type } from "class-transformer";
+import { CreateEstudianteDto } from "src/estudiante/dto/create-estudiante.dto";
+import { CreateEncargadoLegalDto } from "src/encargado-legal/dto/create-encargado-legal.dto";
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
+export class UpdateMatriculaDto extends PartialType(CreateMatriculaDto) {}
