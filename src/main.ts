@@ -11,7 +11,7 @@ async function bootstrap() {
   app.useGlobalFilters(new AllExceptionsFilter);
   app.enableCors({
     origin: 'http://localhost:5173',
-    methods: 'GET,POST,PUT,DELETE,OPTIONS',
+    methods: 'GET,POST,PUT,DELETE,OPTIONS,PATCH,REJECT,APPROVE',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true, 
   });
