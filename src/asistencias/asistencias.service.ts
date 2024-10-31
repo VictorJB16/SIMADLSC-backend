@@ -365,54 +365,47 @@ export class AsistenciasService {
   }
 
 
-  async obtenerReporteAsistencias(filtros: {
-    cedula?: string;
-    gradoId?: number;
-    seccionId?: number;
-    periodoId?: number;
-    fechaInicio?: string;
-    fechaFin?: string;
-  }): Promise<Asistencia[]> {
-    const query = this.asistenciaRepository.createQueryBuilder('asistencia')
-      .leftJoinAndSelect('asistencia.id_Estudiante', 'id_Estudiante')
-      .leftJoinAndSelect('asistencia.id_Materia', 'id_Materia')
-      .leftJoinAndSelect('asistencia.id_grado', 'id_grado')
-      .leftJoinAndSelect('asistencia.id_Seccion', 'id_Seccion')
-      .leftJoinAndSelect('asistencia.id_Profesor', 'id_Profesor')
-      .leftJoinAndSelect('asistencia.id_Periodo', 'id_Periodo')
-      .leftJoinAndSelect('asistencia.justificacionAusencia', 'justificacionAusencia');
+  async obtenerReporteAsistencias(
+    cedula: string,
+    fechaInicio?: string,
+    fechaFin?: string,
+    id_Periodo?: number,
+  ): Promise<Asistencia[]> {
+    const query = this.asistenciaRepository
+      .createQueryBuilder('asistencia')
+      .leftJoinAndSelect('asistencia.id_Estudiante', 'estudiante')
+      .leftJoinAndSelect('asistencia.id_Materia', 'materia')
+      .leftJoinAndSelect('asistencia.id_grado', 'grado')
+      .leftJoinAndSelect('asistencia.id_Seccion', 'seccion')
+      .leftJoinAndSelect('asistencia.id_Profesor', 'profesor')
+      .leftJoinAndSelect('asistencia.id_Periodo', 'periodo')
+      .leftJoinAndSelect('asistencia.justificacionAusencia', 'justificacion');
 
-    if (filtros.cedula) {
-      query.andWhere('id_Estudiante.cedula = :cedula', { cedula: filtros.cedula });
-    }
+    // Filtrar por cédula del estudiante
+    query.where('estudiante.cedula = :cedula', { cedula });
 
-    if (filtros.gradoId) {
-      query.andWhere('id_grado.id_grado = :gradoId', { gradoId: filtros.gradoId });
-    }
-
-    if (filtros.seccionId) {
-      query.andWhere('id_Seccion.id_Seccion = :seccionId', { seccionId: filtros.seccionId });
-    }
-
-    if (filtros.periodoId) {
-      query.andWhere('id_Periodo.id_Periodo = :periodoId', { periodoId: filtros.periodoId });
-    }
-
-    if (filtros.fechaInicio && filtros.fechaFin) {
+    // Aplicar filtros opcionales
+    if (fechaInicio && fechaFin) {
       query.andWhere('asistencia.fecha BETWEEN :fechaInicio AND :fechaFin', {
-        fechaInicio: filtros.fechaInicio,
-        fechaFin: filtros.fechaFin,
+        fechaInicio,
+        fechaFin,
       });
-    } else if (filtros.fechaInicio) {
-      query.andWhere('asistencia.fecha >= :fechaInicio', { fechaInicio: filtros.fechaInicio });
-    } else if (filtros.fechaFin) {
-      query.andWhere('asistencia.fecha <= :fechaFin', { fechaFin: filtros.fechaFin });
+    } else if (fechaInicio) {
+      query.andWhere('asistencia.fecha >= :fechaInicio', { fechaInicio });
+    } else if (fechaFin) {
+      query.andWhere('asistencia.fecha <= :fechaFin', { fechaFin });
+    }
+
+    if (id_Periodo !== undefined) {
+      query.andWhere('periodo.id_Periodo = :id_Periodo', { id_Periodo });
     }
 
     const asistencias = await query.getMany();
 
     if (asistencias.length === 0) {
-      throw new NotFoundException('No se encontraron asistencias con los filtros proporcionados');
+      throw new NotFoundException(
+        `No se encontraron asistencias para la cédula ${cedula} con los filtros proporcionados`,
+      );
     }
 
     return asistencias;
