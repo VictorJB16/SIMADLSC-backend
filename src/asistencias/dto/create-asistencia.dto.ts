@@ -29,6 +29,10 @@ export class CreateAsistenciaDto {
     @IsNotEmpty()
     id_Profesor: number;
 
+    @IsNumber()
+    @IsNotEmpty()
+    id_Periodo: number;
+
     // Justificacién solo es requerida si el estado es 'J'
     @ValidateIf(o => o.estado ===
     AsistenciaStatus.JUSTIFICADO)

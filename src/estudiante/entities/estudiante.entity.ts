@@ -33,7 +33,7 @@ export class Estudiante {
   estado_Estudiante?: string;
 
   @Column({ type: 'varchar', length: 40 })
-  Cedula: string;
+  cedula: string;
 
   @Column({ type: 'date'})
   fecha_nacimiento: string;
