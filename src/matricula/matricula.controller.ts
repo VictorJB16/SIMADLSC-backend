@@ -5,6 +5,7 @@ import { MatriculaService } from './matricula.service';
 import { CreateMatriculaDto } from './dto/create-matricula.dto';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
+import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
 
 @Controller('matriculas')
 export class MatriculaController {
@@ -36,6 +37,17 @@ export class MatriculaController {
  }
 
 
-
+ @Put(':id')
+  async updateMatricula(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateMatriculaDto: UpdateMatriculaDto,
+  ): Promise<Matricula> {
+    // Llamada al servicio para actualizar la matrícula
+    const updatedMatricula = await this.matriculaService.updateMatricula(id, updateMatriculaDto);
+    if (!updatedMatricula) {
+      throw new NotFoundException(`Matrícula con ID ${id} no encontrada`);
+    }
+    return updatedMatricula;
+  }
 
 }

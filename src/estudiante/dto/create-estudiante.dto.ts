@@ -46,11 +46,15 @@ export class CreateEstudianteDto {
   @IsString() 
   lugar_de_nacimiento: string;
 
+  @IsNotEmpty()
+  @IsString()
+  nacionalidad: string;
+
   @IsOptional()           
   @IsString()   
   condicion_migratoria: string; 
 
-  @IsNotEmpty() 
+  @IsOptional()
   @IsString()
   Repite_alguna_materia: string;
 
@@ -58,7 +62,7 @@ export class CreateEstudianteDto {
   @IsString()   
   institucion_de_procedencia: string; 
 
-  @IsNotEmpty()   
+  @IsOptional()
   @IsString()       
   Presenta_alguna_enfermedad: string;
 
