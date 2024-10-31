@@ -1,6 +1,6 @@
 // src/evento/evento.service.ts
 
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Eventos } from './entities/eventos.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +10,15 @@ import { EstadoEvento } from 'src/estado-evento/entities/estado-evento.entity';
 import { TipoEvento } from 'src/tipo-evento/entities/tipo-evento.entity';
 import { Ubicacion } from '../ubicacion/entities/ubicacion.entity';
 import { DirigidoA } from 'src/dirigido-a/entities/dirigido-a.entity';
+
+interface FindFilteredOptions {
+  fechaDesde?: string;
+  fechaHasta?: string;
+  horaDesde?: string;
+  horaHasta?: string;
+  estado?: 'aprobado' | 'rechazado' | 'pendiente';
+}
+
 @Injectable()
 export class EventosService {
   constructor(
@@ -41,6 +50,9 @@ export class EventosService {
     evento.fecha_Evento = createEventoDto.fecha_Evento;
     evento.hora_inicio_Evento = createEventoDto.hora_inicio_Evento;
     evento.hora_fin_Evento = createEventoDto.hora_fin_Evento;
+
+    // Validar que la hora de fin sea posterior a la hora de inicio
+    this.validateEndTimeAfterStartTime(evento.hora_inicio_Evento, evento.hora_fin_Evento);
 
     // Asignar relaciones
     evento.dirigidoA = await this.dirigidoARepository.findOneBy({
@@ -121,6 +133,14 @@ export class EventosService {
     if (updateEventoDto.hora_fin_Evento)
       evento.hora_fin_Evento = updateEventoDto.hora_fin_Evento;
 
+    // Validar que la hora de fin sea posterior a la hora de inicio si se actualizan las horas
+    if (updateEventoDto.hora_inicio_Evento || updateEventoDto.hora_fin_Evento) {
+      const horaInicio = updateEventoDto.hora_inicio_Evento || evento.hora_inicio_Evento;
+      const horaFin = updateEventoDto.hora_fin_Evento || evento.hora_fin_Evento;
+
+      this.validateEndTimeAfterStartTime(horaInicio, horaFin);
+    }
+
     // Actualizar relaciones si se proporcionan
     if (updateEventoDto.id_dirigido_a) {
       evento.dirigidoA = await this.dirigidoARepository.findOneBy({
@@ -199,7 +219,6 @@ export class EventosService {
     evento.estadoEvento = aprobadoEstado;
     return this.eventoRepository.save(evento);
   }
-  
 
   /**
    * Rechazar un evento cambiando su estado a "Rechazado".
@@ -222,4 +241,79 @@ export class EventosService {
     evento.estadoEvento = rechazadoEstado;
     return this.eventoRepository.save(evento);
   }
+
+  /**
+   * Obtiene la lista de eventos filtrados por fecha, hora y estado.
+   * @param opciones - Opciones de filtrado.
+   * @returns Una lista de eventos que coinciden con los filtros.
+   */
+  async findFiltered(opciones: FindFilteredOptions): Promise<Eventos[]> {
+    const { fechaDesde, fechaHasta, horaDesde, horaHasta, estado } = opciones;
+
+    // Crear el QueryBuilder para construir la consulta dinámicamente
+    const query = this.eventoRepository.createQueryBuilder('evento')
+      .leftJoinAndSelect('evento.estadoEvento', 'estadoEvento')
+      .leftJoinAndSelect('evento.tipoEvento', 'tipoEvento')
+      .leftJoinAndSelect('evento.ubicacion', 'ubicacion')
+      .leftJoinAndSelect('evento.dirigidoA', 'dirigidoA');
+
+    // Filtrar por estado si se proporciona
+    if (estado) {
+      query.andWhere('estadoEvento.nombre = :estado', { estado: capitalize(estado) });
+    }
+
+    // Filtrar por fecha
+    if (fechaDesde) {
+      query.andWhere('evento.fecha_Evento >= :fechaDesde', { fechaDesde });
+    }
+    if (fechaHasta) {
+      query.andWhere('evento.fecha_Evento <= :fechaHasta', { fechaHasta });
+    }
+
+    // Filtrar por hora
+    if (horaDesde) {
+      query.andWhere('evento.hora_inicio_Evento >= :horaDesde', { horaDesde });
+    }
+    if (horaHasta) {
+      query.andWhere('evento.hora_fin_Evento <= :horaHasta', { horaHasta });
+    }
+
+    // Ejecutar la consulta
+    const eventos = await query.getMany();
+
+    return eventos;
+  }
+
+  /**
+   * Valida que la hora de fin sea posterior a la hora de inicio.
+   * @param horaInicio - Hora de inicio en formato 'HH:MM'.
+   * @param horaFin - Hora de fin en formato 'HH:MM'.
+   */
+  private validateEndTimeAfterStartTime(horaInicio: string, horaFin: string): void {
+    const [horaInicioNum, minutoInicio] = horaInicio.split(':').map(Number);
+    const [horaFinNum, minutoFin] = horaFin.split(':').map(Number);
+
+    const startTime = new Date();
+    startTime.setHours(horaInicioNum, minutoInicio, 0, 0);
+
+    const endTime = new Date();
+    endTime.setHours(horaFinNum, minutoFin, 0, 0);
+
+    if (endTime <= startTime) {
+      throw new BadRequestException(
+        'La hora de fin debe ser posterior a la hora de inicio.',
+      );
+    }
+  }
+}
+
+/**
+ * Función para capitalizar la primera letra de una cadena.
+ * Por ejemplo, 'aprobado' -> 'Aprobado'
+ * @param texto - Texto a capitalizar.
+ * @returns Texto capitalizado.
+ */
+function capitalize(texto: string): string {
+  if (!texto) return texto;
+  return texto.charAt(0).toUpperCase() + texto.slice(1).toLowerCase();
 }
