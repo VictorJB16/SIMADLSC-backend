@@ -9,7 +9,7 @@ import { CreateMatriculaDto } from './dto/create-matricula.dto';
 import { Periodo } from 'src/periodo/entities/periodo.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { EstadoMatricula } from './entities/Estado-Matricula.enum';
-import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
+import { UpdateMatriculaDto } from './dto/update-matricula.dto';
 @Injectable()
 export class MatriculaService {
   constructor(

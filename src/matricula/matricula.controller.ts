@@ -1,11 +1,10 @@
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, ParseIntPipe, Patch, Post, Put, UsePipes, ValidationPipe } from '@nestjs/common';
 import { Matricula } from './entities/matricula.entity';
-//import { UpdateMatriculaDto } from './dto/update-matricula.dto';
 import { MatriculaService } from './matricula.service';
 import { CreateMatriculaDto } from './dto/create-matricula.dto';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
-import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
+import { UpdateMatriculaDto } from './dto/update-matricula.dto';
 
 @Controller('matriculas')
 export class MatriculaController {
