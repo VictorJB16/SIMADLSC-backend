@@ -4,12 +4,12 @@ import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateMatriculaDto } from './dto/create-matricula.dto';
-//import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
 import { Periodo } from 'src/periodo/entities/periodo.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { EstadoMatricula } from './entities/Estado-Matricula.enum';
-import { UpdateMatriculaDto } from './dto/update-matricula.dto';
+import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
+import { CreateMatriculaDto } from './Dto/create-matricula.dto';
+
 @Injectable()
 export class MatriculaService {
   constructor(
