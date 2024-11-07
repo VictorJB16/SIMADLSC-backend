@@ -10,7 +10,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new AllExceptionsFilter);
   app.enableCors({
-    origin: 'https://simadlsc-rlc.vercel.app/',
+    origin: ['http://localhost:5173', 'https://simadlsc-rlc.vercel.app'],
     methods: 'GET,POST,PUT,DELETE,OPTIONS,PATCH,REJECT,APPROVE',
     allowedHeaders: 'Content-Type, Authorization',
     credentials: true, 
