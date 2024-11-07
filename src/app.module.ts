@@ -1,6 +1,7 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfileController } from './profile/profile.controller';
@@ -9,7 +10,6 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
 import { CorsMiddleware } from './middleware/cors.middleware';
 import { AuditMiddleware } from './middleware/audit.middleware';
 import { XssProtectionMiddleware } from './middleware/xss.middleware';
-import { rateLimitMiddleware } from './middleware/rate-limit.middleware';
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
 import { MailerCustomModule } from './mailer/mailer.module';
@@ -34,7 +34,7 @@ import { PeriodoModule } from './periodo/periodo.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      envFilePath: process.env.NODE_ENV === 'production' ? '.env' : '.env.local',
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
@@ -45,7 +45,7 @@ import { PeriodoModule } from './periodo/periodo.module';
       database: process.env.MARIADB_DATABASE,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: true, // Cambia a false en producción para evitar sincronización automática
     }),
     AsistenciasModule,
     JustificacionAusenciaModule,
@@ -59,7 +59,6 @@ import { PeriodoModule } from './periodo/periodo.module';
     MailerCustomModule,
     HorarioModule,
     ProfesorModule,
-    MateriaModule,
     EventosModule,
     AulasModule,
     EncargadoLegalModule,
