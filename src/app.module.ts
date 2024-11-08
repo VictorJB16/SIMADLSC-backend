@@ -22,7 +22,6 @@ import { AsistenciasModule } from './asistencias/asistencias.module';
 import { JustificacionAusenciaModule } from './justificacion_ausencia/justificacion_ausencia.module';
 import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
-import { DetallesmatriculaModule } from './detallesmatricula/detallesmatricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
@@ -64,7 +63,6 @@ import { ProfileController } from './profile/profile.controller';
     AulasModule,
     EncargadoLegalModule,
     MatriculaModule,
-    DetallesmatriculaModule,
     DirigidoAModule,
     TipoEventoModule,
     EstadoEventoModule,
