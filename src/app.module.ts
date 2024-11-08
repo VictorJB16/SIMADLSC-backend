@@ -33,17 +33,22 @@ import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-  TypeOrmModule.forRoot({
-    type: 'mariadb',
-    host: process.env.MARIADB_HOST,
-    port: parseInt(process.env.MARIADB_PUBLIC_PORT),
-    username: process.env.MARIADB_USER,
-    password: process.env.MARIADB_PASSWORD,
-    database: process.env.MARIADB_DATABASE,
-    entities: [__dirname + '//*.entity{.ts,.js}'],
-    autoLoadEntities: true,
-    synchronize: true, // Cambia a false en producción para evitar sincronización automática
-  }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'mariadb',
+        url: configService.get<string>('MARIADB_PUBLIC_URL'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        autoLoadEntities: true,
+        synchronize: false,
+        logging: false,
+        ssl: configService.get<string>('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
+      }),
+    }),
     AsistenciasModule,
     JustificacionAusenciaModule,
     AuthModule,
