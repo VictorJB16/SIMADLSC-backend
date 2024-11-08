@@ -39,15 +39,11 @@ import { PeriodoModule } from './periodo/periodo.module';
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
-      host: process.env.MARIADB_HOST,
-      port: parseInt(process.env.MARIADB_PORT) || 3333,
-      username: process.env.MARIADB_USER,
-      password: process.env.MARIADB_PASSWORD,
-      database: process.env.MARIADB_DATABASE,
-      entities: [__dirname + '//*.entity{.ts,.js}'],
+      url: process.env.MARIADB_PRIVATE_URL, // Usando la URL completa para evitar problemas de host y puerto
+      entities: [__dirname + '/*.entity{.ts,.js}'],
       autoLoadEntities: true,
-      synchronize: true, // Cambia a false en producción para evitar sincronización automática
-    }),
+      synchronize: true, // Cambia a false en producción
+    }), // Cambia a false en producción para evitar sincronización automática
     AsistenciasModule,
     JustificacionAusenciaModule,
     AuthModule,
