@@ -33,22 +33,15 @@ import { ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: async (configService: ConfigService) => ({
-        type: 'mariadb',
-        url: configService.get<string>('MARIADB_PUBLIC_URL'),
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        autoLoadEntities: true,
-        synchronize: false,
-        logging: false,
-        ssl: configService.get<string>('NODE_ENV') === 'production' ? { rejectUnauthorized: false } : false,
-      }),
-    }),
+    TypeOrmModule.forRoot({
+    type: 'mariadb',
+    url: 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway',
+    entities: [__dirname + '/**/*.entity{.ts,.js}'],
+    autoLoadEntities: true,
+    synchronize: false, // Establecer en false en producción
+    logging: false, // Desactivar logs en producción
+    ssl: { rejectUnauthorized: false }, // Ajusta según los requisitos de Railway
+  }),
     AsistenciasModule,
     JustificacionAusenciaModule,
     AuthModule,
