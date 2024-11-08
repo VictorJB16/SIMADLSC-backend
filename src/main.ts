@@ -21,6 +21,6 @@ async function bootstrap() {
     forbidNonWhitelisted: true, 
     transform: true, 
   }));
-  await app.listen(3000);
+  await app.listen('https://simadlsc-lsc.vercel.app/');
 }
 bootstrap();
