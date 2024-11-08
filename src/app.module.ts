@@ -28,7 +28,7 @@ import { JustificacionAusenciaModule } from './justificacion_ausencia/justificac
 import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
-
+import { ConfigService } from '@nestjs/config';
 
 
 @Module({
@@ -37,13 +37,23 @@ import { PeriodoModule } from './periodo/periodo.module';
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'production' ? '.env' : '.env.local',
     }),
-    TypeOrmModule.forRoot({
-      type: 'mariadb',
-      url: process.env.MARIADB_PRIVATE_URL, // Usando la URL completa para evitar problemas de host y puerto
-      entities: [__dirname + '/*.entity{.ts,.js}'],
-      autoLoadEntities: true,
-      synchronize: true, // Cambia a false en producción
-    }), // Cambia a false en producción para evitar sincronización automática
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        const isProduction = configService.get<string>('NODE_ENV') === 'production';
+        return {
+          type: 'mariadb',
+          url: isProduction
+            ? configService.get<string>('MARIADB_PUBLIC_URL')
+            : configService.get<string>('MARIADB_PRIVATE_URL'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          autoLoadEntities: true,
+          synchronize: !isProduction,
+          logging: !isProduction, // Opcional
+        };
+      },
+    }),
     AsistenciasModule,
     JustificacionAusenciaModule,
     AuthModule,
