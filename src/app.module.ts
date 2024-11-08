@@ -40,7 +40,7 @@ import { PeriodoModule } from './periodo/periodo.module';
     TypeOrmModule.forRoot({
       type: 'mariadb',
       host: process.env.MARIADB_HOST,
-      port: parseInt(process.env.MARIADB_PORT, 10),
+      port: parseInt(process.env.MARIADB_PORT) || 3333,
       username: process.env.MARIADB_USER,
       password: process.env.MARIADB_PASSWORD,
       database: process.env.MARIADB_DATABASE,
