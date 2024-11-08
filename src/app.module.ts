@@ -29,6 +29,7 @@ import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { ConfigService } from '@nestjs/config';
+import { AppController } from './app/app.controller';
 
 
 @Module({
@@ -52,6 +53,7 @@ import { ConfigService } from '@nestjs/config';
     EstudianteModule,
     MateriaModule,
     MailerCustomModule,
+    MailerCustomModule,
     HorarioModule,
     ProfesorModule,
     EventosModule,
@@ -64,8 +66,8 @@ import { ConfigService } from '@nestjs/config';
     UbicacionModule,
     PeriodoModule,
   ],
-  controllers: [ProfileController],
-  providers: [MailerCustomModule],
+  controllers: [ProfileController, AppController],
+  providers: [],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
