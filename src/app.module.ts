@@ -1,10 +1,15 @@
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { ProfileController } from './profile/profile.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
-import { LoggerMiddleware } from './middleware/logger.middleware';
-import { CorsMiddleware } from './middleware/cors.middleware';
-import { AuditMiddleware } from './middleware/audit.middleware';
-import { XssProtectionMiddleware } from './middleware/xss.middleware';
+import { LoggerMiddleware } from './middleware/logger.middleware';  
+import { CorsMiddleware } from './middleware/cors.middleware';  
+import { AuditMiddleware } from './middleware/audit.middleware';  
+import { XssProtectionMiddleware } from './middleware/xss.middleware';   
+import { rateLimitMiddleware } from './middleware/rate-limit.middleware';   
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
 import { MailerCustomModule } from './mailer/mailer.module';
@@ -23,27 +28,23 @@ import { JustificacionAusenciaModule } from './justificacion_ausencia/justificac
 import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { RolesModule } from './roles/roles.module';
-import { ProfileController } from './profile/profile.controller';
 
 
 
 @Module({
-  imports: [ 
+  imports: [
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: process.env.NODE_ENV === 'production' ? '.env' : '.env.local',
     }),
     TypeOrmModule.forRoot({
       type: 'mariadb',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT, 10),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      host: process.env.MARIADB_HOST,
+      port: parseInt(process.env.MARIADB_PORT, 10),
+      username: process.env.MARIADB_USER,
+      password: process.env.MARIADB_PASSWORD,
+      database: process.env.MARIADB_DATABASE,
+      entities: [__dirname + '//*.entity{.ts,.js}'],
       autoLoadEntities: true,
       synchronize: true, // Cambia a false en producción para evitar sincronización automática
     }),
@@ -55,7 +56,7 @@ import { ProfileController } from './profile/profile.controller';
     SeccionesModule,
     GradosModule,
     EstudianteModule,
-    MateriaModule, 
+    MateriaModule,
     MailerCustomModule,
     HorarioModule,
     ProfesorModule,
@@ -75,18 +76,13 @@ import { ProfileController } from './profile/profile.controller';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      
       .apply(LoggerMiddleware)
-      .forRoutes('*') 
-
+      .forRoutes('*')
       .apply(CorsMiddleware)
-      .forRoutes('*')  
-
+      .forRoutes('*')
       .apply(AuditMiddleware)
-      .forRoutes('*')  
-
+      .forRoutes('*')
       .apply(XssProtectionMiddleware)
-      .forRoutes('*')  
-
+      .forRoutes('*');
   }
 }
