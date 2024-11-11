@@ -13,7 +13,7 @@ async function bootstrap() {
 
   // Configurar CORS
   app.enableCors({
-    origin: ['http://localhost:5173', 'https://simadlsc-lscc.vercel.app'], // sin la barra final
+    origin: ['http://localhost:5173', 'http://simadlsc.vercel.app'], // sin la barra final
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'], // Opciones permitidas
     allowedHeaders: ['Content-Type', 'Authorization'], // Encabezados permitidos
     credentials: true,

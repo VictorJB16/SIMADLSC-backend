@@ -71,13 +71,13 @@ import { AppController } from './app/app.controller';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(LoggerMiddleware)
+      // .apply(LoggerMiddleware)
+      // // .forRoutes('*')
+      // // .apply()
       // .forRoutes('*')
-      // .apply()
-      .forRoutes('*')
-      .apply(AuditMiddleware)
-      .forRoutes('*')
-      .apply(XssProtectionMiddleware)
-      .forRoutes('*');
+      // .apply(AuditMiddleware)
+      // .forRoutes('*')
+      // .apply(XssProtectionMiddleware)
+      // .forRoutes('*');
   }
 }
