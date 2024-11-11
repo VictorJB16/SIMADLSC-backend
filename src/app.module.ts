@@ -29,7 +29,7 @@ import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { ConfigService } from '@nestjs/config';
 import { AppController } from './app/app.controller';
-import { InfoController } from './info/info.controller';
+import { InfoController } from './Info/info.controller';
 
 
 @Module({
