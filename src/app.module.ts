@@ -6,7 +6,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './middleware/logger.middleware';  
-import { CorsMiddleware } from './middleware/cors.middleware';  
 import { AuditMiddleware } from './middleware/audit.middleware';  
 import { XssProtectionMiddleware } from './middleware/xss.middleware';   
 import { rateLimitMiddleware } from './middleware/rate-limit.middleware';   
@@ -73,8 +72,8 @@ export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(LoggerMiddleware)
-      .forRoutes('*')
-      .apply(CorsMiddleware)
+      // .forRoutes('*')
+      // .apply()
       .forRoutes('*')
       .apply(AuditMiddleware)
       .forRoutes('*')
