@@ -4,7 +4,6 @@ import { UsersModule } from './users/users.module';
 import { ProfileController } from './profile/profile.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesModule } from './roles/roles.module';
-import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './middleware/logger.middleware';  
 import { AuditMiddleware } from './middleware/audit.middleware';  
 import { XssProtectionMiddleware } from './middleware/xss.middleware';   
@@ -27,33 +26,46 @@ import { JustificacionAusenciaModule } from './justificacion_ausencia/justificac
 import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
-import { ConfigService } from '@nestjs/config';
 import { AppController } from './app/app.controller';
 import { InfoController } from './Info/info.controller';
 
+// Definir configuraciones globales de JWT y SMTP
+const JWT_CONFIG = {
+  secret: "mi-clave-secreta-jwt",
+  expiration: "3600",
+  resetPasswordSecret: "mi-secreto-jwt-reset-password",
+  resetPasswordExpiration: "3600",
+};
+
+const SMTP_CONFIG = {
+  host: "smtp.gmail.com",
+  port: 587,
+  user: "Martinguaduz@gmail.com",
+  pass: "jrvc lzxu fnwh rttu",
+  secure: false,
+};
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
-    type: 'mariadb',
-    url: 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway',
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    autoLoadEntities: true,
-    synchronize: false, // Establecer en false en producción
-    logging: false, // Desactivar logs en producción
-    ssl: { rejectUnauthorized: false }, // Ajusta según los requisitos de Railway
-  }),
+      type: 'mariadb',
+      url: 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway',
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+      autoLoadEntities: true,
+      synchronize: false,
+      logging: false,
+      ssl: { rejectUnauthorized: false },
+    }),
     AsistenciasModule,
     JustificacionAusenciaModule,
-    AuthModule,
+    AuthModule,  
     UsersModule,
     RolesModule,
     SeccionesModule,
     GradosModule,
     EstudianteModule,
     MateriaModule,
-    MailerCustomModule,
-    MailerCustomModule,
+    MailerCustomModule,  
     HorarioModule,
     ProfesorModule,
     EventosModule,
@@ -72,13 +84,6 @@ import { InfoController } from './Info/info.controller';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      // .apply(LoggerMiddleware)
-      // // .forRoutes('*')
-      // // .apply()
-      // .forRoutes('*')
-      // .apply(AuditMiddleware)
-      // .forRoutes('*')
-      // .apply(XssProtectionMiddleware)
-      // .forRoutes('*');
+      // Configura tus middlewares según sea necesario
   }
 }

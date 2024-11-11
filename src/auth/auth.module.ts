@@ -1,3 +1,4 @@
+// src/auth/auth.module.ts
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
@@ -7,23 +8,19 @@ import { JwtStrategy } from './jwt.strategy';
 import { LoggerMiddleware } from '../middleware/logger.middleware';
 import { XssProtectionMiddleware } from '../middleware/xss.middleware';
 import { MailerCustomModule } from '../mailer/mailer.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
-
+// Configuración estática para JWT
+const JWT_SECRET = "mi-clave-secreta-jwt";
+const JWT_EXPIRATION = "3600";
 
 @Module({
   imports: [
     UsersModule,
-    ConfigModule.forRoot({ isGlobal: true }),
-    JwtModule.registerAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_SECRET') || 'defaultSecretKey',
-        signOptions: { expiresIn: '1h' },
-      }),
+    JwtModule.register({
+      secret: JWT_SECRET,
+      signOptions: { expiresIn: JWT_EXPIRATION },
     }),
-    MailerCustomModule,
+    MailerCustomModule, // Importa el módulo de correo personalizado
   ],
   providers: [AuthService, JwtStrategy],
   controllers: [AuthController],
@@ -31,7 +28,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 export class AuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(LoggerMiddleware, XssProtectionMiddleware) // Aplica ambos middlewares en una sola llamada
-      .forRoutes(AuthController); // Aplica a todas las rutas del controlador AuthController
+      .apply(LoggerMiddleware, XssProtectionMiddleware)
+      .forRoutes(AuthController);
   }
 }
