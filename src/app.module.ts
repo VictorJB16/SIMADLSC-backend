@@ -29,7 +29,6 @@ import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { ConfigService } from '@nestjs/config';
-import { AppController } from './app/app.controller';
 
 
 @Module({
@@ -66,7 +65,7 @@ import { AppController } from './app/app.controller';
     UbicacionModule,
     PeriodoModule,
   ],
-  controllers: [ProfileController, AppController],
+  controllers: [ProfileController],
   providers: [],
 })
 export class AppModule implements NestModule {
