@@ -22,7 +22,7 @@ async function bootstrap() {
 
   // Middleware adicional para los encabezados CORS
   app.use((req, res, next) => {
-    res.header('Access-Control-Allow-Origin', 'https://simadlsc.vercel.app');
+    res.header('Access-Control-Allow-Origin', 'https://simadlsc-nine.vercel.app');
     res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     res.header('Access-Control-Allow-Credentials', 'true');
