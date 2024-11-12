@@ -64,9 +64,10 @@ import { InfoController } from './info/info.controller';
     TipoEventoModule,
     EstadoEventoModule,
     UbicacionModule,
+    InfoController,
     PeriodoModule,
   ],
-  controllers: [ProfileController, AppController, InfoController],
+  controllers: [ProfileController, AppController],
   providers: [],
 })
 export class AppModule implements NestModule {
