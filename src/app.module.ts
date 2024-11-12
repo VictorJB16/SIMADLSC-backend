@@ -29,7 +29,6 @@ import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { ConfigService } from '@nestjs/config';
 import { AppController } from './app/app.controller';
-import { InfoController } from './info/info.controller';
 
 
 @Module({
@@ -64,7 +63,6 @@ import { InfoController } from './info/info.controller';
     TipoEventoModule,
     EstadoEventoModule,
     UbicacionModule,
-    InfoController,
     PeriodoModule,
   ],
   controllers: [ProfileController, AppController],
