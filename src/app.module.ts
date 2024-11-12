@@ -27,7 +27,6 @@ import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
 import { AppController } from './app/app.controller';
-import { InfoController } from './Info/info.controller';
 
 // Definir configuraciones globales de JWT y SMTP
 const JWT_CONFIG = {
@@ -78,7 +77,7 @@ const SMTP_CONFIG = {
     UbicacionModule,
     PeriodoModule,
   ],
-  controllers: [ProfileController, AppController, InfoController],
+  controllers: [ProfileController, AppController],
   providers: [],
 })
 export class AppModule implements NestModule {
