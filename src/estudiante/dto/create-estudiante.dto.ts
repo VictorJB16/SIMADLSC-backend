@@ -28,7 +28,7 @@ export class CreateEstudianteDto {
 
   @IsNotEmpty()    
   @IsString()
-  Cedula: string;
+  cedula: string;
 
   @IsNotEmpty()    
   @IsString()
