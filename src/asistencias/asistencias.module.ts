@@ -10,7 +10,7 @@ import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { JustificacionAusencia } from 'src/justificacion_ausencia/entities/justificacion_ausencia.entity';
 import { Periodo } from 'src/periodo/entities/periodo.entity';
-
+import { IsAsistenciaUniqueConstraint } from './Validators/asistencia-unique.validator';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -22,10 +22,9 @@ import { Periodo } from 'src/periodo/entities/periodo.entity';
       Profesor,
       JustificacionAusencia,
       Periodo,
-      
     ]),
   ],
   controllers: [AsistenciasController],
-  providers: [AsistenciasService],
+  providers: [AsistenciasService, IsAsistenciaUniqueConstraint],
 })
 export class AsistenciasModule {}
