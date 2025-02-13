@@ -23,6 +23,9 @@ export class Asistencia {
     default: AsistenciaStatus.PRESENTE,
   })
   estado: AsistenciaStatus;
+
+  @Column({ type: 'varchar', length: 50, nullable: false })
+  lecciones: string;
   
   @CreateDateColumn()
   creadoEn: Date;
@@ -30,7 +33,11 @@ export class Asistencia {
   @UpdateDateColumn()
   actualizadoEn: Date;
 
-  @ManyToOne(() => Estudiante, estudiante => estudiante.asistencias, { eager: true, onDelete: 'CASCADE' })
+  @ManyToOne(() => Estudiante, estudiante => estudiante.asistencias, {
+    eager: false,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn({ name: 'id_Estudiante' })
   id_Estudiante: Estudiante;
 
   @ManyToOne(() => Materia, materia => materia.asistencias, { eager: true, onDelete: 'CASCADE' })

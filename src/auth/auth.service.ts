@@ -24,7 +24,6 @@ export class AuthService {
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
-    console.log('Usuario con relaciones cargadas:', user); // Verifica si `estudiante` está presente aquí
     const { contraseña_Usuario, ...result } = user;
 
     return result;
@@ -36,8 +35,6 @@ export class AuthService {
    const user = await this.validateUser(email_Usuario, password);
 
 
-console.log('Usuario encontrado:', user); // Para debug
-console.log('Datos del estudiante:', user.estudiante); // Para verificar el estudiante
 
 const payload = {
   sub: user.id_usuario,
@@ -50,7 +47,6 @@ const payload = {
   id_Estudiante: user.estudiante ? user.estudiante.id_Estudiante : null,
 };
 
-console.log('Payload generado:', payload);
 
 
 
@@ -65,7 +61,6 @@ console.log('Payload generado:', payload);
   async forgotPassword(email_Usuario: string) {
     const user = await this.usersService.findByEmail(email_Usuario);
     if (!user) {
-      console.log(`Usuario con correo ${email_Usuario} no encontrado.`);
       throw new NotFoundException(`No se encontró ningún usuario para el correo electrónico: ${email_Usuario}`);
     }
   
@@ -94,7 +89,6 @@ const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${encod
       const payload = this.jwtService.verify(token, {
         secret: process.env.JWT_RESET_PASSWORD_SECRET,
       });
-      console.log('Payload del token:', payload);
   
       // Buscamos al usuario usando el email del payload
       const email_Usuario = payload.email_Usuario;
@@ -109,7 +103,6 @@ const resetLink = `${process.env.FRONTEND_URL}/auth/reset-password?token=${encod
       // Actualizamos la contraseña en la base de datos
       await this.usersService.updatePassword(user.id_usuario, hashedPassword);
   
-      console.log('Contraseña actualizada para el usuario:', user.id_usuario);
     } catch (error) {
       // Verificamos el tipo de error
       if (error instanceof TokenExpiredError) {

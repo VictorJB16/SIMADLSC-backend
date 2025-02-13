@@ -1,6 +1,8 @@
 // src/asistencias/dto/create-asistencia.dto.ts
 
 import {
+    ArrayMinSize,
+    IsArray,
     IsDateString,
     IsEnum,
     IsNotEmpty,
@@ -49,6 +51,10 @@ import {
     @IsNotEmpty()
     @IsNumber()
     id_Periodo: number;
+
+    @IsArray()
+    @ArrayMinSize(1)
+    lecciones: number[];
   
     // Justificación solo es requerida si el estado es 'JUSTIFICADO'
     @ValidateIf((o) => o.estado === AsistenciaStatus.JUSTIFICADO)
