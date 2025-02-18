@@ -32,7 +32,7 @@ import { AppController } from './app/app.controller';
 // Define una función de configuración para cargar valores sensibles
 const config = () => ({
   database: {
-    url: process.env.DATABASE_URL //|| 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway',
+    url: process.env.DATABASE_URL || 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway',
   },
   mail: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -44,7 +44,7 @@ const config = () => ({
     },
   },
   frontend: {
-    url: process.env.FRONTEND_URL //|| 'https://simadlsc.vercel.app',
+    url: process.env.FRONTEND_URL || 'https://simadlsc.vercel.app',
   },
 });
 
