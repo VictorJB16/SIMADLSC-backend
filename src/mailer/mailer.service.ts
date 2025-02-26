@@ -6,14 +6,15 @@ import { ConfigService } from '@nestjs/config';
 export class MailerCustomService {
   constructor(
     private readonly mailerService: MailerService,
-    private readonly configService: ConfigService, // Inyectamos ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   async sendResetPasswordEmail(email_Usuario: string, token: string, nombre_Usuario: string) {
     try {
-      // Obtenemos FRONTEND_URL usando ConfigService
-      const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'http://localhost:5173/paginainformativa';
+      // Usa la URL de frontend especificada o por defecto a la de producción
+      const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'https://simadlsc.vercel.app';
       const url = `${frontendUrl}/auth/reset-password?token=${token}`;
+      
       await this.mailerService.sendMail({
         to: email_Usuario,
         subject: 'Restablecimiento de contraseña',
@@ -23,9 +24,10 @@ export class MailerCustomService {
           url, // Enlace para restablecer contraseña
         },
       });
+      
       console.log('Correo enviado correctamente a', email_Usuario);
     } catch (error) {
-      console.error('Error al enviar el correo:', error);  // Captura el error completo
+      console.error('Error al enviar el correo:', error);
     }
   }
 }

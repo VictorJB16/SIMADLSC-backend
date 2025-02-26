@@ -39,68 +39,116 @@ export class AsistenciasService {
     private periodoRepository: Repository<Periodo>,
   ) {}
 
-    async crearAsistencia(createAsistenciaDtoArray: CreateAsistenciaDto[]): Promise<Asistencia[]> {
-      
-      const asistencias: Asistencia[] = [];
-
-      for (const createAsistenciaDto of createAsistenciaDtoArray) {
-        const {
-          fecha,
-          estado,
-          id_Estudiante,
-          id_Materia,
-          id_grado,
-          id_Seccion,
-          id_Profesor,
-          id_Periodo,
-        } = createAsistenciaDto;
-
-        const periodo = await this.periodoRepository.findOne({ where: { id_Periodo } });
-        if (!periodo) {
-          throw new NotFoundException(`Periodo con ID ${id_Periodo} no encontrado`);
-        }
-
-        const estudiante = await this.estudianteRepository.findOne({ where: { id_Estudiante } });
-        if (!estudiante) {
-          throw new NotFoundException(`Estudiante con ID ${id_Estudiante} no encontrado`);
-        }
-
-        const materia = await this.materiaRepository.findOne({ where: { id_Materia } });
-        if (!materia) {
-          throw new NotFoundException(`Materia con ID ${id_Materia} no encontrada`);
-        }
-
-        const grado = await this.gradoRepository.findOne({ where: { id_grado } });
-        if (!grado) {
-          throw new NotFoundException(`Grado con ID ${id_grado} no encontrado`);
-        }
-
-        const seccion = await this.seccionRepository.findOne({ where: { id_Seccion } });
-        if (!seccion) {
-          throw new NotFoundException(`Sección con ID ${id_Seccion} no encontrada`);
-        }
-
-        const profesor = await this.profesorRepository.findOne({ where: { id_Profesor } });
-        if (!profesor) {
-          throw new NotFoundException(`Profesor con ID ${id_Profesor} no encontrado`);
-        }
-
-        const asistencia = this.asistenciaRepository.create({
-          fecha: fecha,
-          estado,
-          id_Estudiante: estudiante,
-          id_Materia: materia,
-          id_grado: grado,
-          id_Seccion: seccion,
-          id_Profesor: profesor,
-          id_Periodo: periodo,
-        });
-
-        asistencias.push(asistencia);
+  async crearAsistencia(
+    createAsistenciaDtoArray: CreateAsistenciaDto[],
+  ): Promise<Asistencia[]> {
+    const asistencias: Asistencia[] = [];
+  
+    for (const createAsistenciaDto of createAsistenciaDtoArray) {
+      const {
+        fecha,
+        estado,
+        id_Estudiante,
+        id_Materia,
+        id_grado,
+        id_Seccion,
+        id_Profesor,
+        id_Periodo,
+        lecciones, // Se espera que venga como un array de números (ej. [1, 2, 3])
+      } = createAsistenciaDto;
+  
+      // Buscar las entidades relacionadas
+      const periodo = await this.periodoRepository.findOne({
+        where: { id_Periodo },
+      });
+      if (!periodo) {
+        throw new NotFoundException(`Periodo con ID ${id_Periodo} no encontrado`);
       }
-
-      return this.asistenciaRepository.save(asistencias);
+  
+      const estudiante = await this.estudianteRepository.findOne({
+        where: { id_Estudiante },
+      });
+      if (!estudiante) {
+        throw new NotFoundException(
+          `Estudiante con ID ${id_Estudiante} no encontrado`,
+        );
+      }
+  
+      const materia = await this.materiaRepository.findOne({
+        where: { id_Materia },
+      });
+      if (!materia) {
+        throw new NotFoundException(
+          `Materia con ID ${id_Materia} no encontrada`,
+        );
+      }
+  
+      const grado = await this.gradoRepository.findOne({
+        where: { id_grado },
+      });
+      if (!grado) {
+        throw new NotFoundException(`Grado con ID ${id_grado} no encontrado`);
+      }
+  
+      const seccion = await this.seccionRepository.findOne({
+        where: { id_Seccion },
+      });
+      if (!seccion) {
+        throw new NotFoundException(`Sección con ID ${id_Seccion} no encontrada`);
+      }
+  
+      const profesor = await this.profesorRepository.findOne({
+        where: { id_Profesor },
+      });
+      if (!profesor) {
+        throw new NotFoundException(
+          `Profesor con ID ${id_Profesor} no encontrado`,
+        );
+      }
+  
+      // Verificar si ya existe una asistencia con los mismos datos
+      const asistenciaExistente = await this.asistenciaRepository.findOne({
+        where: {
+          fecha,
+          id_Estudiante: { id_Estudiante }, // Compara por clave primaria
+          id_Materia: { id_Materia },
+          id_Profesor: { id_Profesor },
+          id_grado: { id_grado },
+          id_Seccion: { id_Seccion },
+          id_Periodo: { id_Periodo },
+        },
+      });
+  
+      if (asistenciaExistente) {
+        throw new BadRequestException(
+          'Ya existe una asistencia registrada para este día con el mismo estudiante, materia, profesor, grado, sección y período.',
+        );
+      }
+  
+      // Convertir las lecciones en un string delimitado por comas
+      const leccionesString = lecciones.join(',');
+  
+      // Crear una nueva instancia de asistencia
+      const asistencia = this.asistenciaRepository.create({
+        fecha,
+        estado,
+        id_Estudiante: estudiante,
+        id_Materia: materia,
+        id_grado: grado,
+        id_Seccion: seccion,
+        id_Profesor: profesor,
+        id_Periodo: periodo,
+        lecciones: leccionesString, // Almacenar el string de lecciones
+      });
+  
+      asistencias.push(asistencia);
     }
+  
+    // Guardar todas las asistencias en la base de datos
+    return this.asistenciaRepository.save(asistencias);
+  }
+  
+  
 
     async findAll(): Promise<Asistencia[]> {
       return this.asistenciaRepository.find({

@@ -4,11 +4,11 @@ import { UsersModule } from './users/users.module';
 import { ProfileController } from './profile/profile.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RolesModule } from './roles/roles.module';
-import { ConfigModule } from '@nestjs/config';
-import { LoggerMiddleware } from './middleware/logger.middleware';  
-import { AuditMiddleware } from './middleware/audit.middleware';  
-import { XssProtectionMiddleware } from './middleware/xss.middleware';   
-import { rateLimitMiddleware } from './middleware/rate-limit.middleware';   
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { LoggerMiddleware } from './middleware/logger.middleware';
+import { AuditMiddleware } from './middleware/audit.middleware';
+import { XssProtectionMiddleware } from './middleware/xss.middleware';
+import { rateLimitMiddleware } from './middleware/rate-limit.middleware';
 import { SeccionesModule } from './secciones/secciones.module';
 import { GradosModule } from './grados/grados.module';
 import { MailerCustomModule } from './mailer/mailer.module';
@@ -27,22 +27,48 @@ import { JustificacionAusenciaModule } from './justificacion_ausencia/justificac
 import { EncargadoLegalModule } from './encargado-legal/encargado-legal.module';
 import { MatriculaModule } from './matricula/matricula.module';
 import { PeriodoModule } from './periodo/periodo.module';
-import { ConfigService } from '@nestjs/config';
 import { AppController } from './app/app.controller';
 import { InfoController } from './info/info.controller';
 
+// Define una función de configuración para cargar valores sensibles
+const config = () => ({
+  database: {
+    url: process.env.DATABASE_URL || 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway',
+  },
+  mail: {
+    host: process.env.SMTP_HOST || 'smtp.gmail.com',
+    port: parseInt(process.env.SMTP_PORT, 10) || 587,
+    secure: process.env.SMTP_SECURE === 'true' || false,
+    auth: {
+      user: process.env.SMTP_USER || 'andreylanza3@gmail.com',
+      pass: process.env.SMTP_PASS || 'nlil hjpl cntp bauq',
+    },
+  },
+  frontend: {
+    url: process.env.FRONTEND_URL || 'https://simadlsc.vercel.app',
+  },
+});
 
 @Module({
   imports: [
-    TypeOrmModule.forRoot({
-    type: 'mariadb',
-    url: 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway',
-    entities: [__dirname + '/**/*.entity{.ts,.js}'],
-    autoLoadEntities: true,
-    synchronize: false, // Establecer en false en producción
-    logging: false, // Desactivar logs en producción
-    ssl: { rejectUnauthorized: false }, // Ajusta según los requisitos de Railway
-  }),
+    ConfigModule.forRoot({
+      load: [config],
+      envFilePath: '.env',
+      isGlobal: true,
+    }),
+    TypeOrmModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: async (configService: ConfigService) => ({
+        type: 'mariadb',
+        url: configService.get<string>('database.url'),
+        entities: [__dirname + '/**/*.entity{.ts,.js}'],
+        autoLoadEntities: true,
+        synchronize: true,
+        logging: false,
+        ssl: { rejectUnauthorized: false },
+      }),
+    }),
     AsistenciasModule,
     JustificacionAusenciaModule,
     AuthModule,
@@ -52,7 +78,6 @@ import { InfoController } from './info/info.controller';
     GradosModule,
     EstudianteModule,
     MateriaModule,
-    MailerCustomModule,
     MailerCustomModule,
     HorarioModule,
     ProfesorModule,
@@ -72,13 +97,7 @@ import { InfoController } from './info/info.controller';
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      // .apply(LoggerMiddleware)
-      // // .forRoutes('*')
-      // // .apply()
-      // .forRoutes('*')
-      // .apply(AuditMiddleware)
-      // .forRoutes('*')
-      // .apply(XssProtectionMiddleware)
-      // .forRoutes('*');
+      .apply(LoggerMiddleware, AuditMiddleware, XssProtectionMiddleware)
+      .forRoutes('*');
   }
 }

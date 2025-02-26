@@ -59,13 +59,13 @@ export class Estudiante {
   @Column({ type: 'varchar', length: 80 })
   institucion_de_procedencia: string;
 
-  @Column({ type: 'varchar', length: 80 })
+  @Column({ type: 'varchar', length: 80, nullable: true })
   Presenta_alguna_enfermedad: string;
 
-  @Column({ type: 'varchar', length: 80 })
+  @Column({ type: 'varchar', length: 80, nullable: true })
   medicamentos_que_debe_tomar: string;
 
-  @Column({ type: 'varchar', length: 80 })
+  @Column({ type: 'varchar', length: 80, nullable: true })
   Ruta_de_viaje: string;
 
   @Column({

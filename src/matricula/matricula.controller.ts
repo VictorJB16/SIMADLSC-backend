@@ -17,7 +17,7 @@ export class MatriculaController {
   }
 
   @Get()
-  async findAll(): Promise<Matricula[]> {
+  async getAllMatriculas(): Promise<Matricula[]> {
     return this.matriculaService.findAll();
   }
 
@@ -32,6 +32,7 @@ export class MatriculaController {
  @Delete(':id')
  @HttpCode(HttpStatus.NO_CONTENT)
  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  
    return this.matriculaService.remove(id);
  }
 
@@ -48,5 +49,13 @@ export class MatriculaController {
     }
     return updatedMatricula;
   }
+
+  @Patch('estado/:id')
+  async updateEstadoMatricula(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { nuevoEstado: string }
+  ): Promise<Matricula> {
+    return await this.matriculaService.updateEstadoMatricula(id, body.nuevoEstado);
+  }  
 
 }

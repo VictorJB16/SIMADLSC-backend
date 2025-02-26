@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Matricula } from './entities/matricula.entity';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
@@ -69,9 +69,7 @@ export class MatriculaService {
     return matriculaEntity;
   }
 
-  async findAll(): Promise<Matricula[]> {
-    return await this.matriculaRepository.find();
-  }
+
 
 // Nuevo método para obtener los datos del Encargado Legal y del Estudiante
 async findEncargadoAndEstudianteByMatriculaId(id: number) {
@@ -145,6 +143,39 @@ async updateMatricula(id: number, updateDto: UpdateMatriculaDto): Promise<Matric
   return await this.matriculaRepository.save(matricula);
 }
 
+async findAll(): Promise<Matricula[]> {
+  return await this.matriculaRepository.find({
+    relations: {
+      estudiante: {
+        grado: true,
+      },
+      encargadoLegal: true,
+      periodo: true,
+    },
+  });
+}
+
+async updateEstadoMatricula(id: number, nuevoEstado: string): Promise<Matricula> {
+  const matricula = await this.matriculaRepository.findOne({
+    where: { id_Matricula: id },
+  });
+
+  if (!matricula) {
+    throw new NotFoundException(`Matrícula con ID ${id} no encontrada`);
+  }
+
+  // Solo se permite cambiar a "Aceptado" o "Rechazado"
+  if (nuevoEstado !== EstadoMatricula.Aceptado && nuevoEstado !== EstadoMatricula.Rechazado) {
+    throw new BadRequestException(
+      `Estado no válido: ${nuevoEstado}. Solo se permiten: ${EstadoMatricula.Aceptado} o ${EstadoMatricula.Rechazado}.`
+    );
+  }
+
+  matricula.estado_Matricula = nuevoEstado;
+  return await this.matriculaRepository.save(matricula);
+}
+
+  
 
 
 }
