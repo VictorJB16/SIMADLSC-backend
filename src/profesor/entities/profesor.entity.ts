@@ -3,8 +3,6 @@ import { Horario } from 'src/horario/entities/horario.entity';
 import { Materia } from 'src/materia/entities/materia.entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { Usuario } from 'src/users/entities/user.entity';
-
-
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToOne, OneToOne, JoinColumn, JoinTable, ManyToMany } from 'typeorm';
 
 
