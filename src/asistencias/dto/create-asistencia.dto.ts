@@ -12,13 +12,8 @@ import {
   } from 'class-validator';
   import { AsistenciaStatus } from '../entities/asistencia-status.enum';
   import { Type } from 'class-transformer';
-  import { IsAsistenciaUnique } from '../validators/asistencia-unique.validator';
   import { CreateJustificacionAusenciaDto } from 'src/justificacion_ausencia/dto/create-justificacion_ausencia.dto';
   
-  @IsAsistenciaUnique({
-    message:
-      'Ya existe una asistencia registrada para este día con el mismo estudiante, materia, profesor, grado, sección y período.',
-  })
   export class CreateAsistenciaDto {
     @IsDateString()
     @IsNotEmpty()
