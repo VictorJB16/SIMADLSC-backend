@@ -1,6 +1,6 @@
 // src/evento/evento.service.ts
 
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Eventos } from './entities/eventos.entity';
 import { Repository } from 'typeorm';
@@ -10,6 +10,7 @@ import { EstadoEvento } from 'src/estado-evento/entities/estado-evento.entity';
 import { TipoEvento } from 'src/tipo-evento/entities/tipo-evento.entity';
 import { Ubicacion } from '../ubicacion/entities/ubicacion.entity';
 import { DirigidoA } from 'src/dirigido-a/entities/dirigido-a.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 interface FindFilteredOptions {
   fechaDesde?: string;
@@ -21,6 +22,9 @@ interface FindFilteredOptions {
 
 @Injectable()
 export class EventosService {
+
+  private readonly logger = new Logger(EventosService.name);
+
   constructor(
     @InjectRepository(Eventos)
     private readonly eventoRepository: Repository<Eventos>,
@@ -40,8 +44,6 @@ export class EventosService {
 
   /**
    * Crear un nuevo evento.
-   * @param createEventoDto DTO para crear un evento.
-   * @returns El evento creado.
    */
   async create(createEventoDto: CreateEventoDto): Promise<Eventos> {
     const evento = new Eventos();
@@ -85,7 +87,6 @@ export class EventosService {
 
   /**
    * Obtener todos los eventos.
-   * @returns Una lista de eventos.
    */
   async findAll(): Promise<Eventos[]> {
     return this.eventoRepository.find({
@@ -95,8 +96,6 @@ export class EventosService {
 
   /**
    * Obtener un evento por su ID.
-   * @param id ID del evento.
-   * @returns El evento encontrado.
    */
   async findOne(id: number): Promise<Eventos> {
     const evento = await this.eventoRepository.findOne({
@@ -111,9 +110,6 @@ export class EventosService {
 
   /**
    * Actualizar un evento existente.
-   * @param id ID del evento a actualizar.
-   * @param updateEventoDto DTO con los datos a actualizar.
-   * @returns El evento actualizado.
    */
   async update(
     id: number,
@@ -121,7 +117,6 @@ export class EventosService {
   ): Promise<Eventos> {
     const evento = await this.findOne(id);
 
-    // Actualizar propiedades básicas
     if (updateEventoDto.nombre_Evento)
       evento.nombre_Evento = updateEventoDto.nombre_Evento;
     if (updateEventoDto.descripcion_Evento)
@@ -133,15 +128,12 @@ export class EventosService {
     if (updateEventoDto.hora_fin_Evento)
       evento.hora_fin_Evento = updateEventoDto.hora_fin_Evento;
 
-    // Validar que la hora de fin sea posterior a la hora de inicio si se actualizan las horas
     if (updateEventoDto.hora_inicio_Evento || updateEventoDto.hora_fin_Evento) {
       const horaInicio = updateEventoDto.hora_inicio_Evento || evento.hora_inicio_Evento;
       const horaFin = updateEventoDto.hora_fin_Evento || evento.hora_fin_Evento;
-
       this.validateEndTimeAfterStartTime(horaInicio, horaFin);
     }
 
-    // Actualizar relaciones si se proporcionan
     if (updateEventoDto.id_dirigido_a) {
       evento.dirigidoA = await this.dirigidoARepository.findOneBy({
         id: updateEventoDto.id_dirigido_a,
@@ -191,7 +183,6 @@ export class EventosService {
 
   /**
    * Eliminar un evento por su ID.
-   * @param id ID del evento a eliminar.
    */
   async remove(id: number): Promise<void> {
     const evento = await this.findOne(id);
@@ -200,13 +191,10 @@ export class EventosService {
 
   /**
    * Aprobar un evento cambiando su estado a "Aprobado".
-   * @param id ID del evento a aprobar.
-   * @returns El evento actualizado.
    */
   async approve(id: number): Promise<Eventos> {
     const evento = await this.findOne(id);
 
-    // Buscar el estado "Aprobado"
     const aprobadoEstado = await this.estadoEventoRepository.findOneBy({
       nombre: 'Aprobado',
     });
@@ -222,13 +210,10 @@ export class EventosService {
 
   /**
    * Rechazar un evento cambiando su estado a "Rechazado".
-   * @param id ID del evento a rechazar.
-   * @returns El evento actualizado.
    */
   async reject(id: number): Promise<Eventos> {
     const evento = await this.findOne(id);
 
-    // Buscar el estado "Rechazado"
     const rechazadoEstado = await this.estadoEventoRepository.findOneBy({
       nombre: 'Rechazado',
     });
@@ -244,25 +229,20 @@ export class EventosService {
 
   /**
    * Obtiene la lista de eventos filtrados por fecha, hora y estado.
-   * @param opciones - Opciones de filtrado.
-   * @returns Una lista de eventos que coinciden con los filtros.
    */
   async findFiltered(opciones: FindFilteredOptions): Promise<Eventos[]> {
     const { fechaDesde, fechaHasta, horaDesde, horaHasta, estado } = opciones;
 
-    // Crear el QueryBuilder para construir la consulta dinámicamente
     const query = this.eventoRepository.createQueryBuilder('evento')
       .leftJoinAndSelect('evento.estadoEvento', 'estadoEvento')
       .leftJoinAndSelect('evento.tipoEvento', 'tipoEvento')
       .leftJoinAndSelect('evento.ubicacion', 'ubicacion')
       .leftJoinAndSelect('evento.dirigidoA', 'dirigidoA');
 
-    // Filtrar por estado si se proporciona
     if (estado) {
       query.andWhere('estadoEvento.nombre = :estado', { estado: capitalize(estado) });
     }
 
-    // Filtrar por fecha
     if (fechaDesde) {
       query.andWhere('evento.fecha_Evento >= :fechaDesde', { fechaDesde });
     }
@@ -270,7 +250,6 @@ export class EventosService {
       query.andWhere('evento.fecha_Evento <= :fechaHasta', { fechaHasta });
     }
 
-    // Filtrar por hora
     if (horaDesde) {
       query.andWhere('evento.hora_inicio_Evento >= :horaDesde', { horaDesde });
     }
@@ -278,16 +257,12 @@ export class EventosService {
       query.andWhere('evento.hora_fin_Evento <= :horaHasta', { horaHasta });
     }
 
-    // Ejecutar la consulta
     const eventos = await query.getMany();
-
     return eventos;
   }
 
   /**
    * Valida que la hora de fin sea posterior a la hora de inicio.
-   * @param horaInicio - Hora de inicio en formato 'HH:MM'.
-   * @param horaFin - Hora de fin en formato 'HH:MM'.
    */
   private validateEndTimeAfterStartTime(horaInicio: string, horaFin: string): void {
     const [horaInicioNum, minutoInicio] = horaInicio.split(':').map(Number);
@@ -305,13 +280,69 @@ export class EventosService {
       );
     }
   }
+
+  // --------------------------------------------------------------------
+  // Funciones Automáticas con Cron Jobs
+  // --------------------------------------------------------------------
+
+  /**
+   * Esta función se ejecuta cada hora y realiza las siguientes tareas:
+   * 1. Elimina los eventos aprobados que hayan pasado 72 horas después de la fecha del evento.
+   * 2. Actualiza los eventos pendientes a "Rechazado" si faltan 48 horas o menos para la realización.
+   * 3. Elimina los eventos rechazados que hayan pasado 72 horas después de la fecha del evento.
+   */
+  @Cron(CronExpression.EVERY_HOUR)
+  async handleEventAutomation() {
+    const now = new Date();
+    this.logger.log('Ejecutando tareas automáticas para eventos...');
+
+    // 1. Eliminar eventos aprobados (fecha_Evento < now - 72 horas)
+    const approvedCutoff = new Date(now.getTime() - 72 * 60 * 60 * 1000);
+    const approvedEvents = await this.eventoRepository.createQueryBuilder('evento')
+      .leftJoinAndSelect('evento.estadoEvento', 'estadoEvento')
+      .where('estadoEvento.nombre = :aprobado', { aprobado: 'Aprobado' })
+      .andWhere('evento.fecha_Evento < :approvedCutoff', { approvedCutoff: approvedCutoff.toISOString() })
+      .getMany();
+
+    for (const event of approvedEvents) {
+      this.logger.log(`Eliminando evento aprobado ID ${event.id_Evento}`);
+      await this.eventoRepository.remove(event);
+    }
+
+    // 2. Actualizar eventos pendientes: Si falta 48 horas o menos para la fecha del evento, pasar a "Rechazado"
+    const pendingCutoff = new Date(now.getTime() + 48 * 60 * 60 * 1000);
+    const pendingEvents = await this.eventoRepository.createQueryBuilder('evento')
+      .leftJoinAndSelect('evento.estadoEvento', 'estadoEvento')
+      .where('estadoEvento.nombre = :pendiente', { pendiente: 'Pendiente' })
+      .andWhere('evento.fecha_Evento <= :pendingCutoff', { pendingCutoff: pendingCutoff.toISOString() })
+      .getMany();
+
+    const rejectedState = await this.estadoEventoRepository.findOneBy({ nombre: 'Rechazado' });
+    for (const event of pendingEvents) {
+      this.logger.log(`Actualizando evento pendiente ID ${event.id_Evento} a Rechazado`);
+      event.estadoEvento = rejectedState;
+      await this.eventoRepository.save(event);
+    }
+
+    // 3. Eliminar eventos rechazados (fecha_Evento < now - 72 horas)
+    const rejectedCutoff = new Date(now.getTime() - 72 * 60 * 60 * 1000);
+    const rejectedEvents = await this.eventoRepository.createQueryBuilder('evento')
+      .leftJoinAndSelect('evento.estadoEvento', 'estadoEvento')
+      .where('estadoEvento.nombre = :rechazado', { rechazado: 'Rechazado' })
+      .andWhere('evento.fecha_Evento < :rejectedCutoff', { rejectedCutoff: rejectedCutoff.toISOString() })
+      .getMany();
+
+    for (const event of rejectedEvents) {
+      this.logger.log(`Eliminando evento rechazado ID ${event.id_Evento}`);
+      await this.eventoRepository.remove(event);
+    }
+
+    this.logger.log('Tareas automáticas para eventos completadas.');
+  }
 }
 
 /**
  * Función para capitalizar la primera letra de una cadena.
- * Por ejemplo, 'aprobado' -> 'Aprobado'
- * @param texto - Texto a capitalizar.
- * @returns Texto capitalizado.
  */
 function capitalize(texto: string): string {
   if (!texto) return texto;

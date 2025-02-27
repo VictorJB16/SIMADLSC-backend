@@ -10,7 +10,6 @@ import {
   Validate,
   Matches,
 } from 'class-validator';
-import { IsReservaValida } from '../Validators/is-reserva-valida.validator';
 import { IsNotPastDate } from '../Validators/is-not-past-date.validator';
 import { IsNotOverlapping } from '../Validators/is-not-overlapping.validator';
 
@@ -25,9 +24,7 @@ export class CreateEventoDto {
 
   @Type(() => Date)
   @IsDate({ message: 'La fecha del evento debe ser una fecha válida' })
-  @Validate(IsReservaValida, {
-    message: 'El evento debe ser reservado con al menos 3 días de anticipación',
-  })
+
   @Validate(IsNotPastDate, {
     message: 'La fecha del evento no puede estar en el pasado.',
   })
