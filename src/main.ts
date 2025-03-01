@@ -4,7 +4,20 @@ import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
 import { AllExceptionsFilter } from './horario/filter/AllExceptionsFilter';
 
+// Cargar variables de entorno
 dotenv.config();
+
+// Importar crypto para Node.js (Solo si es necesario)
+import * as crypto from 'crypto';
+
+// Función segura para generar un UUID que funciona en local y producción
+const generarUUID = () => {
+  if (typeof globalThis.crypto !== 'undefined' && 'randomUUID' in globalThis.crypto) {
+    return globalThis.crypto.randomUUID();
+  } else {
+    return crypto.randomUUID(); // Fallback para Node.js
+  }
+};
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -21,7 +34,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  // Middleware para asegurarse de que los headers de CORS se configuran correctamente
+  // Middleware para asegurarse de que los headers de CORS se configuren correctamente
   app.use((req, res, next) => {
     const origin = req.headers.origin;
     if (allowedOrigins.includes(origin)) {
@@ -46,6 +59,10 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Ejemplo de uso de la función para generar UUID en cualquier parte del código
+  const nombre = generarUUID();
+  console.log(`UUID generado: ${nombre}`);
 
   // Iniciar el servidor en el puerto 3000
   await app.listen(3000);
