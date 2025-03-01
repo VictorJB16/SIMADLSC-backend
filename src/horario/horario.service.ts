@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, MoreThanOrEqual, Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import { Horario } from './entities/horario.entity';
 import { CreateHorarioEstudianteDto } from './dto/create-horario-estudiante.dto';
 import { Profesor } from 'src/profesor/entities/profesor.entity';
@@ -295,9 +295,9 @@ async isAulaDisponible(aulaId: number, dia: string, inicio: string, fin: string)
       where: {
           aula: { id_aula: aulaId },
           dia_semana_Horario: dia,
-          hora_inicio_Horario: LessThanOrEqual(fin),
-          hora_fin_Horario: MoreThanOrEqual(inicio),
-      },
+          hora_inicio_Horario: LessThan(fin),
+          hora_fin_Horario: MoreThan(inicio),
+        },
   });
   return !conflicto;
 }
@@ -307,9 +307,9 @@ async isProfesorDisponible(profesorId: number, dia: string, inicio: string, fin:
       where: {
           profesor: { id_Profesor: profesorId },
           dia_semana_Horario: dia,
-          hora_inicio_Horario: LessThanOrEqual(fin),
-          hora_fin_Horario: MoreThanOrEqual(inicio),
-      },
+          hora_inicio_Horario: LessThan(fin),
+          hora_fin_Horario: MoreThan(inicio),
+        },
   });
   return !conflicto;
 }
@@ -319,13 +319,10 @@ async isSeccionDisponible(seccionId: number, dia: string, inicio: string, fin: s
       where: {
           seccion: { id_Seccion: seccionId },
           dia_semana_Horario: dia,
-          hora_inicio_Horario: LessThanOrEqual(fin),
-          hora_fin_Horario: MoreThanOrEqual(inicio),
-      },
+      hora_inicio_Horario: LessThan(fin),
+      hora_fin_Horario: MoreThan(inicio),
+    },
   });
   return !conflicto;
 }
-
-
-
 }
