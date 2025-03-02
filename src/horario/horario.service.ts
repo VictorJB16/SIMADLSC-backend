@@ -325,7 +325,4 @@ async isSeccionDisponible(seccionId: number, dia: string, inicio: string, fin: s
   });
   return !conflicto;
 }
-
-
-
 }
