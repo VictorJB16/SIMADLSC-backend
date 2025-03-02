@@ -9,6 +9,8 @@ import { Grado } from 'src/grados/entities/grados-entity';
 import { EstadoMatricula } from './entities/Estado-Matricula.enum';
 import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
 import { CreateMatriculaDto } from './Dto/create-matricula.dto';
+import { AssignSeccionDto } from './Dto/assign-seccion.dto';
+import { Seccion } from 'src/secciones/entities/seccion.entity';
 
 @Injectable()
 export class MatriculaService {
@@ -23,6 +25,8 @@ export class MatriculaService {
     private readonly periodoRepository: Repository<Periodo>,
     @InjectRepository(Grado)
     private readonly gradoRepository: Repository<Grado>,
+    @InjectRepository(Seccion)
+    private readonly seccionRepository: Repository<Seccion>,
   ) {}
 
   async create(createMatriculaDto: CreateMatriculaDto): Promise<Matricula> {
@@ -175,7 +179,63 @@ async updateEstadoMatricula(id: number, nuevoEstado: string): Promise<Matricula>
   return await this.matriculaRepository.save(matricula);
 }
 
-  
+//! Método para asignar una sección a una o más matrículas
+async assignSeccionToMatriculas(dto: AssignSeccionDto): Promise<Matricula[]> {
+  const { seccionId, matriculaIds } = dto;
+
+  // 1. Buscar la sección por su ID
+  const seccion = await this.seccionRepository.findOne({
+    where: { id_Seccion: seccionId },
+  });
+  if (!seccion) {
+    throw new NotFoundException(`Sección con ID ${seccionId} no encontrada`);
+  }
+
+  const updatedMatriculas: Matricula[] = [];
+
+  // 2. Iterar sobre cada ID de matrícula
+  for (const matId of matriculaIds) {
+    // Buscar la matrícula con sus relaciones: estudiante (y su grado) y sección
+    const matricula = await this.matriculaRepository.findOne({
+      where: { id_Matricula: matId },
+      relations: {
+        estudiante: { grado: true },
+        seccion: true,
+      },
+    });
+
+    if (!matricula) {
+      throw new NotFoundException(`Matrícula con ID ${matId} no encontrada`);
+    }
+
+    // Verificar que la matrícula esté en estado Aceptado
+    if (matricula.estado_Matricula !== EstadoMatricula.Aceptado) {
+      throw new BadRequestException(
+        `La matrícula con ID ${matId} no está en estado Aceptado (AC)`,
+      );
+    }
+
+    // Verificar que el grado del estudiante coincida con la sección.gradoId
+    const gradoEstudiante = matricula.estudiante.grado?.id_grado;
+    if (gradoEstudiante !== seccion.gradoId) {
+      throw new BadRequestException(
+        `La matrícula ${matId} corresponde a un grado (${gradoEstudiante}) distinto a la sección (${seccion.gradoId})`,
+      );
+    }
+
+    // 3. Asignar la sección a la matrícula
+    matricula.seccion = seccion;
+    await this.matriculaRepository.save(matricula);
+
+    // 4. Asignar la misma sección al estudiante
+    matricula.estudiante.seccion = seccion;
+    await this.estudianteRepository.save(matricula.estudiante);
+
+    updatedMatriculas.push(matricula);
+  }
+
+  return updatedMatriculas;
+}  
 
 
 }

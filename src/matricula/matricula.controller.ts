@@ -5,6 +5,7 @@ import { CreateMatriculaDto } from './Dto/create-matricula.dto';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
 import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
+import { AssignSeccionDto } from './Dto/assign-seccion.dto';
 
 @Controller('matriculas')
 export class MatriculaController {
@@ -57,5 +58,14 @@ export class MatriculaController {
   ): Promise<Matricula> {
     return await this.matriculaService.updateEstadoMatricula(id, body.nuevoEstado);
   }  
+
+  //! Método para asignar una sección a una o más matrículas
+  @Post('asignar-seccion')
+  async assignSeccion(
+    @Body() dto: AssignSeccionDto,
+  ): Promise<Matricula[]> {
+    return this.matriculaService.assignSeccionToMatriculas(dto);
+  }
+
 
 }
