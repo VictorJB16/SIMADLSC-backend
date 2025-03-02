@@ -7,9 +7,10 @@ import { Matricula } from './entities/matricula.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Periodo } from 'src/periodo/entities/periodo.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
+import { Seccion } from 'src/secciones/entities/seccion.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Matricula,Estudiante,EncargadoLegal,Periodo,Grado])], 
+  imports: [TypeOrmModule.forFeature([Matricula,Estudiante,EncargadoLegal,Periodo,Grado,Seccion])],
 
   controllers: [MatriculaController],
   providers: [MatriculaService]
