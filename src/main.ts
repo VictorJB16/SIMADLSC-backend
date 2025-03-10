@@ -7,8 +7,13 @@ import { AllExceptionsFilter } from './horario/filter/AllExceptionsFilter';
 // Cargar variables de entorno
 dotenv.config();
 
-// Importar crypto para Node.js (Solo si es necesario)
+// Importar crypto para Node.js
 import * as crypto from 'crypto';
+
+// Forzar la asignación de crypto a globalThis (ignorando errores de tipado)
+if (!globalThis.crypto) {
+  (globalThis as any).crypto = crypto;
+}
 
 // Función segura para generar un UUID que funciona en local y producción
 const generarUUID = () => {
