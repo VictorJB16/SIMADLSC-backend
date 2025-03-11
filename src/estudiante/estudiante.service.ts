@@ -1,7 +1,8 @@
+// src/Service/EstudianteService.ts
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Estudiante } from './entities/estudiante.entity';
-import { Repository } from 'typeorm';
+import { Repository, Not, IsNull } from 'typeorm';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
 import { UpdateEstudianteDto } from './dto/update-estudiante.dto';
 import { Horario } from 'src/horario/entities/horario.entity';
@@ -40,27 +41,25 @@ export class EstudianteService {
 
   async createEstudiante(createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
     const { encargadoLegal, gradoId, ...estudianteData } = createEstudianteDto;
-
     const encargadoLegalEntity = this.encargadoLegalRepository.create(encargadoLegal);
     await this.encargadoLegalRepository.save(encargadoLegalEntity);
-
     const grado = await this.gradoRepository.findOne({ where: { id_grado: gradoId } });
     if (!grado) {
       throw new NotFoundException(`Grado con ID ${gradoId} no encontrado`);
     }
-
     const estudiante = this.estudianteRepository.create({
       ...estudianteData,
       tipo_de_adecuacion: estudianteData.tipo_de_adecuacion as tipoadecuacion,
       encargadoLegal: encargadoLegalEntity,
       grado: grado,
     });
-
     return await this.estudianteRepository.save(estudiante);
   }
 
   async findAll(): Promise<Estudiante[]> {
-    return await this.estudianteRepository.find();
+    return await this.estudianteRepository.find({
+      relations: ['seccion', 'encargadoLegal', 'grado'],
+    });
   }
 
   async findOne(id: number): Promise<Estudiante> {
@@ -68,18 +67,12 @@ export class EstudianteService {
       where: { id_Estudiante: id },
       relations: ['seccion', 'encargadoLegal', 'grado'],
     });
-
     if (!estudiante) {
       throw new NotFoundException('Estudiante no encontrado');
     }
-
     return estudiante;
   }
 
-  /**
-   * Filtra estudiantes por nombre, apellido y cédula.
-   * Se convierte a minúsculas para comparación insensible a mayúsculas.
-   */
   async findByFilters(filters: {
     nombre?: string;
     cedula?: string;
@@ -88,7 +81,6 @@ export class EstudianteService {
     const query = this.estudianteRepository.createQueryBuilder('estudiante')
       .leftJoinAndSelect('estudiante.encargadoLegal', 'encargadoLegal')
       .leftJoinAndSelect('estudiante.grado', 'grado');
-
     if (filters.nombre && filters.nombre.trim() !== '') {
       query.andWhere('LOWER(estudiante.nombre_Estudiante) LIKE :nombre', {
         nombre: `%${filters.nombre.trim().toLowerCase()}%`
@@ -105,7 +97,6 @@ export class EstudianteService {
         { apellido: `%${filters.apellido.trim().toLowerCase()}%` }
       );
     }
-
     try {
       return await query.getMany();
     } catch (error) {
@@ -129,21 +120,17 @@ export class EstudianteService {
       where: { id_Estudiante },
       relations: ['grado'],
     });
-
     if (!estudiante) {
       throw new NotFoundException(`Estudiante con ID ${id_Estudiante} no encontrado`);
     }
-
     const gradoId = estudiante.grado.id_grado;
     const seccion = await this.seccionRepository.findOne({
       where: { grado: { id_grado: gradoId } },
       relations: ['horarios'],
     });
-
     if (!seccion) {
       throw new NotFoundException(`No se encontró una sección para el grado con ID ${gradoId}`);
     }
-
     return seccion.horarios;
   }
 
@@ -153,7 +140,6 @@ export class EstudianteService {
       Object.assign(estudiante, updateEstudianteDto);
       return await this.estudianteRepository.save(estudiante);
     } catch (error) {
-      
       throw new InternalServerErrorException('No se pudo actualizar el estudiante');
     }
   }
@@ -168,10 +154,24 @@ export class EstudianteService {
   }
 
   async obtenerEstudiantesPorSeccion(id_Seccion: number): Promise<Estudiante[]> {
-    const seccion = await this.seccionRepository.findOne({ where: { id_Seccion }, relations: ['estudiantes'] });
+    const seccion = await this.seccionRepository.findOne({
+      where: { id_Seccion },
+      relations: ['estudiantes']
+    });
     if (!seccion) {
       throw new NotFoundException(`Sección con ID ${id_Seccion} no encontrada`);
     }
     return seccion.estudiantes;
+  }
+
+  // Método para obtener solo los estudiantes de una sección específica usando Query Builder
+  async findStudentsWithSectionById(id_Seccion: number): Promise<Estudiante[]> {
+    return await this.estudianteRepository
+      .createQueryBuilder('estudiante')
+      .leftJoinAndSelect('estudiante.seccion', 'seccion')
+      .leftJoinAndSelect('estudiante.encargadoLegal', 'encargadoLegal')
+      .leftJoinAndSelect('estudiante.grado', 'grado')
+      .where('seccion.id_Seccion = :id_Seccion', { id_Seccion })
+      .getMany();
   }
 }
