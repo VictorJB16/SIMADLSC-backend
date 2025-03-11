@@ -30,4 +30,27 @@ export class MailerCustomService {
       console.error('Error al enviar el correo:', error);
     }
   }
+
+  async sendStudentCredentialsEmail(email: string, nombre: string, username: string, password: string) {
+    try {
+      const frontendUrl = this.configService.get<string>('FRONTEND_URL') || 'https://simadlsc.vercel.app';
+      const loginUrl = `${frontendUrl}/auth/login`;
+      
+      await this.mailerService.sendMail({
+        to: email,
+        subject: 'Bienvenido al Sistema SIMADLSC - Tus Credenciales de Acceso',
+        template: './student-credentials',
+        context: {
+          nombre,
+          username,
+          password,
+          loginUrl,
+        },
+      });
+      
+      console.log('Correo de credenciales enviado correctamente a', email);
+    } catch (error) {
+      console.error('Error al enviar el correo de credenciales:', error);
+    }
+  }
 }
