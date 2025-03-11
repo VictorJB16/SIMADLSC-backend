@@ -11,6 +11,11 @@ import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
 import { CreateMatriculaDto } from './Dto/create-matricula.dto';
 import { AssignSeccionDto } from './Dto/assign-seccion.dto';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
+import { Cron, CronExpression } from '@nestjs/schedule';
+import { UsersService } from 'src/users/users.service';
+import { MailerCustomService } from 'src/mailer/mailer.service';
+import * as crypto from 'crypto';
+import { tipoadecuacion } from 'src/estudiante/entities/tipo-adecuacion.enum';
 
 @Injectable()
 export class MatriculaService {
@@ -27,6 +32,8 @@ export class MatriculaService {
     private readonly gradoRepository: Repository<Grado>,
     @InjectRepository(Seccion)
     private readonly seccionRepository: Repository<Seccion>,
+    private readonly usersService: UsersService,
+    private readonly mailerService: MailerCustomService,
   ) {}
 
   async create(createMatriculaDto: CreateMatriculaDto): Promise<Matricula> {
@@ -238,5 +245,68 @@ async assignSeccionToMatriculas(dto: AssignSeccionDto): Promise<Matricula[]> {
 }  
 
 
+private generateProvisionalPassword(): string {
+  // Genera una contraseña provisional de 10 caracteres en hexadecimal
+  return crypto.randomBytes(5).toString('hex');
 }
 
+@Cron(CronExpression.EVERY_HOUR)
+async processAcceptedEnrollments() {
+  try {
+    // Buscar todas las matrículas con estado 'AC' (Aceptado) que no tengan usuario asignado en el estudiante
+    const acceptedEnrollments = await this.matriculaRepository.find({
+      where: { 
+        estado_Matricula: EstadoMatricula.Aceptado,
+        estudiante: { usuario: null }
+      },
+      relations: ['estudiante', 'estudiante.grado', 'estudiante.seccion', 'estudiante.encargadoLegal']
+    });
+
+    for (const enrollment of acceptedEnrollments) {
+      try {
+        const student = enrollment.estudiante;
+
+        // Verificar que no exista ya un usuario asignado o que no exista un usuario con ese correo
+        if (student.usuario) {
+          continue;
+        }
+        const existingUser = await this.usersService.findUserByEmail(student.correo_estudiantil);
+        if (existingUser) {
+          continue;
+        }
+
+        const provisionalPassword = this.generateProvisionalPassword();
+
+        // Crear solo el usuario (sin crear un nuevo estudiante) y asignarlo al estudiante existente
+        const { usuario } = await this.usersService.createUserForExistingStudent(
+          {
+            nombre_Usuario: student.nombre_Estudiante,
+            apellido1_Usuario: student.apellido1_Estudiante,
+            apellido2_Usuario: student.apellido2_Estudiante,
+            email_Usuario: student.correo_estudiantil,
+            contraseña_Usuario: provisionalPassword,
+            rol_Usuario: 4
+          },
+          student
+        );
+
+        // Enviar correo de bienvenida con las credenciales
+        await this.mailerService.sendStudentCredentialsEmail(
+          student.correo_estudiantil,
+          student.nombre_Estudiante,
+          student.correo_estudiantil, // el usuario es el correo
+          provisionalPassword
+        );
+
+        console.log(`Se creó la cuenta de usuario para el estudiante: ${student.nombre_Estudiante} (${student.correo_estudiantil})`);
+      } catch (error) {
+        console.error(`Error al procesar la matrícula para el estudiante ${enrollment.estudiante.nombre_Estudiante}:`, error);
+        // Continúa con la siguiente matrícula incluso si ocurre un error
+      }
+    }
+  } catch (error) {
+    console.error('Error en processAcceptedEnrollments:', error);
+  }
+}
+
+}

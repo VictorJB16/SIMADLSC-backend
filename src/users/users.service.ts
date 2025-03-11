@@ -1,6 +1,5 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { getManager, In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -11,6 +10,7 @@ import { Profesor } from 'src/profesor/entities/profesor.entity';
 import { CreateEstudianteDto } from 'src/estudiante/dto/create-estudiante.dto';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class UsersService {
@@ -27,7 +27,6 @@ export class UsersService {
     private readonly GradoRepository: Repository<Grado>,
     @InjectRepository(Seccion)
     private readonly seccionRepository: Repository<Seccion>,
-
   ) {}
 
   async createUser(createUserDto: CreateUserDto): Promise<Usuario> {
@@ -51,7 +50,7 @@ export class UsersService {
   
       // Guardar el usuario en la base de datos
       const savedUser = await this.usersRepository.save(usuario);
-      console.log('Usuario creado con ID:', savedUser.id_usuario); // Verificar que se haya creado correctamente
+      console.log('Usuario creado con ID:', savedUser.id_usuario);
       // Crear una entidad `Estudiante` o `Profesor` según el rol
       if (rol_Usuario === 3) { // Si el rol es profesor
         const profesor = new Profesor();
@@ -60,9 +59,8 @@ export class UsersService {
         profesor.apellido1_Profesor = apellido1_Usuario;
         profesor.apellido2_Profesor = apellido2_Usuario;
         const savedProfesor = await this.ProfesorRepository.save(profesor);
-        console.log('Profesor creado con ID:', savedProfesor.id_Profesor); // Verificar que se haya creado correctamente
+        console.log('Profesor creado con ID:', savedProfesor.id_Profesor);
         console.log('Profesor guardado:', savedProfesor);
-
       } 
   
       return savedUser; // Devuelve el usuario creado
@@ -72,7 +70,6 @@ export class UsersService {
     }
   }
   
-
   async createUserAsStudent(
     createUserDto: CreateUserDto,
     createEstudianteDto: CreateEstudianteDto
@@ -110,11 +107,10 @@ export class UsersService {
       console.log('Estudiante creado con ID:', savedEstudiante.id_Estudiante);
       console.log('Profesor creado con ID:', savedEstudiante.id_Estudiante); // Verificar que se haya creado correctamente
       console.log('Profesor guardado:', savedEstudiante);
-
+  
       if (!estudiante.grado || !estudiante.seccion) {
         throw new Error('Grado o sección no encontrados');
       }
-  
   
       return { usuario: savedUser, estudiante: savedEstudiante };
     } catch (error) {
@@ -122,10 +118,6 @@ export class UsersService {
       throw new Error('No se pudo crear el estudiante');
     }
   }
-  
-  
-  
-
   
   // Buscar un usuario por su ID
   async findById(id: number): Promise<Usuario> {
@@ -135,30 +127,38 @@ export class UsersService {
     }
     return user;
   }
-
+  
   // Buscar todos los usuarios
   async findAll(): Promise<Usuario[]> {
     return this.usersRepository.find({ relations: ['rol_Usuario'] });
   }
-
+  
   // Buscar un usuario por email
   async findByEmail(email: string): Promise<Usuario | undefined> {
-    return this.usersRepository.findOne({ where: { email_Usuario: email }, relations: ['rol_Usuario', 'estudiante', 'profesor',] });
+    return this.usersRepository.findOne({ where: { email_Usuario: email }, relations: ['rol_Usuario', 'estudiante', 'profesor'] });
   }
-
+  
+  // Nuevo método: buscar usuario por email
+  async findUserByEmail(email: string): Promise<Usuario | undefined> {
+    return this.usersRepository.findOne({
+      where: { email_Usuario: email },
+      relations: ['rol_Usuario', 'estudiante', 'profesor'],
+    });
+  }
+  
   // Actualizar un usuario por su ID
   async updateUser(id: number, updateUserDto: UpdateUserDto): Promise<Usuario> {
     const user = await this.findById(id);
-
+  
     // Si se proporciona una contraseña nueva, la ciframos
     if (updateUserDto.contraseña_Usuario) {
       updateUserDto.contraseña_Usuario = await bcrypt.hash(updateUserDto.contraseña_Usuario, 10);
     }
-
+  
     const updatedUser = Object.assign(user, updateUserDto);
     return this.usersRepository.save(updatedUser);
   }
-
+  
   async deleteUser(userId: number): Promise<void> {
     const user = await this.usersRepository.findOne({ where: { id_usuario: userId } });
   
@@ -175,16 +175,16 @@ export class UsersService {
     user.bloqueado_Usuario = bloqueado_Usuario;
     return this.usersRepository.save(user); 
   }
-
+  
   // Actualizar la contraseña de un usuario
-  async updatePassword(id_usuario: number,  hashedPassword: string): Promise<void> {
+  async updatePassword(id_usuario: number, hashedPassword: string): Promise<void> {
     try {
       console.log('Actualizando contraseña en la base de datos para el usuario:', id_usuario);
   
       // Aquí usamos un objeto con el campo 'contrasenia_Usuario' para actualizar la contraseña
       const resultado = await this.usersRepository.update(
-        { id_usuario }, // condición para buscar el usuario
-        { contraseña_Usuario: hashedPassword } // objeto que contiene el campo a actualizar
+        { id_usuario },
+        { contraseña_Usuario: hashedPassword }
       );
   
       console.log('Resultado de la actualización:', resultado);
@@ -197,5 +197,42 @@ export class UsersService {
       throw new InternalServerErrorException('Error al actualizar la contraseña');
     }
   }
-  
+
+  async createUserForExistingStudent(
+    createUserDto: CreateUserDto,
+    student: Estudiante
+  ): Promise<{ usuario: Usuario, estudiante: Estudiante }> {
+    try {
+      const { nombre_Usuario, apellido1_Usuario, apellido2_Usuario, email_Usuario, contraseña_Usuario, rol_Usuario } = createUserDto;
+      if (rol_Usuario !== 4) {
+        throw new Error('Rol incorrecto: Se esperaba el rol de estudiante');
+      }
+      
+      const rol = await this.rolesRepository.findOne({ where: { id_Rol: rol_Usuario } });
+      if (!rol) {
+        throw new Error('Rol no encontrado');
+      }
+      
+      const usuario = new Usuario();
+      usuario.nombre_Usuario = nombre_Usuario;
+      usuario.apellido1_Usuario = apellido1_Usuario;
+      usuario.apellido2_Usuario = apellido2_Usuario;
+      usuario.email_Usuario = email_Usuario;
+      usuario.contraseña_Usuario = await bcrypt.hash(contraseña_Usuario, 10);
+      usuario.rol_Usuario = rol;
+      
+      const savedUser = await this.usersRepository.save(usuario);
+      
+      // Asignar el usuario al estudiante ya creado
+      student.usuario = savedUser;
+      const updatedStudent = await this.EstudianteRepository.save(student);
+      
+      return { usuario: savedUser, estudiante: updatedStudent };
+    } catch (error) {
+      console.error('Error al crear usuario para estudiante existente:', error);
+      throw new Error('No se pudo crear el usuario para el estudiante');
+    }
+  }
+
+
 }
