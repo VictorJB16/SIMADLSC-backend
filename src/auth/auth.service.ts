@@ -45,6 +45,7 @@ const payload = {
   rol: user.rol_Usuario.nombre_Rol,
   id_Profesor: user.profesor ? user.profesor.id_Profesor : null,
   id_Estudiante: user.estudiante ? user.estudiante.id_Estudiante : null,
+  id_Materia: user.materia ? user.materia.id_Materia : null,
 };
 
 
