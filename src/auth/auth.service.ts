@@ -34,8 +34,6 @@ export class AuthService {
   async login(email_Usuario: string, password: string) {
    const user = await this.validateUser(email_Usuario, password);
 
-
-
 const payload = {
   sub: user.id_usuario,
   email: user.email_Usuario,
@@ -45,9 +43,8 @@ const payload = {
   rol: user.rol_Usuario.nombre_Rol,
   id_Profesor: user.profesor ? user.profesor.id_Profesor : null,
   id_Estudiante: user.estudiante ? user.estudiante.id_Estudiante : null,
-  id_Materia: user.materia ? user.materia.id_Materia : null,
+  materia: user.profesor && user.profesor.id_Materia && user.profesor.id_Materia.length ? user.profesor.id_Materia[0].id_Materia : null,
 };
-
 
 
 
