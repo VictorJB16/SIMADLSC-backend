@@ -135,7 +135,7 @@ export class UsersService {
   
   // Buscar un usuario por email
   async findByEmail(email: string): Promise<Usuario | undefined> {
-    return this.usersRepository.findOne({ where: { email_Usuario: email }, relations: ['rol_Usuario', 'estudiante', 'profesor'] });
+    return this.usersRepository.findOne({ where: { email_Usuario: email }, relations: ['rol_Usuario', 'estudiante', 'profesor', 'profesor.id_Materia'] });
   }
   
   // Nuevo método: buscar usuario por email
