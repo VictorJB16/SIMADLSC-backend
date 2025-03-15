@@ -384,15 +384,19 @@ export class AsistenciasService {
       .leftJoinAndSelect('asistencia.id_grado', 'id_grado')
       .leftJoinAndSelect('asistencia.id_Seccion', 'id_Seccion')
       .leftJoinAndSelect('asistencia.id_Profesor', 'id_Profesor')
-      .where('id_Estudiante.cedula = :cedula', { cedula });
-
+      .where(
+        `(id_Estudiante.cedula = :cedula OR 
+         LOWER(id_Estudiante.nombre_Estudiante) LIKE LOWER(:search) OR
+         LOWER(id_Estudiante.apellido1_Estudiante) LIKE LOWER(:search) OR
+         LOWER(id_Estudiante.apellido2_Estudiante) LIKE LOWER(:search))`,
+        { cedula, search: `%${cedula}%` },
+      );
+  
     // Aplicar filtros opcionales
-
     if (fecha) {
-      // Validar formato de fecha si es necesario
       query.andWhere('asistencia.fecha = :fecha', { fecha });
     }
-
+  
     if (id_Materia) {
       const materiaId = Number(id_Materia);
       if (isNaN(materiaId)) {
@@ -400,19 +404,17 @@ export class AsistenciasService {
       }
       query.andWhere('id_Materia.id_Materia = :id_Materia', { id_Materia: materiaId });
     }
-
+  
     const asistencias = await query.getMany();
-
+  
     if (asistencias.length === 0) {
       throw new NotFoundException(
-        `No se encontraron asistencias para la cédula ${cedula} con los filtros proporcionados`,
+        `No se encontraron asistencias para el criterio "${cedula}" con los filtros proporcionados`,
       );
     }
-
+  
     return asistencias;
   }
-
-
   async obtenerReporteAsistencias(
     cedula: string,
     fechaInicio?: string,
@@ -428,11 +430,17 @@ export class AsistenciasService {
       .leftJoinAndSelect('asistencia.id_Profesor', 'profesor')
       .leftJoinAndSelect('asistencia.id_Periodo', 'periodo')
       .leftJoinAndSelect('asistencia.justificacionAusencia', 'justificacion');
-
-    // Filtrar por cédula del estudiante
-    query.where('estudiante.cedula = :cedula', { cedula });
-
-    // Aplicar filtros opcionales
+  
+    // Filtrar por cédula o nombre del estudiante (busca en cédula, nombre y apellidos)
+    query.where(
+      `(estudiante.cedula = :cedula OR 
+        LOWER(estudiante.nombre_Estudiante) LIKE LOWER(:search) OR
+        LOWER(estudiante.apellido1_Estudiante) LIKE LOWER(:search) OR
+        LOWER(estudiante.apellido2_Estudiante) LIKE LOWER(:search))`,
+      { cedula, search: `%${cedula}%` },
+    );
+  
+    // Aplicar filtros opcionales de fecha
     if (fechaInicio && fechaFin) {
       query.andWhere('asistencia.fecha BETWEEN :fechaInicio AND :fechaFin', {
         fechaInicio,
@@ -443,19 +451,19 @@ export class AsistenciasService {
     } else if (fechaFin) {
       query.andWhere('asistencia.fecha <= :fechaFin', { fechaFin });
     }
-
+  
     if (id_Periodo !== undefined) {
       query.andWhere('periodo.id_Periodo = :id_Periodo', { id_Periodo });
     }
-
+  
     const asistencias = await query.getMany();
-
+  
     if (asistencias.length === 0) {
       throw new NotFoundException(
-        `No se encontraron asistencias para la cédula ${cedula} con los filtros proporcionados`,
+        `No se encontraron asistencias para el criterio de búsqueda "${cedula}" con los filtros proporcionados`,
       );
     }
-
+  
     return asistencias;
   }
 
