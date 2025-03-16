@@ -67,5 +67,9 @@ export class MatriculaController {
     return this.matriculaService.assignSeccionToMatriculas(dto);
   }
 
+  @Get('sin-seccion')
+  async getMatriculasSinSeccion() {
+    return await this.matriculaService.findMatriculasSinSeccion();
+  }
 
 }
