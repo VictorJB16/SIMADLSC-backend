@@ -3,7 +3,7 @@ import { Matricula } from './entities/matricula.entity';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { IsNull, Repository } from 'typeorm';
 import { Periodo } from 'src/periodo/entities/periodo.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { EstadoMatricula } from './entities/Estado-Matricula.enum';
@@ -185,6 +185,14 @@ async updateEstadoMatricula(id: number, nuevoEstado: string): Promise<Matricula>
   matricula.estado_Matricula = nuevoEstado;
   return await this.matriculaRepository.save(matricula);
 }
+
+  // Función para obtener todas las matrículas que no tienen sección asignada
+  async findMatriculasSinSeccion(): Promise<Matricula[]> {
+    return await this.matriculaRepository.find({
+      where: { seccion: IsNull() },
+      relations: ['estudiante', 'estudiante.grado'], // incluir relaciones si es necesario
+    });
+  }
 
 //! Método para asignar una sección a una o más matrículas
 async assignSeccionToMatriculas(dto: AssignSeccionDto): Promise<Matricula[]> {
