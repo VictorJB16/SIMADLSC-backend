@@ -111,5 +111,16 @@ export class AsistenciasController {
     );
   }
 
+  @Get('reporte-seccion/:id_Seccion')
+  async obtenerReporteAsistenciasPorSeccion(
+    @Param('id_Seccion', ParseIntPipe) id_Seccion: number,
+    @Query('fechaInicio') fechaInicio?: string,
+    @Query('fechaFin') fechaFin?: string,
+  ) {
+    return this.asistenciasService.obtenerReporteAsistenciasPorSeccion(
+      id_Seccion,
+      fechaInicio,
+      fechaFin,
+    );
+  }
 }
-
