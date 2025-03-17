@@ -54,6 +54,10 @@ export class CreateEstudianteDto {
   @IsString()   
   condicion_migratoria: string; 
 
+  @IsNotEmpty()
+  @IsString()
+  motivo_matricula: string;
+
   @IsOptional()
   @IsString()
   Repite_alguna_materia: string;
