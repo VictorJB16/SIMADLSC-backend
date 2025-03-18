@@ -53,7 +53,7 @@ export class Estudiante {
   @Column({ type: 'varchar', length: 80 })
   condicion_migratoria: string;
 
-  @Column({ type: 'text', nullable: false })
+  @Column({ type: 'text', nullable: true })
   motivo_matricula: string;
 
   @Column({ type: 'varchar', length: 80 })
