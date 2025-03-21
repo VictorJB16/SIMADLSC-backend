@@ -19,11 +19,11 @@ export class CreateProfesorDto {
     apellido2_Profesor: string;
     
     @IsNotEmpty()
-    @IsNumber()
-    id_Materia: number;
+    @IsNumber({}, { each: true })
+    id_Materia: number[];
 
     // Campo adicional para vincular el Profesor con un Usuario
     @IsNumber()
     @IsOptional()  // Esto significa que este campo puede ser omitido
-    usuarioId?: number;
+    usuarioId?: number;
 }

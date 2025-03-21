@@ -32,14 +32,16 @@ export class ProfesorService {
       id_Materia,
     } = createProfesorDto;
 
-    // Validar y obtener la Materia
-    const materia = await this.materiaRepository.findOne({
-      where: { id_Materia },
-    });
-
-    if (!materia) {
-      throw new NotFoundException(`Materia con ID ${id_Materia} no encontrada`);
-    }
+    // Validar y obtener las Materias
+    const materias = await Promise.all(
+      id_Materia.map(async (id) => {
+        const materia = await this.materiaRepository.findOne({ where: { id_Materia: id } });
+        if (!materia) {
+          throw new NotFoundException(`Materia con ID ${id} no encontrada`);
+        }
+        return materia;
+      }),
+    );
 
     // Crear el Profesor
     const profesor = new Profesor();
@@ -47,13 +49,12 @@ export class ProfesorService {
     profesor.apellido1_Profesor = apellido1_Profesor;
     profesor.apellido2_Profesor = apellido2_Profesor;
 
-    // Asociar el Profesor con la Materia
-    profesor.id_Materia = [materia];
+    // Asociar el Profesor con las Materias
+    profesor.id_Materia = materias;
 
     // Guardar el Profesor
     return await this.profesorRepository.save(profesor);
-  }
-
+  }
   async findAll(): Promise<Profesor[]> {
     const allProfesores = await this.profesorRepository.find();
     return allProfesores;
@@ -71,9 +72,6 @@ export class ProfesorService {
     return `This action updates a #${id} profesor`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} profesor`;
-  }
 
   async obtenerHorarioProfesor(id: number) {
     // Obtener el profesor
@@ -106,5 +104,48 @@ export class ProfesorService {
       horarios: horariosFormateados,
     };
   }
+  async remove(id: number): Promise<string> {
+    const profesor = await this.profesorRepository.findOne({
+      where: { id_Profesor: id },
+    });
 
+    if (!profesor) {
+      throw new NotFoundException(`Profesor con ID ${id} no encontrado`);
+    }
+
+    // 1. Eliminar horarios relacionados
+    await this.horarioRepository.delete({ profesor: { id_Profesor: id } });
+
+    
+    // 3. Eliminar profesor
+
+    await this.profesorRepository.delete(id);
+
+    return `Profesor con ID ${id} y sus datos asociados han sido eliminados correctamente`;
+  }
+  
+  async obtenerMateriasProfesor(id: number) {
+    // Buscar el profesor y cargar la relación con las materias
+    const profesor = await this.profesorRepository.findOne({
+      where: { id_Profesor: id },
+      relations: ['id_Materia'], // Asegúrate de que la relación está bien definida en la entidad
+    });
+  
+    if (!profesor) {
+      throw new NotFoundException(`Profesor con ID ${id} no encontrado`);
+    }
+  
+    // Formatear la salida para el frontend
+    const materiasFormateadas = profesor.id_Materia.map((materia) => ({
+      id: materia.id_Materia,
+      nombre: materia.nombre_Materia,
+    }));
+  
+    return {
+      nombreProfesor: `${profesor.nombre_Profesor} ${profesor.apellido1_Profesor} ${profesor.apellido2_Profesor}`,
+      materias: materiasFormateadas,
+    };
+  }
+  
+  
 }

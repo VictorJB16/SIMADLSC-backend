@@ -15,6 +15,11 @@ export class ProfesorController {
     return this.profesorService.crearProfesor(createProfesorDto);
   }
 
+  @Get(':id/materias')
+  async obtenerMaterias(@Param('id') id: number) {
+    return this.profesorService.obtenerMateriasProfesor(id);
+  }
+
   @Get()
   findAll() {
     return this.profesorService.findAll();
@@ -38,4 +43,5 @@ export class ProfesorController {
   remove(@Param('id') id: string) {
     return this.profesorService.remove(+id);
   }
+
 }
