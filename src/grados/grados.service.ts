@@ -19,4 +19,9 @@ export class GradosService {
     const grado = this.gradoRepository.create(createGradoDto);
     return this.gradoRepository.save(grado);
   }
+  async delete(id: number): Promise<void> {
+    await this.gradoRepository.delete(id);
+  } 
 }
+
+
