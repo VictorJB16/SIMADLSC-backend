@@ -30,5 +30,14 @@ export class MateriaService {
 
   }
 
+//delete 
+  async remove(id: number): Promise<void> {
+    const materia = await this.materiaRepository.findOne({ where: { id_Materia: id } });
+    if (!materia) {
+      throw new NotFoundException(`Materia con ID ${id} no encontrada`);
+    }
+    await this.materiaRepository.remove(materia);
+  }
+
 
 }

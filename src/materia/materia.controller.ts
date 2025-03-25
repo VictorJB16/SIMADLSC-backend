@@ -21,7 +21,10 @@ export class MateriaController {
   findOne(@Param('id') id: string) {
     return this.materiaService.findOne(+id);
   }
+  //delete
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.materiaService.remove(+id);
+  }
 
-
-  
 }

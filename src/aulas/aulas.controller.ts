@@ -21,5 +21,10 @@ export class AulasController {
   findOne(@Param('id') id: string) {
     return this.aulasService.findOne(+id);
   }
+  //delete
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.aulasService.remove(+id);
+  }
 
 }

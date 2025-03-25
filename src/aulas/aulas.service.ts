@@ -32,4 +32,12 @@ export class AulasService {
   }
     return aula;
   }
+  //delete
+  async remove(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    const aula = await this.aulaRepository.findOne({ where: { id_aula: id } });
+    if (!aula) {
+      throw new NotFoundException(`Aula con ID ${id} no encontrada`);
+    }
+    await this.aulaRepository.remove(aula);
+  }
 }
