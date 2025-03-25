@@ -9,13 +9,11 @@ import { EstadoEvento } from 'src/estado-evento/entities/estado-evento.entity';
 import { TipoEvento } from 'src/tipo-evento/entities/tipo-evento.entity';
 import { Ubicacion } from 'src/ubicacion/entities/ubicacion.entity';
 import { DirigidoA } from 'src/dirigido-a/entities/dirigido-a.entity';
-import { ValidatorsModule } from './Validators/validators.module';
 import { ScheduleModule } from '@nestjs/schedule';
 @Module({
   imports: [
     ScheduleModule.forRoot(),
     TypeOrmModule.forFeature([Eventos, EstadoEvento, TipoEvento, Ubicacion, DirigidoA]),
-    ValidatorsModule, // Importa el módulo de validadores
   ],
   controllers: [EventosController],
   providers: [EventosService],

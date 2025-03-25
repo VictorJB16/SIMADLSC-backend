@@ -1,17 +1,13 @@
 // src/events/dto/create-eventos.dto.ts
-
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsNotEmpty,
   IsString,
   IsDate,
   IsOptional,
   IsInt,
-  Validate,
   Matches,
 } from 'class-validator';
-import { IsNotPastDate } from '../Validators/is-not-past-date.validator';
-import { IsNotOverlapping } from '../Validators/is-not-overlapping.validator';
 
 export class CreateEventoDto {
   @IsString()
@@ -22,15 +18,16 @@ export class CreateEventoDto {
   @IsOptional()
   descripcion_Evento?: string;
 
-  @Type(() => Date)
+  @Transform(({ value }) => {
+    // Si recibimos "2025-04-19", separamos sus componentes
+    if (typeof value === 'string') {
+      const [year, month, day] = value.split('-').map(Number);
+      // Creamos un objeto Date usando el constructor local (nota: mes es 0-based)
+      return new Date(year, month - 1, day);
+    }
+    return value;
+  })
   @IsDate({ message: 'La fecha del evento debe ser una fecha válida' })
-
-  @Validate(IsNotPastDate, {
-    message: 'La fecha del evento no puede estar en el pasado.',
-  })
-  @Validate(IsNotOverlapping, {
-    message: 'La ubicación está ocupada en el horario especificado.',
-  })
   fecha_Evento: Date;
 
   @IsString()
@@ -45,7 +42,6 @@ export class CreateEventoDto {
   @Matches(/^([01]\d|2[0-3]):([0-5]\d)$/, {
     message: 'La hora de fin debe estar en formato HH:MM',
   })
-
   hora_fin_Evento: string;
 
   @IsInt()
