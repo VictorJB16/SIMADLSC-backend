@@ -32,25 +32,37 @@ export class AuthService {
 
 
   async login(email_Usuario: string, password: string) {
-   const user = await this.validateUser(email_Usuario, password);
-
-const payload = {
-  sub: user.id_usuario,
-  email: user.email_Usuario,
-  nombre: user.nombre_Usuario,
-  apellido1: user.apellido1_Usuario,
-  apellido2: user.apellido2_Usuario,
-  rol: user.rol_Usuario.nombre_Rol,
-  id_Profesor: user.profesor ? user.profesor.id_Profesor : null,
-  id_Estudiante: user.estudiante ? user.estudiante.id_Estudiante : null,
-  materia: user.profesor && user.profesor.id_Materia && user.profesor.id_Materia.length ? user.profesor.id_Materia[0].id_Materia : null,
-};
-
-
-
+    // 1. Validar credenciales
+    const user = await this.validateUser(email_Usuario, password);
+    if (!user) {
+      throw new UnauthorizedException('Credenciales inválidas');
+    }
+  
+    // 2. Obtener el array de materias (si el usuario es profesor)
+    //    user.profesor.id_Materia es un array de objetos Materia
+    //    Cada objeto Materia tiene su propio 'id_Materia' (número)
+    const materiasProfesor = user.profesor?.id_Materia?.map(m => m.id_Materia) ?? [];
+  
+    // 3. Construir el payload
+    const payload = {
+      sub: user.id_usuario,
+      email: user.email_Usuario,
+      nombre: user.nombre_Usuario,
+      apellido1: user.apellido1_Usuario,
+      apellido2: user.apellido2_Usuario,
+      rol: user.rol_Usuario?.nombre_Rol,
+      id_Profesor: user.profesor?.id_Profesor ?? null,
+      id_Estudiante: user.estudiante?.id_Estudiante ?? null,
+      materia: materiasProfesor, // <-- Aquí los IDs de las materias
+    };
+  
+    // 4. Firmar el JWT
+    const access_token = this.jwtService.sign(payload);
+  
+    // 5. Retornar el token, el rol y el payload
     return {
-      access_token: this.jwtService.sign(payload),
-      role: user.rol_Usuario.nombre_Rol,
+      access_token,
+      role: user.rol_Usuario?.nombre_Rol,
       payload,
     };
   }

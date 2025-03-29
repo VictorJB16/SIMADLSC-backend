@@ -172,7 +172,7 @@ export class UsersService {
 
     return this.usersRepository.findOne({
       where: { email_Usuario: email },
-      relations: ['rol_Usuario', 'estudiante', 'profesor'],
+      relations: ['rol_Usuario', 'estudiante', 'profesor', 'profesor.id_Materia', 'profesor.horarios'],
     });
 
   }
