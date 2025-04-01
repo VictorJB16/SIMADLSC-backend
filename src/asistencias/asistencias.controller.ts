@@ -24,7 +24,6 @@ export class AsistenciasController {
   
   }
 
-
   @Delete(':id')
   async deleteAsistencia(@Param('id') id: string): Promise<void> {
     return this.asistenciasService.eliminarAsistencia(+id);
@@ -35,7 +34,6 @@ export class AsistenciasController {
     return this.asistenciasService.findByDate(fecha);
   }
 
-  
   @Get('grado/:id_grado')
   async findByGrado(
     @Param('id_grado') id_grado: string,
@@ -43,7 +41,6 @@ export class AsistenciasController {
     return this.asistenciasService.findByGrado(+id_grado);
   }
 
-  
   @Get('materia/:id_Materia')
   async findByMateria(
     @Param('id_Materia') id_Materia: string,
@@ -51,7 +48,6 @@ export class AsistenciasController {
     return this.asistenciasService.findByMateria(+id_Materia);
   }
 
-  
   @Get('seccion/:id_Seccion')
   async findBySeccion(
     @Param('id_Seccion') id_Seccion: string,
@@ -59,7 +55,6 @@ export class AsistenciasController {
     return this.asistenciasService.findBySeccion(+id_Seccion);
   }
   
-
   @Patch(':id')
   async actualizarAsistencia(
     @Param('id') id: string,
@@ -122,5 +117,20 @@ export class AsistenciasController {
       fechaInicio,
       fechaFin,
     );
+  }
+
+  @Get('/resumen/:id')
+  async getResumen(@Param('id', ParseIntPipe) id: number) {
+    return await this.asistenciasService.obtenerResumenPorUsuario(id);
+  }
+
+  
+  @Get('estudiante/:id/resumen-fechas/:fechaInicio/:fechaFin')
+  async getResumenPorRangoDeFechasPorEstudiante(
+    @Param('id', ParseIntPipe) studentId: number,
+    @Param('fechaInicio') fechaInicio: string,
+    @Param('fechaFin') fechaFin: string,
+  ) {
+    return await this.asistenciasService.obtenerResumenPorRangoDeFechasPorEstudiante(studentId, fechaInicio, fechaFin);
   }
 }

@@ -566,4 +566,125 @@ export class AsistenciasService {
     };
   }
 
+  async obtenerResumenPorUsuario(studentId: number): Promise<any> {
+    // Se obtienen las asistencias del estudiante filtrando por id
+    const asistencias = await this.asistenciaRepository
+      .createQueryBuilder('asistencia')
+      .leftJoinAndSelect('asistencia.id_Estudiante', 'estudiante')
+      .leftJoinAndSelect('asistencia.id_Materia', 'materia')
+      .where('estudiante.id_Estudiante = :studentId', { studentId })
+      .getMany();
+
+    if (!asistencias.length) {
+      throw new NotFoundException(`No se encontraron asistencias para el usuario con ID ${studentId}`);
+    }
+
+    let totalAusencias = 0;
+    let totalEscapados = 0;
+    let totalJustificados = 0;
+    const resumenPorMateria = {};
+
+    // Recorrer cada asistencia para agrupar por materia
+    asistencias.forEach((asistencia) => {
+      const materiaId = asistencia.id_Materia.id_Materia;
+      if (!resumenPorMateria[materiaId]) {
+        resumenPorMateria[materiaId] = {
+          materia: asistencia.id_Materia, // se retorna la entidad completa (puede incluir nombre, etc.)
+          ausencias: 0,
+          escapados: 0,
+          justificados: 0,
+        };
+      }
+      switch (asistencia.estado) {
+        case AsistenciaStatus.AUSENTE:
+          totalAusencias++;
+          resumenPorMateria[materiaId].ausencias++;
+          break;
+        case AsistenciaStatus.ESCAPADO:
+          totalEscapados++;
+          resumenPorMateria[materiaId].escapados++;
+          break;
+        case AsistenciaStatus.JUSTIFICADO:
+          totalJustificados++;
+          resumenPorMateria[materiaId].justificados++;
+          break;
+        // Se pueden agregar otros casos si es necesario
+      }
+    });
+
+    return {
+      total_ausencias: totalAusencias,
+      total_escapados: totalEscapados,
+      total_justificados: totalJustificados,
+      resumen_por_materia: Object.values(resumenPorMateria),
+    };
+  }
+
+  async obtenerResumenPorRangoDeFechasPorEstudiante(studentId: number, fechaInicio: string, fechaFin: string): Promise<any> {
+    // Validaciones de fechas
+    const inicio = new Date(fechaInicio);
+    const fin = new Date(fechaFin);
+    if (isNaN(inicio.getTime())) {
+      throw new BadRequestException(`La fecha de inicio "${fechaInicio}" no es válida`);
+    }
+    if (isNaN(fin.getTime())) {
+      throw new BadRequestException(`La fecha fin "${fechaFin}" no es válida`);
+    }
+    if (inicio > fin) {
+      throw new BadRequestException('La fecha de inicio no puede ser mayor que la fecha fin');
+    }
+    
+    // Se obtienen las asistencias del estudiante filtradas por id y dentro del rango de fechas
+    const asistencias = await this.asistenciaRepository
+      .createQueryBuilder('asistencia')
+      .leftJoinAndSelect('asistencia.id_Estudiante', 'estudiante')
+      .leftJoinAndSelect('asistencia.id_Materia', 'materia')
+      .where('estudiante.id_Estudiante = :studentId', { studentId })
+      .andWhere('asistencia.fecha BETWEEN :fechaInicio AND :fechaFin', { fechaInicio, fechaFin })
+      .getMany();
+
+    if (!asistencias.length) {
+      throw new NotFoundException(`No se encontraron asistencias para el usuario con ID ${studentId} en el rango ${fechaInicio} a ${fechaFin}`);
+    }
+
+    let totalAusencias = 0;
+    let totalEscapados = 0;
+    let totalJustificados = 0;
+    const resumenPorMateria = {};
+
+    // Agrupar y contar cada asistencia para el rango de fechas
+    asistencias.forEach((asistencia) => {
+      const materiaId = asistencia.id_Materia.id_Materia;
+      if (!resumenPorMateria[materiaId]) {
+        resumenPorMateria[materiaId] = {
+          materia: asistencia.id_Materia,
+          ausencias: 0,
+          escapados: 0,
+          justificados: 0,
+        };
+      }
+      switch (asistencia.estado) {
+        case AsistenciaStatus.AUSENTE:
+          totalAusencias++;
+          resumenPorMateria[materiaId].ausencias++;
+          break;
+        case AsistenciaStatus.ESCAPADO:
+          totalEscapados++;
+          resumenPorMateria[materiaId].escapados++;
+          break;
+        case AsistenciaStatus.JUSTIFICADO:
+          totalJustificados++;
+          resumenPorMateria[materiaId].justificados++;
+          break;
+        // Se pueden agregar otros casos si es necesario
+      }
+    });
+
+    return {
+      total_ausencias: totalAusencias,
+      total_escapados: totalEscapados,
+      total_justificados: totalJustificados,
+      resumen_por_materia: Object.values(resumenPorMateria),
+    };
+  }
 }

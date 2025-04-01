@@ -258,7 +258,7 @@ private generateProvisionalPassword(): string {
   return crypto.randomBytes(5).toString('hex');
 }
 
-@Cron(CronExpression.EVERY_HOUR)
+@Cron(CronExpression.EVERY_5_SECONDS)
 async processAcceptedEnrollments() {
   try {
     // Buscar todas las matrículas con estado 'AC' (Aceptado) que no tengan usuario asignado en el estudiante
