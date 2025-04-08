@@ -77,7 +77,7 @@ export class AuthService {
     // Generar un nuevo token de restablecimiento de contraseña cada vez que el usuario lo solicite
     const resetToken = this.jwtService.sign(
       { email_Usuario },
-      { secret: process.env.JWT_RESET_PASSWORD_SECRET, expiresIn: '1h' }
+      { secret: process.env.JWT_RESET_PASSWORD_SECRET, expiresIn: '8h' }
     );
   
 // Asegúrate de que el valor de FRONTEND_URL en .env no incluye la ruta `reset-password`

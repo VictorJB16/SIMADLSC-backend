@@ -174,4 +174,19 @@ export class EstudianteService {
       .where('seccion.id_Seccion = :id_Seccion', { id_Seccion })
       .getMany();
   }
+
+  
+
+  async findByCedula(cedula: string): Promise<Estudiante> {
+    const estudiante = await this.estudianteRepository.findOne({
+      where: { cedula },
+      relations: ['seccion', 'encargadoLegal', 'grado'], // Incluye las relaciones necesarias
+    });
+
+    if (!estudiante) {
+      throw new NotFoundException(`No se encontró un estudiante con la cédula: ${cedula}`);
+    }
+
+    return estudiante;
+  }
 }

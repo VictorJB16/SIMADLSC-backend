@@ -4,7 +4,8 @@ import {
   Post,
   Body,
   Param,
-  Query, // Asegúrate de importar Query
+  Query,
+  NotFoundException, // Asegúrate de importar Query
 } from '@nestjs/common';
 import { EstudianteService } from './estudiante.service';
 import { CreateEstudianteDto } from './dto/create-estudiante.dto';
@@ -21,11 +22,7 @@ export class EstudianteController {
     return await this.estudianteService.create(createEstudianteDto);
   }
 
-  /**
-   * GET /estudiantes
-   * Si se envían filtros (nombre, apellido, cedula, seccion, nivel), se llama a findByFilters.
-   * Caso contrario, se llama a findAll.
-   */
+
   @Get()
   async findAll(@Query() query: any): Promise<Estudiante[]> {
     if (query.nombre || query.apellido || query.cedula || query.seccion || query.nivel) {
@@ -48,6 +45,16 @@ export class EstudianteController {
   @Get(':id/horarios')
   async obtenerHorariosPorEstudiante(@Param('id') id: string): Promise<Horario[]> {
     return this.estudianteService.obtenerHorariosPorEstudiante(+id);
+  }
+
+
+  @Get('cedula/:cedula')
+  async findByCedula(@Param('cedula') cedula: string): Promise<Estudiante> {
+    const estudiante = await this.estudianteService.findByCedula(cedula);
+    if (!estudiante) {
+      throw new NotFoundException(`No se encontró un estudiante con la cédula: ${cedula}`);
+    }
+    return estudiante;
   }
 
   @Post('matricula')
