@@ -38,35 +38,76 @@ export class MatriculaService {
 
   async create(createMatriculaDto: CreateMatriculaDto): Promise<Matricula> {
     const { periodo, estudiante: estudianteData, encargadoLegal: encargadoLegalData } = createMatriculaDto;
-
-    // 1. Buscar el Periodo por su ID
+  
+    // 1. Buscar el periodo por su ID
     const periodoEntity = await this.periodoRepository.findOne({ where: { id_Periodo: periodo } });
     if (!periodoEntity) {
       throw new NotFoundException(`Periodo con ID ${periodo} no encontrado`);
     }
-
-    // 2. Crear y guardar el Encargado Legal
-    const encargadoLegalEntity = this.encargadoLegalRepository.create(encargadoLegalData);
-    await this.encargadoLegalRepository.save(encargadoLegalEntity);
-
-    // 3. Buscar el Grado por su ID proporcionado en estudianteData.gradoId
-    const gradoEntity = await this.gradoRepository.findOne({where : {id_grado: estudianteData.gradoId}});
+  
+    // 2. Buscar (o crear) el Encargado Legal usando su N_Cedula
+    let encargadoLegalEntity: EncargadoLegal;
+    if (encargadoLegalData.N_Cedula) {
+      const existingEncargado = await this.encargadoLegalRepository.findOne({
+        where: { N_Cedula: encargadoLegalData.N_Cedula },
+      });
+      if (existingEncargado) {
+        Object.assign(existingEncargado, encargadoLegalData);
+        encargadoLegalEntity = await this.encargadoLegalRepository.save(existingEncargado);
+      } else {
+        encargadoLegalEntity = await this.encargadoLegalRepository.save(
+          this.encargadoLegalRepository.create(encargadoLegalData)
+        );
+      }
+    } else {
+      encargadoLegalEntity = await this.encargadoLegalRepository.save(
+        this.encargadoLegalRepository.create(encargadoLegalData)
+      );
+    }
+  
+    // 3. Buscar el Grado por su ID (según estudianteData.gradoId)
+    const gradoEntity = await this.gradoRepository.findOne({ where: { id_grado: estudianteData.gradoId } });
     if (!gradoEntity) {
       throw new NotFoundException(`Grado con ID ${estudianteData.gradoId} no encontrado`);
     }
-
-    // 4. Crear y guardar el Estudiante
-    const estudianteEntity = this.estudianteRepository.create({
-      ...estudianteData,
-      encargadoLegal: encargadoLegalEntity,
-      grado: gradoEntity,
+  
+    // 4. Verificar si el estudiante ya existe usando la propiedad "cedula" de la entidad Estudiante
+    let estudianteEntity: Estudiante;
+    const existingStudent = await this.estudianteRepository.findOne({
+      where: { cedula: estudianteData.cedula },
     });
-    await this.estudianteRepository.save(estudianteEntity);
-
-    // 5. Generar fechas de creación y actualización
-    const currentDate = new Date().toISOString().split('T')[0]; // Formato 'YYYY-MM-DD'
-
-    // 6. Crear la Matrícula y establecer las relaciones
+    if (existingStudent) {
+      // Actualiza los datos del estudiante existente y asigna el nuevo grado
+      Object.assign(existingStudent, estudianteData);
+      existingStudent.grado = gradoEntity;
+      estudianteEntity = await this.estudianteRepository.save(existingStudent);
+    } else {
+      // Crear y guardar un nuevo estudiante
+      estudianteEntity = await this.estudianteRepository.save(
+        this.estudianteRepository.create({
+          ...estudianteData,
+          encargadoLegal: encargadoLegalEntity,
+          grado: gradoEntity,
+        })
+      );
+    }
+  
+    // 5. Verificar si ya existe una matrícula para este estudiante en el mismo periodo
+    const existingMatricula = await this.matriculaRepository.findOne({
+      where: {
+        estudiante: { id_Estudiante: estudianteEntity.id_Estudiante },
+        periodo: { id_Periodo: periodoEntity.id_Periodo },
+      },
+    });
+    if (existingMatricula) {
+      // Elimina la matrícula previa para evitar duplicados
+      await this.matriculaRepository.remove(existingMatricula);
+    }
+  
+    // 6. Generar la fecha actual en formato 'YYYY-MM-DD'
+    const currentDate = new Date().toISOString().split('T')[0];
+  
+    // 7. Crear la nueva matrícula en estado Pendiente para aprobar de nuevo el proceso
     const matriculaEntity = this.matriculaRepository.create({
       fecha_creacion_Matricula: currentDate,
       fecha_actualizacion_Matricula: currentDate,
@@ -75,11 +116,8 @@ export class MatriculaService {
       encargadoLegal: encargadoLegalEntity,
       periodo: periodoEntity,
     });
-    await this.matriculaRepository.save(matriculaEntity);
-
-    return matriculaEntity;
+    return await this.matriculaRepository.save(matriculaEntity);
   }
-
 
 
 // Nuevo método para obtener los datos del Encargado Legal y del Estudiante
@@ -261,7 +299,7 @@ private generateProvisionalPassword(): string {
 @Cron(CronExpression.EVERY_5_SECONDS)
 async processAcceptedEnrollments() {
   try {
-    // Buscar todas las matrículas con estado 'AC' (Aceptado) que no tengan usuario asignado en el estudiante
+    // Buscar todas las matrículas con estado 'Aceptado' (AC) que no tengan usuario asignado al estudiante
     const acceptedEnrollments = await this.matriculaRepository.find({
       where: { 
         estado_Matricula: EstadoMatricula.Aceptado,
@@ -274,18 +312,21 @@ async processAcceptedEnrollments() {
       try {
         const student = enrollment.estudiante;
 
-        // Verificar que no exista ya un usuario asignado o que no exista un usuario con ese correo
+        // Verificar que no exista ya un usuario asignado o registrado previamente para este correo
         if (student.usuario) {
+          // Ya existe un usuario asociado, no se crea ni se envía correo
           continue;
         }
         const existingUser = await this.usersService.findUserByEmail(student.correo_estudiantil);
         if (existingUser) {
+          // El estudiante ya tuvo un usuario registrado en un ciclo previo; por lo tanto, se omite enviar el correo
           continue;
         }
 
+        // Si llega hasta acá, se procede a crear el usuario y enviar correo
         const provisionalPassword = this.generateProvisionalPassword();
 
-        // Crear solo el usuario (sin crear un nuevo estudiante) y asignarlo al estudiante existente
+        // Crear el usuario y asignarlo al estudiante existente
         const { usuario } = await this.usersService.createUserForExistingStudent(
           {
             nombre_Usuario: student.nombre_Estudiante,
