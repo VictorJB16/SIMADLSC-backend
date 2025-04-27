@@ -205,9 +205,15 @@ export class UsersService {
     await this.usersRepository.remove(user);
   }
 
-  async toggleBlockUser(id: number, bloqueado_Usuario: boolean): Promise<Usuario> {
+  async toggleBlockUser(
+    id: number,
+    bloqueado_Usuario?: boolean,  // opcional: si no viene, invierte el estado
+  ): Promise<Usuario> {
     const user = await this.findById(id);
-    user.bloqueado_Usuario = bloqueado_Usuario;
+    user.bloqueado_Usuario =
+      typeof bloqueado_Usuario === 'boolean'
+        ? bloqueado_Usuario
+        : !user.bloqueado_Usuario;
     return this.usersRepository.save(user);
   }
 

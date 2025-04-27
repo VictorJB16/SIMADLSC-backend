@@ -1,7 +1,9 @@
 import {
   Controller,
   Get,
+  Put,
   Post,
+  Patch,
   Body,
   Param,
   Query,
@@ -61,4 +63,22 @@ export class EstudianteController {
   async creates(@Body() createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
     return await this.estudianteService.createEstudiante(createEstudianteDto);
   }
+
+  @Patch(':id/deactivate')
+  deactivate(@Param('id') id: string): Promise<Estudiante> {
+    return this.estudianteService.deactivateStudent(+id);
+  }
+
+  @Patch(':id/seccion')
+  updateSection(
+    @Param('id') id: string,
+    @Body('seccionId') seccionId: number,
+  ): Promise<Estudiante> {
+    return this.estudianteService.updateSection(+id, seccionId);
+  }
+  @Post('graduar-undecimo')
+  graduarUndecimo(): Promise<Estudiante[]> {
+    return this.estudianteService.graduateUndecimo();
+  }
+  
 }

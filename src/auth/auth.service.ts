@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException, ForbiddenException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcryptjs';
 import { TokenExpiredError, JsonWebTokenError } from 'jsonwebtoken'; // Asegúrate de importar desde jsonwebtoken
@@ -19,6 +19,10 @@ export class AuthService {
     if (!user || !user.contraseña_Usuario) {
       throw new UnauthorizedException('Credenciales incorrectas');
     }
+       // ← NUEVO: impide el login si está bloqueado
+   if (user.bloqueado_Usuario) {
+    throw new ForbiddenException('Tu cuenta está bloqueada');
+   }
 
     const isPasswordValid = await bcrypt.compare(password, user.contraseña_Usuario);
     if (!isPasswordValid) {

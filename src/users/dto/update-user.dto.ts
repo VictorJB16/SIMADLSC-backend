@@ -1,4 +1,4 @@
-import { IsOptional, IsEmail, MinLength } from 'class-validator';
+import { IsOptional, IsEmail, MinLength, IsBoolean } from 'class-validator';
 
 export class UpdateUserDto {
   @IsOptional()
@@ -21,5 +21,7 @@ export class UpdateUserDto {
   @IsOptional()
   rol_Usuario?: number; // Referencia al ID del Rol
   
+   @IsOptional()
+  @IsBoolean({ message: 'El valor de bloqueo debe ser verdadero o falso' })
   bloqueado_Usuario?: boolean;
 }

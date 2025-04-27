@@ -6,6 +6,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth/jwt-auth.guard';
 import { CreateEstudianteDto } from 'src/estudiante/dto/create-estudiante.dto';
 import { Usuario } from './entities/user.entity';
 import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
+import { BlockGuard } from 'src/auth/guard/block.guard';
 
 @Controller('users')
 export class UsersController {
@@ -58,22 +59,13 @@ async createUserAsStudent(
     return { message: 'Usuario eliminado' }; // O devuelve un estado 204 si no quieres enviar ningún mensaje.
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, BlockGuard)  // opcional, para que solo usuarios válidos/administradores lleguen aquí
   @Put(':id/block')
   async blockUser(@Param('id') id: number) {
-    const user = await this.usersService.findById(id);
-    if (!user) {
-      throw new NotFoundException('Usuario no encontrado');
-    }
-  
-    // Invertimos el estado actual de "bloqueado_Usuario"
-    const updateUserDto: UpdateUserDto = { bloqueado_Usuario: !user.bloqueado_Usuario };
-  
-    // Guardamos el estado actualizado en la base de datos
-    await this.usersService.updateUser(user.id_usuario, updateUserDto);
-  
-    // Devolvemos el usuario actualizado
-    return { message: 'Estado de usuario actualizado', user: { ...user, bloqueado_Usuario: !user.bloqueado_Usuario } };
+    const updated = await this.usersService.toggleBlockUser(id);
+    return {
+      message: `Usuario ${updated.bloqueado_Usuario ? 'bloqueado' : 'desbloqueado'}`,
+      user: updated,
+    };
   }
-
 }

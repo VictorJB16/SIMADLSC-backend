@@ -1,5 +1,5 @@
 // src/Service/EstudianteService.ts
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Estudiante } from './entities/estudiante.entity';
 import { Repository, Not, IsNull } from 'typeorm';
@@ -10,9 +10,12 @@ import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
 import { tipoadecuacion } from './entities/tipo-adecuacion.enum';
 import { Grado } from 'src/grados/entities/grados-entity';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class EstudianteService {
+
+  private readonly logger = new Logger(EstudianteService.name);
   constructor(
     @InjectRepository(Estudiante)
     private readonly estudianteRepository: Repository<Estudiante>,
@@ -28,7 +31,9 @@ export class EstudianteService {
 
     @InjectRepository(Grado)
     private readonly gradoRepository: Repository<Grado>,
-  ) {}
+
+    private readonly usersService: UsersService,
+    ) {}
 
   async create(createEstudianteDto: CreateEstudianteDto): Promise<Estudiante> {
     try {
@@ -189,4 +194,72 @@ export class EstudianteService {
 
     return estudiante;
   }
+  async deactivateStudent(id: number): Promise<Estudiante> {
+    const est = await this.findOne(id);
+    est.estado_Estudiante = 'Inactivo';
+    est.seccion = null;
+    est.grado = null;
+    try {
+      return await this.estudianteRepository.save(est);
+    } catch {
+      throw new InternalServerErrorException('No se pudo cambiar el estado del estudiante');
+    }
+  }
+
+  async updateSection(id: number, seccionId: number): Promise<Estudiante> {
+    const estudiante = await this.findOne(id);
+    const seccion = await this.seccionRepository.findOne({
+      where: { id_Seccion: seccionId },
+    });
+    if (!seccion) throw new NotFoundException(`Sección con ID ${seccionId} no encontrada`);
+    estudiante.seccion = seccion;
+    try {
+      return await this.estudianteRepository.save(estudiante);
+    } catch {
+      throw new InternalServerErrorException('No se pudo actualizar la sección del estudiante');
+    }
+  }
+  async graduateUndecimo(): Promise<Estudiante[]> {
+    // 1) Buscar el grado “Undecimo”
+    const grado = await this.gradoRepository.findOne({
+      where: { nivel: 'Undecimo' },
+    });
+    if (!grado) {
+      throw new NotFoundException(`Grado 'Undecimo' no encontrado`);
+    }
+  
+    // 2) Obtener estudiantes activos de ese grado
+    const estudiantes = await this.estudianteRepository.find({
+      where: {
+        grado: { id_grado: grado.id_grado },
+        estado_Estudiante: 'Activo',
+      },
+    });
+  
+    const graduados: Estudiante[] = [];
+  
+    // 3) Procesar cada estudiante
+    for (const estudiante of estudiantes) {
+      estudiante.estado_Estudiante = 'Graduado';
+      estudiante.grado = null;
+      estudiante.seccion = null;
+      await this.estudianteRepository.save(estudiante);
+      graduados.push(estudiante);
+  
+      // 4) Bloquear el usuario del estudiante, pero si falla (404), lo ignoramos
+      try {
+        await this.usersService.toggleBlockUser(estudiante.id_Estudiante, true);
+      } catch (err) {
+        // Solo registramos, pero no abortamos todo el proceso
+        this.logger.warn(
+          `Al graduar estudiante ${estudiante.id_Estudiante}: no se pudo bloquear usuario. ${err.message}`
+        );
+      }
+    }
+  
+    return graduados;
+  }
+
 }
+
+
