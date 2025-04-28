@@ -9,10 +9,7 @@ export class Periodo {
 
     @Column({ length: 100 })
     nombre_Periodo: string;
-
-    @OneToMany(() => Matricula, (matricula) => matricula.periodo)
-    matriculas: Matricula[];
-
+    
     @OneToMany(() => Asistencia, (asistencia) => asistencia.id_Periodo)
     asistencias: Asistencia[]
 

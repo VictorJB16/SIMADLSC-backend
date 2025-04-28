@@ -4,7 +4,6 @@ import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { IsNull, Repository } from 'typeorm';
-import { Periodo } from 'src/periodo/entities/periodo.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { EstadoMatricula } from './entities/Estado-Matricula.enum';
 import { UpdateMatriculaDto } from './Dto/update-matricula.dto';
@@ -26,8 +25,6 @@ export class MatriculaService {
     private readonly estudianteRepository: Repository<Estudiante>,
     @InjectRepository(EncargadoLegal)
     private readonly encargadoLegalRepository: Repository<EncargadoLegal>,
-    @InjectRepository(Periodo)
-    private readonly periodoRepository: Repository<Periodo>,
     @InjectRepository(Grado)
     private readonly gradoRepository: Repository<Grado>,
     @InjectRepository(Seccion)
@@ -37,15 +34,9 @@ export class MatriculaService {
   ) {}
 
   async create(createMatriculaDto: CreateMatriculaDto): Promise<Matricula> {
-    const { periodo, estudiante: estudianteData, encargadoLegal: encargadoLegalData } = createMatriculaDto;
-  
-    // 1. Buscar el periodo por su ID
-    const periodoEntity = await this.periodoRepository.findOne({ where: { id_Periodo: periodo } });
-    if (!periodoEntity) {
-      throw new NotFoundException(`Periodo con ID ${periodo} no encontrado`);
-    }
-  
-    // 2. Buscar (o crear) el Encargado Legal usando su N_Cedula
+    const { estudiante: estudianteData, encargadoLegal: encargadoLegalData } = createMatriculaDto;
+
+    // 1. Buscar (o crear) el Encargado Legal usando su N_Cedula
     let encargadoLegalEntity: EncargadoLegal;
     if (encargadoLegalData.N_Cedula) {
       const existingEncargado = await this.encargadoLegalRepository.findOne({
@@ -64,14 +55,14 @@ export class MatriculaService {
         this.encargadoLegalRepository.create(encargadoLegalData)
       );
     }
-  
-    // 3. Buscar el Grado por su ID (según estudianteData.gradoId)
+    
+    // 2. Buscar el Grado por su ID (según estudianteData.gradoId)
     const gradoEntity = await this.gradoRepository.findOne({ where: { id_grado: estudianteData.gradoId } });
     if (!gradoEntity) {
       throw new NotFoundException(`Grado con ID ${estudianteData.gradoId} no encontrado`);
     }
-  
-    // 4. Verificar si el estudiante ya existe usando la propiedad "cedula" de la entidad Estudiante
+    
+    // 3. Verificar si el estudiante ya existe usando la propiedad "cedula"
     let estudianteEntity: Estudiante;
     const existingStudent = await this.estudianteRepository.findOne({
       where: { cedula: estudianteData.cedula },
@@ -91,30 +82,26 @@ export class MatriculaService {
         })
       );
     }
-  
-    // 5. Verificar si ya existe una matrícula para este estudiante en el mismo periodo
+    
+    // 4. Verificar si ya existe una matrícula para este estudiante (sin considerar periodo)
     const existingMatricula = await this.matriculaRepository.findOne({
-      where: {
-        estudiante: { id_Estudiante: estudianteEntity.id_Estudiante },
-        periodo: { id_Periodo: periodoEntity.id_Periodo },
-      },
+      where: { estudiante: { id_Estudiante: estudianteEntity.id_Estudiante } },
     });
     if (existingMatricula) {
       // Elimina la matrícula previa para evitar duplicados
       await this.matriculaRepository.remove(existingMatricula);
     }
-  
-    // 6. Generar la fecha actual en formato 'YYYY-MM-DD'
+    
+    // 5. Generar la fecha actual en formato 'YYYY-MM-DD'
     const currentDate = new Date().toISOString().split('T')[0];
-  
-    // 7. Crear la nueva matrícula en estado Pendiente para aprobar de nuevo el proceso
+    
+    // 6. Crear la nueva matrícula en estado Pendiente
     const matriculaEntity = this.matriculaRepository.create({
       fecha_creacion_Matricula: currentDate,
       fecha_actualizacion_Matricula: currentDate,
       estado_Matricula: EstadoMatricula.Pendiente,
       estudiante: estudianteEntity,
       encargadoLegal: encargadoLegalEntity,
-      periodo: periodoEntity,
     });
     return await this.matriculaRepository.save(matriculaEntity);
   }
@@ -199,7 +186,6 @@ async findAll(): Promise<Matricula[]> {
         grado: true,
       },
       encargadoLegal: true,
-      periodo: true,
     },
   });
 }

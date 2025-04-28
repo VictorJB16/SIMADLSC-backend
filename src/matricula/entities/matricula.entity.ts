@@ -1,10 +1,8 @@
 import { EncargadoLegal } from "src/encargado-legal/entities/encargado-legal.entity";
 import { Estudiante } from "src/estudiante/entities/estudiante.entity";
-import { Grado } from "src/grados/entities/grados-entity";
 import { Seccion } from "src/secciones/entities/seccion.entity";
 import { Usuario } from "src/users/entities/user.entity";
-import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Periodo } from "src/periodo/entities/periodo.entity";
+import { Column,  Entity, ManyToOne, PrimaryGeneratedColumn,  } from "typeorm";
 import { EstadoMatricula } from "./Estado-Matricula.enum";
 
 @Entity('matriculas')
@@ -31,9 +29,6 @@ export class Matricula {
   
     @ManyToOne(() => EncargadoLegal, (encargadoLegal) => encargadoLegal.matriculas)
     encargadoLegal: EncargadoLegal;
-
-    @ManyToOne(() => Periodo, (periodo) => periodo.matriculas, { eager: true })
-    periodo: Periodo;
   
     @ManyToOne(() => Usuario, (usuario) => usuario.matriculas)
     usuario: Usuario;

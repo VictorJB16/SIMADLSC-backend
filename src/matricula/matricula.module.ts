@@ -5,7 +5,6 @@ import { Estudiante } from 'src/estudiante/entities/estudiante.entity';
 import { EncargadoLegal } from 'src/encargado-legal/entities/encargado-legal.entity';
 import { Matricula } from './entities/matricula.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Periodo } from 'src/periodo/entities/periodo.entity';
 import { Grado } from 'src/grados/entities/grados-entity';
 import { Seccion } from 'src/secciones/entities/seccion.entity';
 import { UsersModule } from 'src/users/users.module';
@@ -13,7 +12,7 @@ import { MailerCustomModule } from 'src/mailer/mailer.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Matricula, Estudiante, EncargadoLegal, Periodo, Grado, Seccion]),
+    TypeOrmModule.forFeature([Matricula, Estudiante, EncargadoLegal, Grado, Seccion]),
     UsersModule,
     MailerCustomModule
   ],

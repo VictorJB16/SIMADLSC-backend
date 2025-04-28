@@ -8,10 +8,6 @@ import { EstadoMatricula } from "../entities/Estado-Matricula.enum";
 export class CreateMatriculaDto {
 
   @IsNotEmpty()
-  @IsNumber()
-  periodo: number;
-
-  @IsNotEmpty()
   @ValidateNested()
   @Type(() => CreateEstudianteDto)
   estudiante: CreateEstudianteDto;
