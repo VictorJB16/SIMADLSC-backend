@@ -1,4 +1,9 @@
+// src/app.module.ts
+
 import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProfileController } from './profile/profile.controller';
@@ -32,7 +37,9 @@ import { AppController } from './app/app.controller';
 // Define una función de configuración para cargar valores sensibles
 const config = () => ({
   database: {
-    url: process.env.DATABASE_URL || 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway'
+    url:
+      process.env.DATABASE_URL ||
+      'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5w@autorack.proxy.rlwy.net:14487/railway',
   },
   mail: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -50,6 +57,17 @@ const config = () => ({
 
 @Module({
   imports: [
+    ServeStaticModule.forRoot({
+      serveRoot: '/uploads',
+      // apunta a la carpeta uploads EN LA RAÍZ de tu proyecto, no a dist/uploads
+      rootPath: join(process.cwd(), 'uploads'),
+      serveStaticOptions: {
+        index: false,      // no sirve index.html
+        fallthrough: false // devuelve 404 si no existe el archivo
+      },
+    }),
+
+    // 2) Módulos de configuración y ORM
     ConfigModule.forRoot({
       load: [config],
       envFilePath: '.env',
@@ -68,6 +86,8 @@ const config = () => ({
         ssl: { rejectUnauthorized: false },
       }),
     }),
+
+    // 3) Resto de tus módulos
     AsistenciasModule,
     JustificacionAusenciaModule,
     AuthModule,

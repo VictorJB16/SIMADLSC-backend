@@ -35,5 +35,8 @@ export class Matricula {
     
     @ManyToOne(() => Seccion, (seccion) => seccion.matriculas)
     seccion: Seccion;
+
+    @Column('simple-array', { nullable: true })
+    archivos?: string[];
   
     }

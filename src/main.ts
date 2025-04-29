@@ -2,6 +2,8 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import * as dotenv from 'dotenv';
+import * as express from 'express';
+import { join } from 'path';
 import { AllExceptionsFilter } from './horario/filter/AllExceptionsFilter';
 
 // Cargar variables de entorno
@@ -63,6 +65,11 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
     }),
+  );
+
+  app.use(
+    '/uploads',
+    express.static(join(__dirname, '..', 'src', 'uploads')),
   );
 
   // Ejemplo de uso de la función para generar UUID en cualquier parte del código

@@ -33,10 +33,13 @@ export class MatriculaService {
     private readonly mailerService: MailerCustomService,
   ) {}
 
-  async create(createMatriculaDto: CreateMatriculaDto): Promise<Matricula> {
+  async create(
+    createMatriculaDto: CreateMatriculaDto,
+    files: Express.Multer.File[],                           // ← añadimos los archivos aquí
+  ): Promise<Matricula> {
     const { estudiante: estudianteData, encargadoLegal: encargadoLegalData } = createMatriculaDto;
-
-    // 1. Buscar (o crear) el Encargado Legal usando su N_Cedula
+  
+    // 1. Buscar (o crear) el Encargado Legal
     let encargadoLegalEntity: EncargadoLegal;
     if (encargadoLegalData.N_Cedula) {
       const existingEncargado = await this.encargadoLegalRepository.findOne({
@@ -55,25 +58,25 @@ export class MatriculaService {
         this.encargadoLegalRepository.create(encargadoLegalData)
       );
     }
-    
-    // 2. Buscar el Grado por su ID (según estudianteData.gradoId)
-    const gradoEntity = await this.gradoRepository.findOne({ where: { id_grado: estudianteData.gradoId } });
+  
+    // 2. Buscar el Grado
+    const gradoEntity = await this.gradoRepository.findOne({
+      where: { id_grado: estudianteData.gradoId },
+    });
     if (!gradoEntity) {
       throw new NotFoundException(`Grado con ID ${estudianteData.gradoId} no encontrado`);
     }
-    
-    // 3. Verificar si el estudiante ya existe usando la propiedad "cedula"
+  
+    // 3. Crear o actualizar Estudiante
     let estudianteEntity: Estudiante;
     const existingStudent = await this.estudianteRepository.findOne({
       where: { cedula: estudianteData.cedula },
     });
     if (existingStudent) {
-      // Actualiza los datos del estudiante existente y asigna el nuevo grado
       Object.assign(existingStudent, estudianteData);
       existingStudent.grado = gradoEntity;
       estudianteEntity = await this.estudianteRepository.save(existingStudent);
     } else {
-      // Crear y guardar un nuevo estudiante
       estudianteEntity = await this.estudianteRepository.save(
         this.estudianteRepository.create({
           ...estudianteData,
@@ -82,20 +85,17 @@ export class MatriculaService {
         })
       );
     }
-    
-    // 4. Verificar si ya existe una matrícula para este estudiante (sin considerar periodo)
+  
+    // 4. Evitar duplicados de matrícula
     const existingMatricula = await this.matriculaRepository.findOne({
       where: { estudiante: { id_Estudiante: estudianteEntity.id_Estudiante } },
     });
     if (existingMatricula) {
-      // Elimina la matrícula previa para evitar duplicados
       await this.matriculaRepository.remove(existingMatricula);
     }
-    
-    // 5. Generar la fecha actual en formato 'YYYY-MM-DD'
+  
+    // 5. Crear nueva Matrícula
     const currentDate = new Date().toISOString().split('T')[0];
-    
-    // 6. Crear la nueva matrícula en estado Pendiente
     const matriculaEntity = this.matriculaRepository.create({
       fecha_creacion_Matricula: currentDate,
       fecha_actualizacion_Matricula: currentDate,
@@ -103,9 +103,16 @@ export class MatriculaService {
       estudiante: estudianteEntity,
       encargadoLegal: encargadoLegalEntity,
     });
-    return await this.matriculaRepository.save(matriculaEntity);
+    const saved = await this.matriculaRepository.save(matriculaEntity);
+  
+    // 6. Guardar nombres de los archivos en la entidad
+    if (files?.length) {
+      saved.archivos = files.map(f => f.filename);
+      await this.matriculaRepository.save(saved);
+    }
+  
+    return saved;
   }
-
 
 // Nuevo método para obtener los datos del Encargado Legal y del Estudiante
 async findEncargadoAndEstudianteByMatriculaId(id: number) {
