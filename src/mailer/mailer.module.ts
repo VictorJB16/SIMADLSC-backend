@@ -12,8 +12,8 @@ import { MailerCustomService } from './mailer.service';
         port: 587, // Puerto de Gmail para TLS
         secure: false, // `false` para usar STARTTLS en el puerto 587
         auth: {
-          user: 'andreylanza3@gmail.com', // Reemplaza con tu correo
-          pass: 'nlil hjpl cntp bauq', // Reemplaza con la contraseña de aplicación de Gmail
+          user: 'liceosantacruz0219@gmail.com', // Reemplaza con tu correo
+          pass: 'urrq lbxp vyee mtow', // Reemplaza con la contraseña de aplicación de Gmail
         },
         tls: {
           rejectUnauthorized: false, // Útil para pruebas; asegúrate de cambiarlo en producción si es necesario
