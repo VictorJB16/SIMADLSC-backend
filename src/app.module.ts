@@ -46,8 +46,8 @@ const config = () => ({
     port: parseInt(process.env.SMTP_PORT, 10) || 587,
     secure: process.env.SMTP_SECURE === 'true' || false,
     auth: {
-      user: process.env.SMTP_USER || 'andreylanza3@gmail.com',
-      pass: process.env.SMTP_PASS || 'nlil hjpl cntp bauq',
+      user: process.env.SMTP_USER || 'liceosantacruz0219@gmail.com',
+      pass: process.env.SMTP_PASS || 'urrq lbxp vyee mtow',
     },
   },
   frontend: {
