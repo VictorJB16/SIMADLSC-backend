@@ -120,17 +120,16 @@ export class AsistenciasController {
   }
 
   @Get('/resumen/:id')
-  async getResumen(@Param('id', ParseIntPipe) id: number) {
-    return await this.asistenciasService.obtenerResumenPorUsuario(id);
-  }
+getResumen(@Param('id', ParseIntPipe) id: number) {
+  return this.asistenciasService.obtenerResumenPorUsuario(id);
+}
 
-  
-  @Get('estudiante/:id/resumen-fechas/:fechaInicio/:fechaFin')
-  async getResumenPorRangoDeFechasPorEstudiante(
-    @Param('id', ParseIntPipe) studentId: number,
-    @Param('fechaInicio') fechaInicio: string,
-    @Param('fechaFin') fechaFin: string,
-  ) {
-    return await this.asistenciasService.obtenerResumenPorRangoDeFechasPorEstudiante(studentId, fechaInicio, fechaFin);
-  }
+@Get('estudiante/:id/resumen-fechas/:fechaInicio/:fechaFin')
+getResumenPorRangoDeFechasPorEstudiante(
+  @Param('id', ParseIntPipe) id: number,
+  @Param('fechaInicio') fi: string,
+  @Param('fechaFin') ff: string
+) {
+  return this.asistenciasService.obtenerResumenPorRangoDeFechasPorEstudiante(id, fi, ff);
+}
 }
