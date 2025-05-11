@@ -325,4 +325,9 @@ async isSeccionDisponible(seccionId: number, dia: string, inicio: string, fin: s
   });
   return !conflicto;
 }
+
+ async deleteAllHorarios(): Promise<void> {
+    await this.horarioRepository.clear();
+  }
+  
 }

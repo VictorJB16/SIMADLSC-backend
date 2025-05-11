@@ -65,6 +65,17 @@ export class HorarioController {
       throw new HttpException('Horario no encontrado', HttpStatus.NOT_FOUND);
     }
   }
-
+ @Delete()
+  async deleteAll(): Promise<{ deleted: boolean }> {
+    try {
+      await this.horarioService.deleteAllHorarios();
+      return { deleted: true };
+    } catch (err) {
+      throw new HttpException(
+        'Error al eliminar todos los horarios',
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+  }
 
 }
