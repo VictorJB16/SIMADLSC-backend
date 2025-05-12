@@ -132,4 +132,12 @@ getResumenPorRangoDeFechasPorEstudiante(
 ) {
   return this.asistenciasService.obtenerResumenPorRangoDeFechasPorEstudiante(id, fi, ff);
 }
+
+
+ @Delete()
+  async deleteAll(): Promise<{ deleted: boolean }> {
+    await this.asistenciasService.deleteAllAsistencias();
+    return { deleted: true };
+  }
+  
 }

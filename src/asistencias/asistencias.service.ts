@@ -716,4 +716,9 @@ export class AsistenciasService {
       resumen_por_materia: Object.values(resumenPorMateria),
     };
   }
+  async deleteAllAsistencias(): Promise<void> {
+    await this.asistenciaRepository.clear();
+  }
+  
 }
+
