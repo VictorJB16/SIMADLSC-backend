@@ -37,9 +37,7 @@ import { AppController } from './app/app.controller';
 // Define una función de configuración para cargar valores sensibles
 const config = () => ({
   database: {
-    url:
-      process.env.DATABASE_URL ||
-      'mariadb://railway:7vveQiTcqYSmc7on7.O.UomcGXsBLsX.@ballast.proxy.rlwy.net:22790/railway',
+    url: process.env.DATABASE_URL || 'mariadb://railway:H6RH2AMSROf0xNW3~9hIJR.UqxIx7k5@mariadb.railway.internal:3306/railway',
   },
   mail: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -54,6 +52,8 @@ const config = () => ({
     url: process.env.FRONTEND_URL || 'https://simadlsc.vercel.app',
   },
 });
+console.log('[DEBUG] Using DATABASE_URL:', process.env.DATABASE_URL);
+
 
 @Module({
   imports: [
