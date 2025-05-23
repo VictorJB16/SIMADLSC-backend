@@ -15,13 +15,13 @@ import { Aula } from 'src/aulas/entities/aula.entity';
 dotenv.config(); // Cargar variables de entorno
 
 const AppDataSource = new DataSource({
-  type: 'mariadb',
-  host: process.env.DB_HOST,
-  port: parseInt(process.env.DB_PORT || '3306', 10),
-  username: process.env.DB_USERNAME,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_DATABASE,
-  entities: [Grado, Seccion,Profesor,Usuario,Roles,Estudiante,Materia,Aula,Horario,],
+type: 'mariadb',
+  host: process.env.MARIADB_HOST,
+  port: parseInt(process.env.MARIADB_PUBLIC_PORT || '3306', 10),
+  username: process.env.MARIADB_USER,
+  password: process.env.MARIADB_PASSWORD,
+  database: process.env.MARIADB_DATABASE,
+  entities: [Grado, Seccion, Profesor, Usuario, Roles, Estudiante, Materia, Aula, Horario],
   synchronize: false,
 });
 
