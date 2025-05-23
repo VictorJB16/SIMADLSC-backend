@@ -39,7 +39,7 @@ const config = () => ({
   database: {
     url:
       process.env.DATABASE_URL ||
-      'mariadb://railway:Yiieg23i2eNM~vR2CGnTT658J_usWTo.@ballast.proxy.rlwy.net:19186/simadlsc',
+      'mariadb://railway:Yiieg23i2eNM~vR2CGnTT658J_usWTo.@mariadb.railway.internal:3306/simadlsc',
   },
   mail: {
     host: process.env.SMTP_HOST || 'smtp.gmail.com',
