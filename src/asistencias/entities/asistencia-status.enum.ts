@@ -3,4 +3,5 @@ export enum AsistenciaStatus {
     AUSENTE = 'A',
     ESCAPADO = 'E',
     JUSTIFICADO = 'J',
+    TARDIA = 'T',
   }

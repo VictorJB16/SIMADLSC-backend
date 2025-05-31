@@ -242,7 +242,7 @@ export class AsistenciasService {
         .leftJoinAndSelect('asistencia.id_Profesor', 'profesor')
         .where('seccion.id_Seccion = :id_Seccion', { id_Seccion })
         .getMany();
-    
+  
       if (!asistencias.length) {
         throw new NotFoundException(
           `No hay asistencias para la sección con ID ${id_Seccion}`,
@@ -276,6 +276,8 @@ export class AsistenciasService {
 
       if (updateAsistenciaDto.estado) {
           asistencia.estado = updateAsistenciaDto.estado;
+          // Si el estado es TARDIA y tienes lógica especial para tardías, agrégala aquí
+          // Por ejemplo, podrías guardar un comentario o realizar alguna acción adicional
       }
 
       if (updateAsistenciaDto.id_Estudiante) {
@@ -511,6 +513,7 @@ export class AsistenciasService {
       total_ausencias: 0,
       total_escapados: 0,
       total_justificados: 0,
+      total_tardias: 0,
     };
 
     // Estadísticas por estudiante
@@ -530,6 +533,7 @@ export class AsistenciasService {
         ausencias: 0,
         escapados: 0,
         justificados: 0,
+        tardias: 0,
       };
 
       // Contar los diferentes tipos de asistencia
@@ -550,6 +554,10 @@ export class AsistenciasService {
           case AsistenciaStatus.JUSTIFICADO:
             estadisticasEstudiante.justificados++;
             estadisticasSeccion.total_justificados++;
+            break;
+          case AsistenciaStatus.TARDIA:
+            estadisticasEstudiante.tardias = (estadisticasEstudiante.tardias || 0) + 1;
+            estadisticasSeccion.total_tardias = (estadisticasSeccion.total_tardias || 0) + 1;
             break;
         }
       });
@@ -595,6 +603,7 @@ export class AsistenciasService {
       ausencias: number;
       escapados: number;
       justificados: number;
+      tardias: number;
     }> = {};
 
     for (const a of asistencias) {
@@ -605,6 +614,7 @@ export class AsistenciasService {
           ausencias: 0,
           escapados: 0,
           justificados: 0,
+          tardias: 0,
         };
       }
       const cnt = contarLecciones(a.lecciones);
@@ -620,6 +630,9 @@ export class AsistenciasService {
         case AsistenciaStatus.JUSTIFICADO:
           totalJustificados += cnt;
           resumenPorMateria[idMat].justificados += cnt;
+          break;
+        case AsistenciaStatus.TARDIA:
+          resumenPorMateria[idMat].tardias = (resumenPorMateria[idMat].tardias || 0) + cnt;
           break;
       }
     }
@@ -680,6 +693,7 @@ export class AsistenciasService {
       ausencias: number;
       escapados: number;
       justificados: number;
+      tardias: number;
     }> = {};
 
     for (const a of asistencias) {
@@ -690,6 +704,7 @@ export class AsistenciasService {
           ausencias: 0,
           escapados: 0,
           justificados: 0,
+          tardias: 0,
         };
       }
       const cnt = contarLecciones(a.lecciones);
@@ -705,6 +720,9 @@ export class AsistenciasService {
         case AsistenciaStatus.JUSTIFICADO:
           totalJustificados += cnt;
           resumenPorMateria[idMat].justificados += cnt;
+          break;
+        case AsistenciaStatus.TARDIA:
+          resumenPorMateria[idMat].tardias = (resumenPorMateria[idMat].tardias || 0) + cnt;
           break;
       }
     }
