@@ -471,109 +471,119 @@ export class AsistenciasService {
   }
 
   async obtenerReporteAsistenciasPorSeccion(
-    id_Seccion: number,
-    fechaInicio?: string,
-    fechaFin?: string,
-  ) {
-    // Obtener todos los estudiantes de la sección
-    const seccion = await this.seccionRepository.findOne({
-      where: { id_Seccion },
-      relations: ['estudiantes'],
+  id_Seccion: number,
+  fechaInicio?: string,
+  fechaFin?: string,
+  id_Materia?: number, // Añadir parámetro para filtrar por materia
+) {
+  // Obtener todos los estudiantes de la sección
+  const seccion = await this.seccionRepository.findOne({
+    where: { id_Seccion },
+    relations: ['estudiantes'],
+  });
+
+  if (!seccion) {
+    throw new NotFoundException(`Sección con ID ${id_Seccion} no encontrada`);
+  }
+
+  // Construir la consulta base
+  const query = this.asistenciaRepository
+    .createQueryBuilder('asistencia')
+    .leftJoinAndSelect('asistencia.id_Estudiante', 'estudiante')
+    .leftJoinAndSelect('asistencia.id_Seccion', 'seccion')
+    .leftJoinAndSelect('asistencia.justificacionAusencia', 'justificacion')
+    .leftJoinAndSelect('asistencia.id_Materia', 'materia') // Añadimos relación con materia
+    .where('seccion.id_Seccion = :id_Seccion', { id_Seccion });
+
+  // Aplicar filtros de fecha si se proporcionan
+  if (fechaInicio && fechaFin) {
+    query.andWhere('asistencia.fecha BETWEEN :fechaInicio AND :fechaFin', {
+      fechaInicio,
+      fechaFin,
+    });
+  } else if (fechaInicio) {
+    query.andWhere('asistencia.fecha >= :fechaInicio', { fechaInicio });
+  } else if (fechaFin) {
+    query.andWhere('asistencia.fecha <= :fechaFin', { fechaFin });
+  }
+
+  // Filtrar por materia si se proporciona
+  if (id_Materia) {
+    query.andWhere('materia.id_Materia = :id_Materia', { id_Materia });
+  }
+
+  const asistencias = await query.getMany();
+
+  // Estadísticas generales de la sección
+  const estadisticasSeccion = {
+    total_asistencias: 0,
+    total_ausencias: 0,
+    total_escapados: 0,
+    total_justificados: 0,
+    total_tardias: 0,
+  };
+
+  // Estadísticas por estudiante
+  const estadisticasPorEstudiante = [];
+
+  // Procesar cada estudiante de la sección
+  for (const estudiante of seccion.estudiantes) {
+    const asistenciasEstudiante = asistencias.filter(
+      (a) => a.id_Estudiante.id_Estudiante === estudiante.id_Estudiante
+    );
+
+    const estadisticasEstudiante = {
+      id_Estudiante: estudiante.id_Estudiante,
+      cedula: estudiante.cedula,
+      nombre_completo: `${estudiante.nombre_Estudiante} ${estudiante.apellido1_Estudiante} ${estudiante.apellido2_Estudiante || ''}`,
+      asistencias: 0,
+      ausencias: 0,
+      escapados: 0,
+      justificados: 0,
+      tardias: 0,
+    };
+
+    // Contar los diferentes tipos de asistencia POR LECCIÓN usando contarLecciones
+    asistenciasEstudiante.forEach((asistencia) => {
+      // Contar cuántas lecciones hay en este registro
+      const cantidadLecciones = contarLecciones(asistencia.lecciones);
+      
+      switch (asistencia.estado) {
+        case AsistenciaStatus.PRESENTE:
+          estadisticasEstudiante.asistencias += cantidadLecciones;
+          estadisticasSeccion.total_asistencias += cantidadLecciones;
+          break;
+        case AsistenciaStatus.AUSENTE:
+          estadisticasEstudiante.ausencias += cantidadLecciones;
+          estadisticasSeccion.total_ausencias += cantidadLecciones;
+          break;
+        case AsistenciaStatus.ESCAPADO:
+          estadisticasEstudiante.escapados += cantidadLecciones;
+          estadisticasSeccion.total_escapados += cantidadLecciones;
+          break;
+        case AsistenciaStatus.JUSTIFICADO:
+          estadisticasEstudiante.justificados += cantidadLecciones;
+          estadisticasSeccion.total_justificados += cantidadLecciones;
+          break;
+        case AsistenciaStatus.TARDIA:
+          estadisticasEstudiante.tardias += cantidadLecciones;
+          estadisticasSeccion.total_tardias += cantidadLecciones;
+          break;
+      }
     });
 
-    if (!seccion) {
-      throw new NotFoundException(`Sección con ID ${id_Seccion} no encontrada`);
-    }
-
-    // Construir la consulta base
-    const query = this.asistenciaRepository
-      .createQueryBuilder('asistencia')
-      .leftJoinAndSelect('asistencia.id_Estudiante', 'estudiante')
-      .leftJoinAndSelect('asistencia.id_Seccion', 'seccion')
-      .leftJoinAndSelect('asistencia.justificacionAusencia', 'justificacion')
-      .where('seccion.id_Seccion = :id_Seccion', { id_Seccion });
-
-    // Aplicar filtros de fecha si se proporcionan
-    if (fechaInicio && fechaFin) {
-      query.andWhere('asistencia.fecha BETWEEN :fechaInicio AND :fechaFin', {
-        fechaInicio,
-        fechaFin,
-      });
-    } else if (fechaInicio) {
-      query.andWhere('asistencia.fecha >= :fechaInicio', { fechaInicio });
-    } else if (fechaFin) {
-      query.andWhere('asistencia.fecha <= :fechaFin', { fechaFin });
-    }
-
-    const asistencias = await query.getMany();
-
-    // Estadísticas generales de la sección
-    const estadisticasSeccion = {
-      total_asistencias: 0,
-      total_ausencias: 0,
-      total_escapados: 0,
-      total_justificados: 0,
-      total_tardias: 0,
-    };
-
-    // Estadísticas por estudiante
-    const estadisticasPorEstudiante = [];
-
-    // Procesar cada estudiante de la sección
-    for (const estudiante of seccion.estudiantes) {
-      const asistenciasEstudiante = asistencias.filter(
-        (a) => a.id_Estudiante.id_Estudiante === estudiante.id_Estudiante
-      );
-
-      const estadisticasEstudiante = {
-        id_Estudiante: estudiante.id_Estudiante,
-        cedula: estudiante.cedula,
-        nombre_completo: `${estudiante.nombre_Estudiante} ${estudiante.apellido1_Estudiante} ${estudiante.apellido2_Estudiante}`,
-        asistencias: 0,
-        ausencias: 0,
-        escapados: 0,
-        justificados: 0,
-        tardias: 0,
-      };
-
-      // Contar los diferentes tipos de asistencia
-      asistenciasEstudiante.forEach((asistencia) => {
-        switch (asistencia.estado) {
-          case AsistenciaStatus.PRESENTE:
-            estadisticasEstudiante.asistencias++;
-            estadisticasSeccion.total_asistencias++;
-            break;
-          case AsistenciaStatus.AUSENTE:
-            estadisticasEstudiante.ausencias++;
-            estadisticasSeccion.total_ausencias++;
-            break;
-          case AsistenciaStatus.ESCAPADO:
-            estadisticasEstudiante.escapados++;
-            estadisticasSeccion.total_escapados++;
-            break;
-          case AsistenciaStatus.JUSTIFICADO:
-            estadisticasEstudiante.justificados++;
-            estadisticasSeccion.total_justificados++;
-            break;
-          case AsistenciaStatus.TARDIA:
-            estadisticasEstudiante.tardias = (estadisticasEstudiante.tardias || 0) + 1;
-            estadisticasSeccion.total_tardias = (estadisticasSeccion.total_tardias || 0) + 1;
-            break;
-        }
-      });
-
-      estadisticasPorEstudiante.push(estadisticasEstudiante);
-    }
-
-    return {
-      id_Seccion: seccion.id_Seccion,
-      nombre_Seccion: seccion.nombre_Seccion,
-      fecha_inicio: fechaInicio,
-      fecha_fin: fechaFin,
-      estadisticas_generales: estadisticasSeccion,
-      estudiantes: estadisticasPorEstudiante,
-    };
+    estadisticasPorEstudiante.push(estadisticasEstudiante);
   }
+
+  return {
+    id_Seccion: seccion.id_Seccion,
+    nombre_Seccion: seccion.nombre_Seccion,
+    fecha_inicio: fechaInicio,
+    fecha_fin: fechaFin,
+    estadisticas_generales: estadisticasSeccion,
+    estudiantes: estadisticasPorEstudiante,
+  };
+}
 
    async obtenerResumenPorUsuario(studentId: number): Promise<{
     total_ausencias: number;
